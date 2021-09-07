@@ -7,7 +7,7 @@ using Nitride;
 
 namespace Nitride.Chart
 {
-    public class TestTable : ITable
+    public class TestTable : ITable, IDataProvider
     {
         private HashSet<TestDatum> Rows { get; } = new HashSet<TestDatum>();
 
@@ -52,6 +52,8 @@ namespace Nitride.Chart
                 Rows.Clear();
         }
 
+
+
         public bool ReadyToShow => Count > 0 && Status != TableStatus.Default && Status != TableStatus.Loading && Status != TableStatus.Ticking && Status != TableStatus.Calculating;// (Status == TableStatus.Ready || Status == TableStatus.CalculateFinished || Status == TableStatus.TickingFinished);
 
         public TableStatus Status
@@ -64,19 +66,32 @@ namespace Nitride.Chart
 
                 if (m_Status == TableStatus.CalculateFinished)
                 {
-                    lock (DataViews) DataViews.ForEach(n => { n.ReadyToShow = true; n.PointerToEnd(); });
+                    lock (DataViews) DataViews.ForEach(n => { n.ReadyToShow = true; n.PointerSnapToEnd(); });
                 }
                 else if (!ReadyToShow)
                 {
-                    lock (DataViews) DataViews.ForEach(n => { n.ReadyToShow = false; n.SetAsyncUpdateUI(); });
+                    lock (DataViews) DataViews.ForEach(n => { n.ReadyToShow = false; n.DataIsUpdated(this); });
                 }
             }
         }
 
         private TableStatus m_Status = TableStatus.Default;
 
-        public List<IDataView> DataViews { get; } = new List<IDataView>();
+        public List<IDataRenderer> DataViews { get; } = new List<IDataRenderer>();
 
         public object DataLockObject { get; } = new object();
+
+
+        public bool AddDataConsumer(IDataConsumer idk)
+        {
+            return false;
+        }
+
+        public bool RemoveDataConsumer(IDataConsumer idk)
+        {
+            return false;
+        }
+
+        public DateTime UpdateTime { get; set; }
     }
 }
