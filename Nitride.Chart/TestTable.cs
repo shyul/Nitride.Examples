@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nitride;
 
-namespace Nitride.Chart
+namespace Nitride.Example
 {
     public class TestTable : ITable, IDataProvider
     {

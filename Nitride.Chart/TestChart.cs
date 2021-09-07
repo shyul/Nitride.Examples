@@ -5,9 +5,9 @@ using System.Drawing.Text;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Nitride.Chart;
+using Nitride.Example;
 
-namespace Nitride.Chart
+namespace Nitride.Example
 {
     public sealed class TestChart : ChartWidget
     {

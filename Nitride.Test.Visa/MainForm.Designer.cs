@@ -1,5 +1,5 @@
 ﻿
-namespace Nitride.Mosaic
+namespace Nitride.Example
 {
     partial class MainForm
     {

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Nitride.WindowsNativeMethods;
 
-namespace Nitride.Mosaic
+namespace Nitride.Example
 {
     static class Program
     {

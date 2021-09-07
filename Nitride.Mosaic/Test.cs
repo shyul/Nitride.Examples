@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Nitride.Mosaic
+namespace Nitride.Example
 {
     sealed partial class PacMain : MosaicForm
     {
@@ -172,8 +172,8 @@ namespace Nitride.Mosaic
                 //Enabled = false,
                 Label = "StockChart",
                 IconList = new Dictionary<IconType, Dictionary<Size, Bitmap>>() { { IconType.Normal, new Dictionary<Size, Bitmap>() {
-                    { new Size(16, 16), Mosaic.Properties.Resources.StockChart_16 },
-                    { new Size(32, 32), Mosaic.Properties.Resources.StockChart_32 }
+                    { new Size(16, 16), Example.Properties.Resources.StockChart_16 },
+                    { new Size(32, 32), Example.Properties.Resources.StockChart_32 }
                 } } },
                 //Action = (IObject sender, string[] args, Progress<Event> progress, CancellationTokenSource cts) => { Console.WriteLine("StockChart is clicked"); },
             };

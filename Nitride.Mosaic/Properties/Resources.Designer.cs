@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Nitride.Mosaic.Properties {
+namespace Nitride.Example.Properties {
     using System;
     
     

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Nitride.Mosaic
+namespace Nitride.Example
 {
     public partial class MainForm : Form
     {

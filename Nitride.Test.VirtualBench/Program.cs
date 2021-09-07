@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Nitride.Mosaic
+namespace Nitride.Example
 {
     static class Program
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nitride.Chart
+namespace Nitride.Example
 {
     public class TestDatum
     {
