@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Nitride\Nitride\Nitride.csproj" />
+    <ProjectReference Include="..\Nitride.EE.Visa\Nitride.EE.Visa.csproj" />
   </ItemGroup>
 
 </Project>

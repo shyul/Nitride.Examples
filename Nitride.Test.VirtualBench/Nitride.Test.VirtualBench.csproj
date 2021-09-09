@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Nitride\Nitride\Nitride.csproj" />
+    <ProjectReference Include="..\Nitride.EE.VirtualBench\Nitride.EE.VirtualBench.csproj" />
   </ItemGroup>
 
 </Project>
