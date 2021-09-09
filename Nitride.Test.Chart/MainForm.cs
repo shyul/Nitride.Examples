@@ -7,29 +7,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Nitride.EE;
 
 namespace Nitride.Example
 {
     public partial class MainForm : Form
     {
-        TestTable TestTable { get; set; } = new();
+        FreqTable FreqTable { get; set; } = new(1e6, 2e6, 1000);
 
         TestChart TestChart { get; set; }
 
         public MainForm()
         {
-            TestChart = new("Test Chart", TestTable);
+            for (int i = 0; i < FreqTable.Count; i++)
+            {
+                FreqTable[i][TestChart.Column_Amplitude] = i / 10D - 50;
 
-            Console.WriteLine("Test Console Output!!");
+            }
+
+
             InitializeComponent();
 
+
+            TestChart = new("Test Chart", FreqTable) { ReadyToShow  = true };
             TestChart.Location = new Point(0, 0);
             TestChart.Dock = DockStyle.Fill;
 
 
             Controls.Add(TestChart);
 
-            Console.WriteLine("Test Console Debug Output!!");
+            Console.WriteLine(FreqTable[5][TestChart.Column_Amplitude]);
         }
 
     }

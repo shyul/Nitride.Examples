@@ -6,16 +6,35 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Nitride.Chart;
+using Nitride.EE;
 
 namespace Nitride.Example
 {
     public sealed class TestChart : ChartWidget
     {
-        public TestChart(string name, TestTable st) : base(name)
+        public static NumericColumn Column_Amplitude { get; } = new NumericColumn("Amplitude", "dB");
+
+        public TestChart(string name, FreqTable st) : base(name)
         {
-            TestTable = st;
-            TestTable.Status = TableStatus.Loading;
-            TestTable.DataViews.Add(this);
+            Margin = new Padding(5, 15, 5, 5);
+            Theme.FillColor = BackColor = Color.FromArgb(255, 255, 253, 245);
+            Theme.EdgeColor = Theme.ForeColor = Color.FromArgb(192, 192, 192);
+
+            Style[Importance.Major].Font = Main.Theme.FontBold;
+            Style[Importance.Major].HasLabel = true;
+            Style[Importance.Major].HasLine = true;
+            Style[Importance.Major].Theme.EdgePen.DashPattern = new float[] { 5, 3 };
+            Style[Importance.Major].Theme.EdgePen.Color = Color.FromArgb(180, 180, 180);
+
+            Style[Importance.Minor].Font = Main.Theme.Font;
+            Style[Importance.Minor].HasLabel = true;
+            Style[Importance.Minor].HasLine = true;
+            Style[Importance.Minor].Theme.EdgePen.DashPattern = new float[] { 1, 2 };
+
+            FreqTable = st;
+            FreqTable.Status = TableStatus.Loading;
+            FreqTable.AddDataConsumer(this);
+            TabName = Name = "Test Chart with Table Here:)";
 
             AddArea(MainArea = new OscillatorArea(this, "Main", 0.3f)
             {
@@ -29,17 +48,20 @@ namespace Nitride.Example
 
             });
 
-            MainArea.AddSeries(MainSeries = new LineSeries(TestDatum.Column_Amplitude)
+            MainArea.AddSeries(MainSeries = new LineSeries(Column_Amplitude)
             {
                 Color = Color.Gray,
                 IsAntialiasing = true,
                 Tension = 0
             });
+
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         public override int RightBlankAreaWidth => 0;
 
-        public TestTable TestTable { get; private set; }
+        public FreqTable FreqTable { get; private set; }
 
         public OscillatorArea MainArea { get; }
 
@@ -50,7 +72,7 @@ namespace Nitride.Example
         {
             get
             {
-                if (TestTable[i] is TestDatum sp && sp.Frequency is double d)
+                if (FreqTable[i] is FreqRow sp && sp.Frequency is double d)
                     return d.ToString();
                 else
                     return string.Empty;
@@ -59,16 +81,18 @@ namespace Nitride.Example
 
         public override ITable Table
         {
-            get => TestTable;
+            get => FreqTable;
 
             set
             {
-                if (value is TestTable st)
-                    TestTable = st;
+                if (value is FreqTable st)
+                    FreqTable = st;
                 else
-                    TestTable = null;
+                    FreqTable = null;
             }
         }
+
+        public override bool ReadyToShow { get => m_ReadyToShow; set { m_ReadyToShow = value; } }
 
         public override void CoordinateOverlay()
         {
