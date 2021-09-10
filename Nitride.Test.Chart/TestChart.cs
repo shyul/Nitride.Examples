@@ -39,9 +39,9 @@ namespace Nitride.Example
             AddArea(MainArea = new OscillatorArea(this, "Main", 0.3f)
             {
                 HasXAxisBar = true,
-                Reference = -50,
-                UpperLimit = -20,
-                LowerLimit = -80,
+                Reference = 0,
+                UpperLimit = 20,
+                LowerLimit = -20,
                 UpperColor = Color.Green,
                 LowerColor = Color.DarkOrange,
                 FixedTickStep_Right = 10,

@@ -63,8 +63,8 @@ namespace Nitride
         {
             base.OnGotFocus(e);
             DockCanvas.ActiveDockForm = this;
-            if (Parent != null) DockCanvas.ActiveDockContainer = (DockContainer)Parent;
-            if (DockCanvas != null) DockCanvas.Invalidate(true);
+            if (Parent is DockContainer dc) DockCanvas.ActiveDockContainer = dc;
+            if (DockCanvas is not null) DockCanvas.Invalidate(true);
         }
 
         public override void Close()

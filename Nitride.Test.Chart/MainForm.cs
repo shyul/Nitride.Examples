@@ -13,7 +13,7 @@ namespace Nitride.Example
 {
     public partial class MainForm : Form
     {
-        FreqTable FreqTable { get; set; } = new(1e6, 2e6, 1000);
+        FreqTable FreqTable { get; set; } = new(1e6, 2e6, 50);
 
         TestChart TestChart { get; set; }
 
@@ -21,7 +21,7 @@ namespace Nitride.Example
         {
             for (int i = 0; i < FreqTable.Count; i++)
             {
-                FreqTable[i][TestChart.Column_Amplitude] = i / 10D - 50;
+                FreqTable[i][TestChart.Column_Amplitude] = i * 3D - 50D;
 
             }
 
@@ -32,9 +32,9 @@ namespace Nitride.Example
 
             TestChart = new("Test Chart", FreqTable) 
             {
-                IndexCount = 1000,
+                IndexCount = FreqTable.Count,
                 ReadyToShow  = true,
-                StopPt = 1000
+                StopPt = FreqTable.Count
             };
 
             TestChart.Location = new Point(0, 0);
@@ -43,7 +43,7 @@ namespace Nitride.Example
 
             Controls.Add(TestChart);
 
-            Console.WriteLine(FreqTable[5][TestChart.Column_Amplitude]);
+            Console.WriteLine(FreqTable[3][TestChart.Column_Amplitude]);
             Console.WriteLine(TestChart.IndexCount);
         }
 
