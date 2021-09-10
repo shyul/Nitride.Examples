@@ -19,10 +19,6 @@ namespace Nitride
 
         #region Numeric Column
 
-        /// <summary>
-        /// BarAnalysis Data Line
-        /// </summary>
-        // set is not allowed// One column only has one data
         private Dictionary<NumericColumn, double> NumericColumnsLUT { get; } = new Dictionary<NumericColumn, double>();
 
         public double this[NumericColumn column]
