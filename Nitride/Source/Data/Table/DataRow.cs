@@ -51,8 +51,9 @@ namespace Nitride
 
         #endregion Numeric Column
 
+        /*
         #region Datum Column
-
+        
         private Dictionary<DatumColumn, IDatum> DatumColumnsLUT { get; } = new Dictionary<DatumColumn, IDatum>();
 
         public IDatum this[DatumColumn dc]
@@ -77,6 +78,7 @@ namespace Nitride
         }
 
         #endregion Datum Column
+        */
 
         #region Equality
 
