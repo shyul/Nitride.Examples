@@ -25,11 +25,18 @@ namespace Nitride.Example
 
             }
 
+            FreqTable.Status = TableStatus.Ready;
 
             InitializeComponent();
 
 
-            TestChart = new("Test Chart", FreqTable) { ReadyToShow  = true };
+            TestChart = new("Test Chart", FreqTable) 
+            {
+                IndexCount = 1000,
+                ReadyToShow  = true,
+                StopPt = 1000
+            };
+
             TestChart.Location = new Point(0, 0);
             TestChart.Dock = DockStyle.Fill;
 
@@ -37,6 +44,7 @@ namespace Nitride.Example
             Controls.Add(TestChart);
 
             Console.WriteLine(FreqTable[5][TestChart.Column_Amplitude]);
+            Console.WriteLine(TestChart.IndexCount);
         }
 
     }
