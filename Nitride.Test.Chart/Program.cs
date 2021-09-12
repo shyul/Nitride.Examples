@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Nitride.WindowsNativeMethods;
 
 namespace Nitride.Example
 {
@@ -17,7 +18,12 @@ namespace Nitride.Example
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ChartForm.Show();
             Application.Run(new MainForm());
         }
+
+        public static ChartForm ChartForm { get; } = new();
+
+        public static readonly int SHOW_FSQ = User32.RegisterWindowMessage("SHOW_FSQ");
     }
 }

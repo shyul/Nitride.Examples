@@ -61,6 +61,8 @@ namespace Nitride.Chart
 
         private int MaximumBlankPoints => (0.3f * IndexCount).ToInt32();
 
+        public bool EnableChartShift { get; set; } = true;
+
         /// <summary>
         /// TODO: The scrolling short chart: CLOV got issues.
         /// </summary>

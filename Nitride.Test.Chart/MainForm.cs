@@ -43,6 +43,9 @@ namespace Nitride.Example
 
             Controls.Add(TestChart);
 
+
+            Program.ChartForm.AddForm(TestChart);
+
             Console.WriteLine(FreqTable[3][TestChart.Column_Amplitude]);
             Console.WriteLine(TestChart.IndexCount);
         }

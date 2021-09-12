@@ -55,6 +55,8 @@ namespace Nitride.Example
                 Tension = 0
             });
 
+            EnableChartShift = false;
+
             ResumeLayout(false);
             PerformLayout();
         }
@@ -66,7 +68,6 @@ namespace Nitride.Example
         public OscillatorArea MainArea { get; }
 
         public LineSeries MainSeries { get; }
-
 
         public override string this[int i]
         {
