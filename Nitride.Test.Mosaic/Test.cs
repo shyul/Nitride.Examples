@@ -107,9 +107,9 @@ namespace Nitride.Example
 
         // Load Table
         // SELECT [time], [freq], [value], [type] FROM AAPL where [type] = 'DIVIDEND' and [freq] = 'Daily' order by [time] desc
-        public static DataTable LoadTable(FileInfo DataFile, string TableName, string SqlCmd)
+        public static System.Data.DataTable LoadTable(FileInfo DataFile, string TableName, string SqlCmd)
         {
-            DataTable t = new DataTable();
+            System.Data.DataTable t = new();
 
             t.TableName = TableName;
             return t;

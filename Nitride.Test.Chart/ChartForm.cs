@@ -9,7 +9,7 @@ namespace Nitride.Example
     internal sealed partial class ChartForm : MosaicForm
     {
         #region Ctor
-        public ChartForm() : base(Program.SHOW_FSQ)
+        public ChartForm() : base(Program.SHOW_FORM)
         {
             SuspendLayout();
 

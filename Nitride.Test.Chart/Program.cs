@@ -24,6 +24,6 @@ namespace Nitride.Example
 
         public static ChartForm ChartForm { get; } = new();
 
-        public static readonly int SHOW_FSQ = User32.RegisterWindowMessage("SHOW_FSQ");
+        public static readonly int SHOW_FORM = User32.RegisterWindowMessage("SHOW_NITRIDE_FORM");
     }
 }
