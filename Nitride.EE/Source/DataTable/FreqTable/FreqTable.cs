@@ -16,21 +16,45 @@ namespace Nitride.EE
 {
     public class FreqTable : DataTable, IComplexTable
     {
-        public FreqTable(double startFreq, double stopFreq, int numOfPts)
+        ~FreqTable() => Dispose();
+
+        public void Configure(double startFreq, double stopFreq, int numOfPts)
         {
-            double deltaFreq = (stopFreq - startFreq) / (numOfPts - 1D);
-            for (int i = 0; i < numOfPts; i++)
+            lock (DataLockObject)
             {
-                double freq = startFreq + (i * deltaFreq);
-                Rows.Add(new FreqRow(freq, this));
+                Rows.Clear();
+                Step = (stopFreq - startFreq) / (numOfPts - 1D);
+                Start = startFreq;
+                for (int i = 0; i < numOfPts; i++)
+                {
+                    double freq = startFreq + (i * Step);
+                    Rows.Add(new FreqRow(freq, this));
+                    Stop = freq;
+                }
             }
         }
 
-        ~FreqTable() => Dispose();
+        public void Configure(double startFreq, double stopFreq, double stepFreq)
+        {
+            lock (DataLockObject)
+            {
+                Rows.Clear();
+                Step = stepFreq;
+                Start = startFreq;
+                for (double freq = startFreq; freq < stopFreq; freq += Step)
+                {
+                    Rows.Add(new FreqRow(freq, this));
+                    //Console.WriteLine("freq = " + freq);
+                    Stop = freq;
+                }
+            }
+        }
 
-        public double Start => Count > 0 ? Rows.First().X : double.NaN;
+        public double Start { get; protected set; } = double.NaN; // => Count > 0 ? Rows.First().X : double.NaN;
 
-        public double Stop => Count > 0 ? Rows.Last().X : double.NaN;
+        public double Stop { get; protected set; } = double.NaN; // => Count > 0 ? Rows.Last().X : double.NaN;
+
+        public double Step { get; protected set; } = double.NaN;
 
         private List<FreqRow> Rows { get; } = new();
 
@@ -38,7 +62,7 @@ namespace Nitride.EE
 
         public override void Clear()
         {
-            lock (Rows)
+            lock (DataLockObject)
                 Rows.Clear();
         }
 

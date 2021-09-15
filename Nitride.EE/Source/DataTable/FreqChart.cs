@@ -88,6 +88,9 @@ namespace Nitride.EE
 
         public override bool ReadyToShow { get => m_ReadyToShow; set { m_ReadyToShow = value; } }
 
+        public double[] TickDacades { get; set; } = new double[]
+            { 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.8, 1 };
+
         public override void CoordinateOverlay()
         {
             ResumeLayout(true);
@@ -105,20 +108,37 @@ namespace Nitride.EE
                     {
                         AxisX.TickList.Clear();
 
-                        int tickMulti = 1;
-                        int tickWidth = AxisX.TickWidth;
+                        //int tickMulti = 1;
+                        //int tickWidth = AxisX.TickWidth;
+                        double minTextWidth = TextRenderer.MeasureText("0.0000MHz", Style[Importance.Major].Font).Width * 1D;
 
-                        int minorTextWidth = TextRenderer.MeasureText("000", Style[Importance.Minor].Font).Width;
+                        //while (tickWidth <= minTextWidth) { tickWidth += tickWidth; tickMulti++; }
+                       
 
-                        while (tickWidth <= minorTextWidth) { tickWidth++; tickMulti++; }
                         int px = 0;
+
+                        //int totalTicks = (StopPt - StartPt) / tickMulti;
+
+                        double tickNum = Width / minTextWidth;
+                        int tickStep = Math.Round( (StopPt - StartPt) / tickNum).ToInt32();
+
+
+                        //Console.WriteLine("totalTicks =" + totalTicks);
+                        //double freqSpan = FreqTable[StopPt - 1].Frequency - FreqTable[StartPt].Frequency;
+                        //double tickFreqSpan = (freqSpan / totalTicks).FitDacades(TickDacades);
+
+                        //Console.WriteLine("tickFreqSpan = " + tickFreqSpan);
+
                         for (int i = StartPt; i < StopPt; i++)
                         {
                             //DateTime time = m_BarTable.IndexToTime(i);
                             //if ((time.Month - 1) % MajorTick.Length == 0) AxisX.TickList.CheckAdd(px, (Importance.Major, time.ToString("MMM-YY")));
                             //if ((time.Month - 1) % MinorTick.Length == 0) AxisX.TickList.CheckAdd(px, (Importance.Minor, time.ToString("MM")));
 
+                            double freq = FreqTable[i].Frequency;
 
+                            //if ((freq % tickFreqSpan) < (tickFreqSpan / 10D)) AxisX.TickList.CheckAdd(px, (Importance.Major, freq.ToString()));
+                            if (i% tickStep==0) AxisX.TickList.CheckAdd(px, (Importance.Major, (freq/1e6).ToString("0.###") + "MHz"));
 
 
 

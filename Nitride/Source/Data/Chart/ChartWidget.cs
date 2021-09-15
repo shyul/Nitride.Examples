@@ -291,6 +291,7 @@ namespace Nitride.Chart
                         }
                     }
 
+                    CoordinateOverlay();
                 }
             PerformLayout();
         }
