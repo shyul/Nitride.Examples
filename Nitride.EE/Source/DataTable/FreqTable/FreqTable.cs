@@ -56,7 +56,7 @@ namespace Nitride.EE
 
         public double Step { get; protected set; } = double.NaN;
 
-        private List<FreqRow> Rows { get; } = new();
+        protected List<FreqRow> Rows { get; } = new();
 
         public override int Count => Rows.Count;
 
