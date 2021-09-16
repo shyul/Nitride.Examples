@@ -15,9 +15,9 @@ using System.IO;
 
 namespace Nitride.EE
 {
-    public class SParamTable : FreqTable
+    public class ParamTable : FreqTable
     {
-        ~SParamTable() => Dispose();
+        ~ParamTable() => Dispose();
 
         public void Reset()
         {

@@ -6,6 +6,8 @@ https://www.maximintegrated.com/en/design/technical-documents/tutorials/2/2866.h
 https://teledynelecroy.com/doc/an-introduction-to-sparameters
 https://incompliancemag.com/article/s-parameters-tutorial-part-i-fundamental-background/
 
+https://web.ece.ucsb.edu/~long/ece145a/Notes4_Sparams.pdf
+
 Touchstone Format (*.snp)
 These files contain small-signal S-parameters described by frequency-dependent linear network parameters for 1- to 10-port components. The 2-port component files can also contain frequency-dependent noise parameters. This data file format is also known as Touchstone format.
 
