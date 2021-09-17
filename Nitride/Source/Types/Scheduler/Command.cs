@@ -87,7 +87,7 @@ namespace Nitride
                     return new Bitmap(bm, sz);
                 }
                 else
-                    return new Bitmap(Properties.Resources.Blank_32, sz);
+                    return new Bitmap(Properties.Resources.Blank_32, new Size(1, 1));
             }
         }
 

@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Nitride
 {
@@ -72,10 +73,13 @@ namespace Nitride
 
                 double[] K = tdm.Solve(R);
 
-                Console.WriteLine(tdm.ToString());
+                //Console.WriteLine(tdm.ToString());
 
-                Console.WriteLine("R = " + R.ToStringWithIndex());
-                Console.WriteLine("K = " + K.ToStringWithIndex());
+                //Console.WriteLine("R = " + R.ToStringWithIndex());
+                //Console.WriteLine("K = " + K.ToStringWithIndex());
+
+                //Console.WriteLine("R: {0}", ArrayUtilToString(R));
+                //Console.WriteLine("K: {0}", ArrayUtilToString(K));
 
                 A = new double[N - 1];
                 B = new double[N - 1];
@@ -88,13 +92,36 @@ namespace Nitride
                     B[i - 1] = -K[i] * dx1 + dy1;       // Equation 11
                 }
 
-                Console.WriteLine("A = " + A.ToStringWithIndex());
-                Console.WriteLine("B = " + B.ToStringWithIndex());
+                //Console.WriteLine("A = " + A.ToStringWithIndex());
+                //Console.WriteLine("B = " + B.ToStringWithIndex());
+
+                //Console.WriteLine("A: {0}", ArrayUtilToString(A));
+                //Console.WriteLine("B: {0}", ArrayUtilToString(B));
             }
             else
             {
                 throw new Exception("x array and y array size should be the same, the size should be greater than 1.");
             }    
+        }
+
+        public static string ArrayUtilToString<T>(T[] array, string format = "")
+        {
+            var s = new StringBuilder();
+            string formatString = "{0" + format + "}";
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (i < array.Length - 1)
+                {
+                    s.AppendFormat(formatString + ", ", array[i]);
+                }
+                else
+                {
+                    s.AppendFormat(formatString, array[i]);
+                }
+            }
+
+            return s.ToString();
         }
 
         public double[] Evaluate(IEnumerable<double> xin) 
@@ -108,17 +135,29 @@ namespace Nitride
                 if (x < X[0] || x > X[N - 1])
                     y[i] = double.NaN;
 
+                if (x < X[pt])
+                {
+                    throw new ArgumentException("The X values to evaluate must be sorted.");
+                }
+
+                while ((pt < X.Length - 2) && (x > X[pt + 1]))
+                {
+                    pt++;
+                }
+                /*
                 while (pt < N - 1)
                 {
                     if (x >= X[pt])
                         break;
                     else
                         pt++;
-                }
+                }*/
 
                 double dx = X[pt + 1] - X[pt];
                 double t = (x - X[pt]) / dx;
                 y[i] = (1 - t) * Y[pt] + t * Y[pt + 1] + t * (1 - t) * (A[pt] * (1 - t) + B[pt] * t);
+
+                //Console.WriteLine("xs = {0}, j = {1}, t = {2}", x, pt, t);
 
                 i++;
             }
@@ -182,7 +221,7 @@ namespace Nitride
                 xs[i] = i * (n - 1D) / (nInterpolated - 1D);
             }
 
-            CubicSpline spline = new(x, y, 0.0f, double.NaN);
+            CubicSpline spline = new(x, y, 0.0D, double.NaN);
 
             var result = spline.Evaluate(xs);
 
