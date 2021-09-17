@@ -22,14 +22,17 @@ namespace Nitride.EE
         {
             lock (DataLockObject)
             {
-                Rows.Clear();
+                FreqRows.Clear();
                 Step = (stopFreq - startFreq) / (numOfPts - 1D);
                 Start = startFreq;
+
+                int pt = 0;
                 for (int i = 0; i < numOfPts; i++)
                 {
                     double freq = startFreq + (i * Step);
-                    Rows.Add(new FreqRow(freq, this));
+                    FreqRows.Add(new FreqRow(freq, pt, this));
                     Stop = freq;
+                    pt++;
                 }
             }
         }
@@ -38,14 +41,16 @@ namespace Nitride.EE
         {
             lock (DataLockObject)
             {
-                Rows.Clear();
+                FreqRows.Clear();
                 Step = stepFreq;
                 Start = startFreq;
+
+                int pt = 0;
                 for (double freq = startFreq; freq < stopFreq; freq += Step)
                 {
-                    Rows.Add(new FreqRow(freq, this));
-                    //Console.WriteLine("freq = " + freq);
+                    FreqRows.Add(new FreqRow(freq, pt, this));
                     Stop = freq;
+                    pt++;
                 }
             }
         }
@@ -56,36 +61,36 @@ namespace Nitride.EE
 
         public double Step { get; protected set; } = double.NaN;
 
-        protected List<FreqRow> Rows { get; } = new();
+        protected List<FreqRow> FreqRows { get; } = new();
 
-        public override int Count => Rows.Count;
+        public override int Count => FreqRows.Count;
 
         public override void Clear()
         {
             lock (DataLockObject)
-                Rows.Clear();
+                FreqRows.Clear();
         }
 
-        public IEnumerable<double> FreqList => Rows.Select(n => n.Frequency).OrderBy(n => n);
+        public IEnumerable<double> FreqList => FreqRows.Select(n => n.Frequency).OrderBy(n => n);
 
-        public IEnumerable<FreqRow> RowList => Rows.OrderBy(n => n.Frequency);
+        public IEnumerable<FreqRow> Rows => FreqRows.OrderBy(n => n.Frequency);
 
         public FreqRow this[int i]
         {
             get
             {
-                lock (Rows)
+                lock (DataLockObject)
                     if (i >= Count || i < 0)
                         return null;
                     else
-                        return Rows[i];
+                        return FreqRows[i];
             }
         }
 
-        public override double this[int i, NumericColumn column] => i >= Count || i < 0 ? double.NaN : Rows[i][column];
+        public override double this[int i, NumericColumn column] => i >= Count || i < 0 ? double.NaN : FreqRows[i][column];
 
         //public override IDatum this[int i, DatumColumn column] => i >= Count || i < 0 ? null : Rows[i][column];
 
-        public Complex this[int i, ComplexColumn column] => i >= Count || i < 0 ? Complex.NaN : Rows[i][column];
+        public Complex this[int i, ComplexColumn column] => i >= Count || i < 0 ? Complex.NaN : FreqRows[i][column];
     }
 }
