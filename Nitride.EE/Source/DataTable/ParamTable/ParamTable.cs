@@ -167,8 +167,6 @@ namespace Nitride.EE
                     }
                 }
             }
-
-
         }
 
         ~ParamTable() => Dispose();
@@ -246,12 +244,13 @@ namespace Nitride.EE
                 Complex s21 = row[2, 1];
                 Complex s22 = row[2, 2];
 
-                Console.WriteLine("freq = " + row.Frequency + "; s11 = " + s11 + "; s21 = " + s21 + "; s12 = " + s12 + "; s22 = " + s22);
+                //Console.WriteLine("freq = " + row.Frequency + "; s11 = " + s11 + "; s21 = " + s21 + "; s12 = " + s12 + "; s22 = " + s22);
+                Console.WriteLine("freq = " + row.Frequency + "; " + Type + "11 = " + s11 + "; " + Type + "21 = " + s21 + "; " + Type + "12 = " + s12 + "; " + Type + "22 = " + s22);
 
-                row[Column_S11] = 20 * Math.Log10(s11.Magnitude);
-                row[Column_S21] = 20 * Math.Log10(s21.Magnitude);
-                row[Column_S12] = 20 * Math.Log10(s12.Magnitude);
-                row[Column_S22] = 20 * Math.Log10(s22.Magnitude);
+                row[Column_S11] = Type == ParamType.S ? 20 * Math.Log10(s11.Magnitude) : s11.Magnitude;
+                row[Column_S21] = Type == ParamType.S ? 20 * Math.Log10(s21.Magnitude) : s21.Magnitude;
+                row[Column_S12] = Type == ParamType.S ? 20 * Math.Log10(s12.Magnitude) : s12.Magnitude;
+                row[Column_S22] = Type == ParamType.S ? 20 * Math.Log10(s22.Magnitude) : s22.Magnitude;
             }
 
         }
@@ -274,15 +273,15 @@ namespace Nitride.EE
 
         public override double this[int i, NumericColumn column] => i >= Count || i < 0 ? double.NaN : ParamRows[i][column];
 
-        public static ParamTable GetZTable(ParamTable st)
+        public ParamTable GetZTable()
         {
-            if (st.Type == ParamType.S && st.PortCount == 2)
+            if (Type == ParamType.S && PortCount == 2)
             {
-                double z0 = st.Z0;
+                double z0 = Z0;
                 ParamTable zt = new(ParamType.Z, 2, z0);
 
                 int pt = 0;
-                foreach (var sr in st.ParamRows)
+                foreach (var sr in ParamRows)
                 {
                     ParamRow zr = new(sr.Frequency, pt, zt);
                     pt++;
@@ -299,6 +298,7 @@ namespace Nitride.EE
                     zr[2, 1] = 2 * s21 * z0 / deltaS;
                     zr[2, 2] = (((1 - s11) * (1 + s22)) + (s12 * s21)) * z0 / deltaS;
 
+                    Console.WriteLine("freq = " + zr.Frequency + "; z11 = " + zr[1, 1] + "; z21 = " + zr[2, 1] + "; z12 = " + zr[1, 2] + "; z22 = " + zr[2, 2]);
                     zt.ParamRows.Add(zr);
                 }
 
@@ -334,6 +334,93 @@ namespace Nitride.EE
             }
 
             return t;
+        }
+
+        public Dictionary<double, Complex> GetImpedance(Dictionary<double, Complex> z2_list)
+        {
+            var freq_list = z2_list.Keys.OrderBy(n => n);
+
+            ParamTable zt = Interpolate(freq_list);
+            Dictionary<double, Complex> result = new();
+
+            for (int i = 0; i < zt.Count; i++)
+            {
+                ParamRow zr = zt[i];
+                double freq = zr.Frequency;
+
+                Complex z11 = zr[1, 1]; // = new Complex(result_s11_real[pt], result_s11_imag[pt]);
+                Complex z12 = zr[1, 2]; // = new Complex(result_s12_real[pt], result_s12_imag[pt]);
+                Complex z21 = zr[2, 1]; // = new Complex(result_s21_real[pt], result_s21_imag[pt]);
+                Complex z22 = zr[2, 2]; // = new Complex(result_s22_real[pt], result_s22_imag[pt]);
+                Complex z2 = z2_list[freq];
+
+                result[freq] = z11 - (z12 * z21 / (z22 + z2));
+            }
+
+            return result;
+        }
+
+        public static Dictionary<double, Complex> GetImpedance(Dictionary<double, Complex> z2_list, ParamTable st)
+        {
+            ParamTable zt0 = st.GetZTable();
+
+            // Intrepolate zt
+            double startSlope = 0D;
+            double endSlope = double.NaN;
+
+            CubicSpline spline_s11_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 1].Real), startSlope, endSlope);
+            CubicSpline spline_s11_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 1].Imaginary), startSlope, endSlope);
+            CubicSpline spline_s12_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 2].Real), startSlope, endSlope);
+            CubicSpline spline_s12_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 2].Imaginary), startSlope, endSlope);
+            CubicSpline spline_s21_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 1].Real), startSlope, endSlope);
+            CubicSpline spline_s21_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 1].Imaginary), startSlope, endSlope);
+            CubicSpline spline_s22_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 2].Real), startSlope, endSlope);
+            CubicSpline spline_s22_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 2].Imaginary), startSlope, endSlope);
+            /*
+            CubicSpline spline_s11_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 1].Magnitude), startSlope, endSlope);
+            CubicSpline spline_s11_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 1].Phase), startSlope, endSlope);
+            CubicSpline spline_s12_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 2].Magnitude), startSlope, endSlope);
+            CubicSpline spline_s12_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 2].Phase), startSlope, endSlope);
+            CubicSpline spline_s21_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 1].Magnitude), startSlope, endSlope);
+            CubicSpline spline_s21_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 1].Phase), startSlope, endSlope);
+            CubicSpline spline_s22_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 2].Magnitude), startSlope, endSlope);
+            CubicSpline spline_s22_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 2].Phase), startSlope, endSlope);
+            */
+
+            var freq_list = z2_list.Keys.OrderBy(n => n);
+
+            var result_s11_real = spline_s11_real.Evaluate(freq_list);
+            var result_s11_imag = spline_s11_imag.Evaluate(freq_list);
+            var result_s12_real = spline_s12_real.Evaluate(freq_list);
+            var result_s12_imag = spline_s12_imag.Evaluate(freq_list);
+            var result_s21_real = spline_s21_real.Evaluate(freq_list);
+            var result_s21_imag = spline_s21_imag.Evaluate(freq_list);
+            var result_s22_real = spline_s22_real.Evaluate(freq_list);
+            var result_s22_imag = spline_s22_imag.Evaluate(freq_list);
+
+            ParamTable zt = new(ParamType.Z, 2, zt0.Z0);
+
+            Dictionary<double, Complex> result = new();
+
+            int pt = 0;
+            foreach (double freq in freq_list)
+            {
+                ParamRow zr = new(freq, pt, zt);
+
+                Complex z11 = zr[1, 1] = new Complex(result_s11_real[pt], result_s11_imag[pt]);
+                Complex z12 = zr[1, 2] = new Complex(result_s12_real[pt], result_s12_imag[pt]);
+                Complex z21 = zr[2, 1] = new Complex(result_s21_real[pt], result_s21_imag[pt]);
+                Complex z22 = zr[2, 2] = new Complex(result_s22_real[pt], result_s22_imag[pt]);
+
+                Complex z2 = z2_list[freq];
+
+                result[freq] = z11 - (z12 * z21 / (z22 + z2));
+
+                pt++;
+                zt.ParamRows.Add(zr);
+            }
+
+            return result;
         }
 
         public ParamChart TestChart()
@@ -394,93 +481,6 @@ namespace Nitride.EE
             });
 
             return pc;
-        }
-
-        public Dictionary<double, Complex> GetImpedance(Dictionary<double, Complex> z2_list)
-        {
-            var freq_list = z2_list.Keys.OrderBy(n => n);
-
-            ParamTable zt = Interpolate(freq_list);
-            Dictionary<double, Complex> result = new();
-
-            for (int i = 0; i < zt.Count; i++)
-            {
-                ParamRow zr = zt[i];
-                double freq = zr.Frequency;
-
-                Complex z11 = zr[1, 1]; // = new Complex(result_s11_real[pt], result_s11_imag[pt]);
-                Complex z12 = zr[1, 2]; // = new Complex(result_s12_real[pt], result_s12_imag[pt]);
-                Complex z21 = zr[2, 1]; // = new Complex(result_s21_real[pt], result_s21_imag[pt]);
-                Complex z22 = zr[2, 2]; // = new Complex(result_s22_real[pt], result_s22_imag[pt]);
-                Complex z2 = z2_list[freq];
-
-                result[freq] = z11 - (z12 * z21 / (z22 + z2));
-            }
-
-            return result;
-        }
-
-        public static Dictionary<double, Complex> GetImpedance(Dictionary<double, Complex> z2_list, ParamTable st)
-        {
-            ParamTable zt0 = GetZTable(st);
-
-            // Intrepolate zt
-            double startSlope = 0D;
-            double endSlope = double.NaN;
-
-            CubicSpline spline_s11_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 1].Real), startSlope, endSlope);
-            CubicSpline spline_s11_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 1].Imaginary), startSlope, endSlope);
-            CubicSpline spline_s12_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 2].Real), startSlope, endSlope);
-            CubicSpline spline_s12_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 2].Imaginary), startSlope, endSlope);
-            CubicSpline spline_s21_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 1].Real), startSlope, endSlope);
-            CubicSpline spline_s21_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 1].Imaginary), startSlope, endSlope);
-            CubicSpline spline_s22_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 2].Real), startSlope, endSlope);
-            CubicSpline spline_s22_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 2].Imaginary), startSlope, endSlope);
-            /*
-            CubicSpline spline_s11_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 1].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s11_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 1].Phase), startSlope, endSlope);
-            CubicSpline spline_s12_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 2].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s12_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 2].Phase), startSlope, endSlope);
-            CubicSpline spline_s21_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 1].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s21_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 1].Phase), startSlope, endSlope);
-            CubicSpline spline_s22_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 2].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s22_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 2].Phase), startSlope, endSlope);
-            */
-
-            var freq_list = z2_list.Keys.OrderBy(n => n);
-
-            var result_s11_real = spline_s11_real.Evaluate(freq_list);
-            var result_s11_imag = spline_s11_imag.Evaluate(freq_list);
-            var result_s12_real = spline_s12_real.Evaluate(freq_list);
-            var result_s12_imag = spline_s12_imag.Evaluate(freq_list);
-            var result_s21_real = spline_s21_real.Evaluate(freq_list);
-            var result_s21_imag = spline_s21_imag.Evaluate(freq_list);
-            var result_s22_real = spline_s22_real.Evaluate(freq_list);
-            var result_s22_imag = spline_s22_imag.Evaluate(freq_list);
-
-            ParamTable zt = new(ParamType.Z, 2, zt0.Z0);
-
-            Dictionary<double, Complex> result = new();
-
-            int pt = 0;
-            foreach (double freq in freq_list)
-            {
-                ParamRow zr = new(freq, pt, zt);
-
-                Complex z11 = zr[1, 1] = new Complex(result_s11_real[pt], result_s11_imag[pt]);
-                Complex z12 = zr[1, 2] = new Complex(result_s12_real[pt], result_s12_imag[pt]);
-                Complex z21 = zr[2, 1] = new Complex(result_s21_real[pt], result_s21_imag[pt]);
-                Complex z22 = zr[2, 2] = new Complex(result_s22_real[pt], result_s22_imag[pt]);
-
-                Complex z2 = z2_list[freq];
-
-                result[freq] = z11 - (z12 * z21 / (z22 + z2));
-
-                pt++;
-                zt.ParamRows.Add(zr);
-            }
-
-            return result;
         }
     }
 }
