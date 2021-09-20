@@ -7,22 +7,24 @@
 /// ***************************************************************************
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.IO;
 
 namespace Nitride.EE
 {
-    public enum TouchstoneFormat : int
+    public interface IFreqTable : ITable, IDataProvider
     {
-        Invalid = 0,
-        RealImaginary = 1,
-        dBAngle = 2,
-        MagnitudeAngle = 3,
+        double Start { get; }
+
+        double Stop { get; }
+
+        double Step { get; }
+
+        IEnumerable<double> FreqList { get; }
+
+        IEnumerable<FreqRow> Rows { get; }
+
+        FreqRow this[int i] { get; }
     }
-
-
-
 }

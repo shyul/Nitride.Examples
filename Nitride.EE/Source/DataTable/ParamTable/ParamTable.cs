@@ -17,7 +17,7 @@ using System.Drawing;
 
 namespace Nitride.EE
 {
-    public class ParamTable : DataTable
+    public class ParamTable : DataTable, IFreqTable
     {
         public ParamTable(ParamType type, int portCount, double z0 = 50)
         {
@@ -64,7 +64,6 @@ namespace Nitride.EE
             int validFieldCount = -1;
             //double normalized = -1;
             double freqUnit = 0;
-            TouchstoneFormat format = TouchstoneFormat.Invalid;
 
             if (suffix.StartsWith('s') && suffix.EndsWith('p'))
             {
@@ -75,7 +74,7 @@ namespace Nitride.EE
             {
                 using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using StreamReader sr = new(fs);
-
+                string format = string.Empty;
                 bool validHeader = false;
                 int linePt = 0;
 
@@ -98,13 +97,10 @@ namespace Nitride.EE
                                     _ => throw new Exception("Invalid SnP file format.")
                                 };
 
-                                format = fields[3].ToUpper() switch
-                                {
-                                    "RI" => TouchstoneFormat.RealImaginary,
-                                    "DB" => TouchstoneFormat.dBAngle,
-                                    "MA" => TouchstoneFormat.MagnitudeAngle,
-                                    _ => throw new Exception("Invalid SnP file format.")
-                                };
+                                format = fields[3].ToUpper();
+
+                                if (format != "RI" && format != "DB" && format != "MA")
+                                    throw new Exception("Invalid SnP file format.");
 
                                 Type = fields[2].ToUpper() switch
                                 {
@@ -150,10 +146,13 @@ namespace Nitride.EE
                                 {
                                     for (int j = 1; j <= PortCount; j++)
                                     {
-                                        if (format == TouchstoneFormat.RealImaginary)
+                                        row[j, i] = format switch
                                         {
-                                            row[j, i] = new(fields[pt].ToDouble(), fields[pt + 1].ToDouble());
-                                        }
+                                            "RI" => new(fields[pt].ToDouble(), fields[pt + 1].ToDouble()),
+                                            "DB" => Complex.FromPolarCoordinates(Math.Pow((fields[pt].ToDouble() / 20D), 10D), fields[pt + 1].ToDouble() * Math.PI / 180D),
+                                            "MA" => Complex.FromPolarCoordinates(fields[pt].ToDouble(), fields[pt + 1].ToDouble() * Math.PI / 180D),
+                                            _ => throw new Exception("Invalid SnP file format.")
+                                        };
 
                                         pt += 2;
                                     }
@@ -257,9 +256,9 @@ namespace Nitride.EE
 
         public IEnumerable<double> FreqList => ParamRows.Select(n => n.Frequency).OrderBy(n => n);
 
-        public IEnumerable<ParamRow> Rows => ParamRows.OrderBy(n => n.Frequency);
+        public IEnumerable<FreqRow> Rows => ParamRows.OrderBy(n => n.Frequency).Select(n => n as FreqRow);
 
-        public ParamRow this[int i]
+        public FreqRow this[int i]
         {
             get
             {
@@ -345,7 +344,7 @@ namespace Nitride.EE
 
             for (int i = 0; i < zt.Count; i++)
             {
-                ParamRow zr = zt[i];
+                ParamRow zr = zt.ParamRows[i];
                 double freq = zr.Frequency;
 
                 Complex z11 = zr[1, 1]; // = new Complex(result_s11_real[pt], result_s11_imag[pt]);
@@ -423,9 +422,9 @@ namespace Nitride.EE
             return result;
         }
 
-        public ParamChart TestChart()
+        public FreqChart TestChart()
         {
-            ParamChart pc = new("S-Parameter", this)
+            FreqChart pc = new("S-Parameter", this)
             {
                 IndexCount = Count,
                 ReadyToShow = true,

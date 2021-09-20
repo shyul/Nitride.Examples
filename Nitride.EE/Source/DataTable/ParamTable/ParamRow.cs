@@ -13,22 +13,9 @@ using System.Numerics;
 
 namespace Nitride.EE
 {
-    public class ParamRow : DataRow
+    public class ParamRow : FreqRow
     {
-        public ParamRow(double freq, int index, ParamTable ft)
-        {
-            ParamTable = ft;
-            Index = index;
-            Frequency = freq;
-        }
-
-        public ParamTable ParamTable { get; }
-
-        public int Index { get; }
-
-        public double Frequency { get; }
-
-        public override double X => Frequency;
+        public ParamRow(double freq, int index, ParamTable ft) : base(freq, index, ft) { }
 
         private Dictionary<(int p1, int p2), Complex> ParamDataLUT { get; } = new();
 

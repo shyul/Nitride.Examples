@@ -14,7 +14,7 @@ using System.Numerics;
 
 namespace Nitride.EE
 {
-    public class FreqTable : DataTable, IComplexTable
+    public class FreqTable : DataTable, IComplexTable, IFreqTable
     {
         ~FreqTable() => Dispose();
 
@@ -83,13 +83,11 @@ namespace Nitride.EE
                     if (i >= Count || i < 0)
                         return null;
                     else
-                        return FreqRows[i];
+                        return FreqRows[i];// as ;
             }
         }
 
         public override double this[int i, NumericColumn column] => i >= Count || i < 0 ? double.NaN : FreqRows[i][column];
-
-        //public override IDatum this[int i, DatumColumn column] => i >= Count || i < 0 ? null : Rows[i][column];
 
         public Complex this[int i, ComplexColumn column] => i >= Count || i < 0 ? Complex.NaN : FreqRows[i][column];
     }

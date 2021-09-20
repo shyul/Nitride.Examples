@@ -15,14 +15,14 @@ namespace Nitride.EE
 {
     public class FreqRow : DataRow
     {
-        public FreqRow(double freq, int index, FreqTable ft)
+        public FreqRow(double freq, int index, IFreqTable ft)
         {
             FreqTable = ft;
             Index = index;
             Frequency = freq;
         }
 
-        public FreqTable FreqTable { get; }
+        public IFreqTable FreqTable { get; }
 
         public int Index { get; }
 
