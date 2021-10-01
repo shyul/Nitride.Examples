@@ -243,8 +243,7 @@ namespace Nitride.EE
                 Complex s21 = row[2, 1];
                 Complex s22 = row[2, 2];
 
-                //Console.WriteLine("freq = " + row.Frequency + "; s11 = " + s11 + "; s21 = " + s21 + "; s12 = " + s12 + "; s22 = " + s22);
-                Console.WriteLine("freq = " + row.Frequency + "; " + Type + "11 = " + s11 + "; " + Type + "21 = " + s21 + "; " + Type + "12 = " + s12 + "; " + Type + "22 = " + s22);
+                //Console.WriteLine("freq = " + row.Frequency + "; " + Type + "11 = " + s11 + "; " + Type + "21 = " + s21 + "; " + Type + "12 = " + s12 + "; " + Type + "22 = " + s22);
 
                 row[Column_S11] = Type == ParamType.S ? 20 * Math.Log10(s11.Magnitude) : s11.Magnitude;
                 row[Column_S21] = Type == ParamType.S ? 20 * Math.Log10(s21.Magnitude) : s21.Magnitude;
@@ -297,7 +296,7 @@ namespace Nitride.EE
                     zr[2, 1] = 2 * s21 * z0 / deltaS;
                     zr[2, 2] = (((1 - s11) * (1 + s22)) + (s12 * s21)) * z0 / deltaS;
 
-                    Console.WriteLine("freq = " + zr.Frequency + "; z11 = " + zr[1, 1] + "; z21 = " + zr[2, 1] + "; z12 = " + zr[1, 2] + "; z22 = " + zr[2, 2]);
+                    //Console.WriteLine("freq = " + zr.Frequency + "; z11 = " + zr[1, 1] + "; z21 = " + zr[2, 1] + "; z12 = " + zr[1, 2] + "; z22 = " + zr[2, 2]);
                     zt.ParamRows.Add(zr);
                 }
 
@@ -321,7 +320,7 @@ namespace Nitride.EE
                     var result_real = spline_real.Evaluate(freqList);
                     var result_imag = spline_imag.Evaluate(freqList);
 
-                    Console.WriteLine("Getting S" + i + j);
+                    //Console.WriteLine("Getting S" + i + j);
 
                     int pt = 0;
                     foreach (ParamRow row in t.ParamRows)
