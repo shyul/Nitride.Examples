@@ -229,28 +229,73 @@ namespace Nitride.EE
                 ParamRows.Clear();
         }
 
-        public static NumericColumn Column_S11 { get; } = new("S11");
-        public static NumericColumn Column_S12 { get; } = new("S12");
-        public static NumericColumn Column_S21 { get; } = new("S21");
-        public static NumericColumn Column_S22 { get; } = new("S22");
+        public static NumericColumn Column_Mag11 { get; } = new("Mag11");
+        public static NumericColumn Column_Mag12 { get; } = new("Mag12");
+        public static NumericColumn Column_Mag21 { get; } = new("Mag21");
+        public static NumericColumn Column_Mag22 { get; } = new("Mag22");
 
-        public void Calculate()
+        public void CalculateMagnitude()
         {
             foreach (var row in ParamRows)
             {
-                Complex s11 = row[1, 1];
-                Complex s12 = row[1, 2];
-                Complex s21 = row[2, 1];
-                Complex s22 = row[2, 2];
+                Complex p11 = row[1, 1];
+                Complex p12 = row[1, 2];
+                Complex p21 = row[2, 1];
+                Complex p22 = row[2, 2];
 
-                //Console.WriteLine("freq = " + row.Frequency + "; " + Type + "11 = " + s11 + "; " + Type + "21 = " + s21 + "; " + Type + "12 = " + s12 + "; " + Type + "22 = " + s22);
+                Console.WriteLine("freq = " + row.Frequency + "; " + Type + "11 = " + p11.Magnitude + "; " + Type + "21 = " + p21.Magnitude + "; " + Type + "12 = " + p12.Magnitude + "; " + Type + "22 = " + p22.Magnitude);
 
-                row[Column_S11] = Type == ParamType.S ? 20 * Math.Log10(s11.Magnitude) : s11.Magnitude;
-                row[Column_S21] = Type == ParamType.S ? 20 * Math.Log10(s21.Magnitude) : s21.Magnitude;
-                row[Column_S12] = Type == ParamType.S ? 20 * Math.Log10(s12.Magnitude) : s12.Magnitude;
-                row[Column_S22] = Type == ParamType.S ? 20 * Math.Log10(s22.Magnitude) : s22.Magnitude;
+                row[Column_Mag11] = Type == ParamType.S ? 20 * Math.Log10(p11.Magnitude) : p11.Magnitude;
+                row[Column_Mag21] = Type == ParamType.S ? 20 * Math.Log10(p21.Magnitude) : p21.Magnitude;
+                row[Column_Mag12] = Type == ParamType.S ? 20 * Math.Log10(p12.Magnitude) : p12.Magnitude;
+                row[Column_Mag22] = Type == ParamType.S ? 20 * Math.Log10(p22.Magnitude) : p22.Magnitude;
             }
+        }
 
+        public static ComplexColumn Column_V1 { get; } = new("V1");
+        public static ComplexColumn Column_I1 { get; } = new("I1");
+        public static ComplexColumn Column_P1 { get; } = new("P1");
+
+        public static ComplexColumn Column_V2 { get; } = new("V2");
+        public static ComplexColumn Column_I2 { get; } = new("I2");
+        public static ComplexColumn Column_P2 { get; } = new("P2");
+
+        public void CalculatePort2VI()
+        {
+            foreach (var row in ParamRows)
+            {
+                Complex z11 = row[1, 1];
+                Complex z12 = row[1, 2];
+                Complex z21 = row[2, 1];
+                Complex z22 = row[2, 2];
+
+                Complex v1 = row[Column_V1];
+                Complex i1 = row[Column_I1];
+                row[Column_P1] = v1 * i1;
+
+                Complex i2 = row[Column_I2] = (v1 - (z11 * i1)) / z12;
+                Complex v2 = row[Column_V2] = (z21 * i1) + (z22 * i2);
+                row[Column_P2] = v2 * i2;
+            }
+        }
+
+        public void CalculatePort1VI()
+        {
+            foreach (var row in ParamRows)
+            {
+                Complex z11 = row[1, 1];
+                Complex z12 = row[1, 2];
+                Complex z21 = row[2, 1];
+                Complex z22 = row[2, 2];
+
+                Complex v2 = row[Column_V1];
+                Complex i2 = row[Column_I1];
+                row[Column_P2] = v2 * i2;
+
+                Complex i1 = row[Column_I1] = (v2 - (z22 * i2)) / z21;
+                Complex v1 = row[Column_V1] = (z11 * i1) + (z12 * i2);
+                row[Column_P1] = v1 * i1;
+            }
         }
 
         public IEnumerable<double> FreqList => ParamRows.Select(n => n.Frequency).OrderBy(n => n);
@@ -277,11 +322,12 @@ namespace Nitride.EE
             {
                 double z0 = Z0;
                 ParamTable zt = new(ParamType.Z, 2, z0);
-
+                Console.WriteLine("Get Z Table:\n");
                 int pt = 0;
                 foreach (var sr in ParamRows)
                 {
-                    ParamRow zr = new(sr.Frequency, pt, zt);
+                    double freq = sr.Frequency;
+                    ParamRow zr = new(freq, pt, zt);
                     pt++;
 
                     Complex s11 = sr[1, 1];
@@ -296,7 +342,15 @@ namespace Nitride.EE
                     zr[2, 1] = 2 * s21 * z0 / deltaS;
                     zr[2, 2] = (((1 - s11) * (1 + s22)) + (s12 * s21)) * z0 / deltaS;
 
-                    //Console.WriteLine("freq = " + zr.Frequency + "; z11 = " + zr[1, 1] + "; z21 = " + zr[2, 1] + "; z12 = " + zr[1, 2] + "; z22 = " + zr[2, 2]);
+                    //if (pt < 5 || (freq >= 1.9e6 && freq <= 2.4e6))
+                    if (freq >= 1.9e6 && freq <= 2.4e6)
+                    {
+                        Console.WriteLine("freq = " + freq + "; s11 = " + sr[1, 1] + "; s21 = " + sr[2, 1] + "; s12 = " + sr[1, 2] + "; s22 = " + sr[2, 2]);
+                        Console.WriteLine("freq = " + freq + "; z11 = " + zr[1, 1] + "; z21 = " + zr[2, 1] + "; z12 = " + zr[1, 2] + "; z22 = " + zr[2, 2]);
+                        Console.WriteLine("freq = " + freq + "; Mag(z11) = " + zr[1, 1].Magnitude + "; Mag(z21) = " + zr[2, 1].Magnitude + "; Mag(z12) = " + zr[1, 2].Magnitude + "; Mag(z22) = " + zr[2, 2].Magnitude);
+                        Console.WriteLine();
+                    }
+
                     zt.ParamRows.Add(zr);
                 }
 
@@ -305,6 +359,8 @@ namespace Nitride.EE
             else
                 throw new Exception("The function only supports 2 ports, S-Parameter table.");
         }
+
+
 
         public ParamTable Interpolate(IEnumerable<double> freqList, double startSlope = 0, double endSlope = 0)
         {
@@ -430,7 +486,7 @@ namespace Nitride.EE
                 StopPt = Count
             };
 
-            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_S11)
+            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_Mag11)
             {
                 Order = 0,
                 Importance = Importance.Major,
@@ -442,7 +498,7 @@ namespace Nitride.EE
                 HasTailTag = false
             });
 
-            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_S12)
+            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_Mag12)
             {
                 Order = 0,
                 Importance = Importance.Major,
@@ -454,7 +510,7 @@ namespace Nitride.EE
                 HasTailTag = false
             });
 
-            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_S21)
+            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_Mag21)
             {
                 Order = 0,
                 Importance = Importance.Major,
@@ -466,7 +522,7 @@ namespace Nitride.EE
                 HasTailTag = false
             });
 
-            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_S22)
+            pc.MainArea.AddSeries(new LineSeries(ParamTable.Column_Mag22)
             {
                 Order = 0,
                 Importance = Importance.Major,
