@@ -12,7 +12,7 @@ namespace Nitride.EE
 {
     public sealed class FreqChart : ChartWidget
     {
-        public FreqChart(string name, IFreqTable st) : base(name)
+        public FreqChart(string name, FreqTable st) : base(name)
         {
             Margin = new Padding(5, 15, 5, 5);
             Theme.FillColor = BackColor = Color.FromArgb(255, 255, 253, 245);
@@ -58,7 +58,7 @@ namespace Nitride.EE
 
         public override int RightBlankAreaWidth => 0;
 
-        public IFreqTable FreqTable { get; private set; }
+        public FreqTable FreqTable { get; private set; }
 
         public Area MainArea { get; }
 
@@ -79,7 +79,7 @@ namespace Nitride.EE
 
             set
             {
-                if (value is IFreqTable st)
+                if (value is FreqTable st)
                     FreqTable = st;
                 else
                     FreqTable = null;

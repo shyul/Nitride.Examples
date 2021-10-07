@@ -13,18 +13,12 @@ using System.Numerics;
 
 namespace Nitride.EE
 {
-    public interface IFreqTable : ITable, IDataProvider
+    public enum ComplexFormat : int
     {
-        double Start { get; }
-
-        double Stop { get; }
-
-        double Step { get; }
-
-        IEnumerable<double> FreqList { get; }
-
-        IEnumerable<FreqRow> Rows { get; }
-
-        FreqRow this[int i] { get; }
+        Real = 1,
+        Image = 2,
+        Magnitude = 3,
+        Phase = 4,
+        dB = 0
     }
 }
