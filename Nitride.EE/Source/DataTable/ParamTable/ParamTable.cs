@@ -17,46 +17,9 @@ using System.Drawing;
 
 namespace Nitride.EE
 {
-    public class ParamTable : DataTable, IFreqTable
+    public abstract class ParamTable : DataTable, IFreqTable
     {
-        public ParamTable(ParamType type, int portCount, double z0 = 50)
-        {
-            Type = type;
-            PortCount = portCount;
-            Z0 = z0;
-        }
-
-        public ParamTable(IEnumerable<double> freqList, ParamType type, int portCount, double z0 = 50)
-        {
-            Type = type;
-            PortCount = portCount;
-            Z0 = z0;
-
-            int pt = 0;
-            foreach (double freq in freqList)
-            {
-                ParamRows.Add(new ParamRow(freq, pt, this));
-                pt++;
-            }
-        }
-
-        public ParamTable(double startFreq, double stopFreq, int numOfPts, ParamType type, int portCount, double z0 = 50)
-        {
-            Type = type;
-            PortCount = portCount;
-            Z0 = z0;
-            Configure(startFreq, stopFreq, numOfPts);
-        }
-
-        public ParamTable(double startFreq, double stopFreq, double stepFreq, ParamType type, int portCount, double z0 = 50)
-        {
-            Type = type;
-            PortCount = portCount;
-            Z0 = z0;
-            Configure(startFreq, stopFreq, stepFreq);
-        }
-
-        public ParamTable(string fileName)
+        public static ParamTable LoadSnP(string fileName)
         {
             string suffix = fileName.Split('.').Last();
 
@@ -64,6 +27,9 @@ namespace Nitride.EE
             int validFieldCount = -1;
             //double normalized = -1;
             double freqUnit = 0;
+
+            int PortCount = 0;
+            ParamTable pat = null;
 
             if (suffix.StartsWith('s') && suffix.EndsWith('p'))
             {
@@ -102,20 +68,20 @@ namespace Nitride.EE
                                 if (format != "RI" && format != "DB" && format != "MA")
                                     throw new Exception("Invalid SnP file format.");
 
-                                Type = fields[2].ToUpper() switch
-                                {
-                                    "S" => ParamType.S,
-                                    "Z" => ParamType.Z,
-                                    "Y" => ParamType.Y,
-                                    "G" => ParamType.G,
-                                    _ => throw new Exception("Invalid SnP file format.")
-                                };
-
-                                Z0 = fields[5].ToDouble();
+                                double Z0 = fields[5].ToDouble();
 
                                 if (Z0 > 0)
                                 {
-                                    Console.WriteLine("PortCount = " + PortCount + "; unit = " + freqUnit + "; type = " + Type + "; format = " + format + "; Z0 = " + Z0);
+                                    pat = fields[2].ToUpper() switch
+                                    {
+                                        "S" => new SParamTable(PortCount, Z0), // ParamType.S,
+                                        "Z" => new ZParamTable(PortCount),
+                                        //"Y" => ParamType.Y,
+                                        //"G" => ParamType.G,
+                                        _ => throw new Exception("Invalid SnP file format.")
+                                    };
+
+                                    Console.WriteLine("PortCount = " + PortCount + "; unit = " + freqUnit + "; type = " + fields[2] + "; format = " + format + "; Z0 = " + Z0);
                                     validFieldCount = 1 + (2 * PortCount * PortCount);
                                     validHeader = true;
                                 }
@@ -135,11 +101,11 @@ namespace Nitride.EE
                                 }
                             }
 
-                            if (fields.Count == validFieldCount)
+                            if (fields.Count == validFieldCount && pat is ParamTable)
                             {
                                 double freq = fields[0].ToDouble() * freqUnit;
                                 int pt = 1;
-                                var row = new ParamRow(freq, linePt, this);
+                                var row = new ParamRow(freq, linePt, pat);
                                 linePt++;
 
                                 for (int i = 1; i <= PortCount; i++)
@@ -158,23 +124,18 @@ namespace Nitride.EE
                                     }
                                 }
 
-                                ParamRows.Add(row);
+                                pat.ParamRows.Add(row);
                             }
-
-
                         }
                     }
                 }
             }
+            return pat;
         }
 
         ~ParamTable() => Dispose();
 
-        public ParamType Type { get; }
-
-        public int PortCount { get; }
-
-        public double Z0 { get; }
+        public int PortCount { get; protected set; }
 
         protected void Configure(double startFreq, double stopFreq, int numOfPts)
         {
@@ -219,7 +180,10 @@ namespace Nitride.EE
 
         public double Step { get; protected set; } = double.NaN;
 
-        protected List<ParamRow> ParamRows { get; } = new();
+        public List<ParamRow> ParamRows { get; } = new();
+
+        // TODO: Need to sort the rows by frequency...
+        public void AddRow(ParamRow row) => ParamRows.Add(row);
 
         public override int Count => ParamRows.Count;
 
@@ -243,14 +207,15 @@ namespace Nitride.EE
                 Complex p21 = row[2, 1];
                 Complex p22 = row[2, 2];
 
-                Console.WriteLine("freq = " + row.Frequency + "; " + Type + "11 = " + p11.Magnitude + "; " + Type + "21 = " + p21.Magnitude + "; " + Type + "12 = " + p12.Magnitude + "; " + Type + "22 = " + p22.Magnitude);
+                Console.WriteLine("freq = " + row.Frequency + "; " + "Mag11 = " + p11.Magnitude + "; " + "Mag21 = " + p21.Magnitude + "; " + "Mag12 = " + p12.Magnitude + "; " + "Mag22 = " + p22.Magnitude);
 
-                row[Column_Mag11] = Type == ParamType.S ? 20 * Math.Log10(p11.Magnitude) : p11.Magnitude;
-                row[Column_Mag21] = Type == ParamType.S ? 20 * Math.Log10(p21.Magnitude) : p21.Magnitude;
-                row[Column_Mag12] = Type == ParamType.S ? 20 * Math.Log10(p12.Magnitude) : p12.Magnitude;
-                row[Column_Mag22] = Type == ParamType.S ? 20 * Math.Log10(p22.Magnitude) : p22.Magnitude;
+                row[Column_Mag11] = p11.Magnitude;
+                row[Column_Mag21] = p21.Magnitude;
+                row[Column_Mag12] = p12.Magnitude;
+                row[Column_Mag22] = p22.Magnitude;
             }
         }
+
 
         public static ComplexColumn Column_V1 { get; } = new("V1");
         public static ComplexColumn Column_I1 { get; } = new("I1");
@@ -316,56 +281,9 @@ namespace Nitride.EE
 
         public override double this[int i, NumericColumn column] => i >= Count || i < 0 ? double.NaN : ParamRows[i][column];
 
-        public ParamTable GetZTable()
+        public void Interpolate(ParamTable pat, double startSlope = 0, double endSlope = 0)
         {
-            if (Type == ParamType.S && PortCount == 2)
-            {
-                double z0 = Z0;
-                ParamTable zt = new(ParamType.Z, 2, z0);
-                Console.WriteLine("Get Z Table:\n");
-                int pt = 0;
-                foreach (var sr in ParamRows)
-                {
-                    double freq = sr.Frequency;
-                    ParamRow zr = new(freq, pt, zt);
-                    pt++;
-
-                    Complex s11 = sr[1, 1];
-                    Complex s12 = sr[1, 2];
-                    Complex s21 = sr[2, 1];
-                    Complex s22 = sr[2, 2];
-
-                    Complex deltaS = ((1 - s11) * (1 - s22)) - (s12 * s21);
-
-                    zr[1, 1] = (((1 + s11) * (1 - s22)) + (s12 * s21)) * z0 / deltaS;
-                    zr[1, 2] = 2 * s12 * z0 / deltaS;
-                    zr[2, 1] = 2 * s21 * z0 / deltaS;
-                    zr[2, 2] = (((1 - s11) * (1 + s22)) + (s12 * s21)) * z0 / deltaS;
-
-                    //if (pt < 5 || (freq >= 1.9e6 && freq <= 2.4e6))
-                    if (freq >= 1.9e6 && freq <= 2.4e6)
-                    {
-                        Console.WriteLine("freq = " + freq + "; s11 = " + sr[1, 1] + "; s21 = " + sr[2, 1] + "; s12 = " + sr[1, 2] + "; s22 = " + sr[2, 2]);
-                        Console.WriteLine("freq = " + freq + "; z11 = " + zr[1, 1] + "; z21 = " + zr[2, 1] + "; z12 = " + zr[1, 2] + "; z22 = " + zr[2, 2]);
-                        Console.WriteLine("freq = " + freq + "; Mag(z11) = " + zr[1, 1].Magnitude + "; Mag(z21) = " + zr[2, 1].Magnitude + "; Mag(z12) = " + zr[1, 2].Magnitude + "; Mag(z22) = " + zr[2, 2].Magnitude);
-                        Console.WriteLine();
-                    }
-
-                    zt.ParamRows.Add(zr);
-                }
-
-                return zt;
-            }
-            else
-                throw new Exception("The function only supports 2 ports, S-Parameter table.");
-        }
-
-
-
-        public ParamTable Interpolate(IEnumerable<double> freqList, double startSlope = 0, double endSlope = 0)
-        {
-            freqList = freqList.OrderBy(n => n);
-            ParamTable t = new(freqList, Type, PortCount, Z0);
+            var freqList = pat.FreqList;
 
             for (int i = 1; i <= PortCount; i++)
             {
@@ -379,102 +297,13 @@ namespace Nitride.EE
                     //Console.WriteLine("Getting S" + i + j);
 
                     int pt = 0;
-                    foreach (ParamRow row in t.ParamRows)
+                    foreach (ParamRow row in pat.ParamRows)
                     {
                         row[i, j] = new Complex(result_real[pt], result_imag[pt]);
                         pt++;
                     }
                 }
             }
-
-            return t;
-        }
-
-        public Dictionary<double, Complex> GetImpedance(Dictionary<double, Complex> z2_list)
-        {
-            var freq_list = z2_list.Keys.OrderBy(n => n);
-
-            ParamTable zt = Interpolate(freq_list);
-            Dictionary<double, Complex> result = new();
-
-            for (int i = 0; i < zt.Count; i++)
-            {
-                ParamRow zr = zt.ParamRows[i];
-                double freq = zr.Frequency;
-
-                Complex z11 = zr[1, 1]; // = new Complex(result_s11_real[pt], result_s11_imag[pt]);
-                Complex z12 = zr[1, 2]; // = new Complex(result_s12_real[pt], result_s12_imag[pt]);
-                Complex z21 = zr[2, 1]; // = new Complex(result_s21_real[pt], result_s21_imag[pt]);
-                Complex z22 = zr[2, 2]; // = new Complex(result_s22_real[pt], result_s22_imag[pt]);
-                Complex z2 = z2_list[freq];
-
-                result[freq] = z11 - (z12 * z21 / (z22 + z2));
-            }
-
-            return result;
-        }
-
-        public static Dictionary<double, Complex> GetImpedance(Dictionary<double, Complex> z2_list, ParamTable st)
-        {
-            ParamTable zt0 = st.GetZTable();
-
-            // Intrepolate zt
-            double startSlope = 0D;
-            double endSlope = double.NaN;
-
-            CubicSpline spline_s11_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 1].Real), startSlope, endSlope);
-            CubicSpline spline_s11_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 1].Imaginary), startSlope, endSlope);
-            CubicSpline spline_s12_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 2].Real), startSlope, endSlope);
-            CubicSpline spline_s12_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[1, 2].Imaginary), startSlope, endSlope);
-            CubicSpline spline_s21_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 1].Real), startSlope, endSlope);
-            CubicSpline spline_s21_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 1].Imaginary), startSlope, endSlope);
-            CubicSpline spline_s22_real = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 2].Real), startSlope, endSlope);
-            CubicSpline spline_s22_imag = new(zt0.ParamRows.Select(n => n.Frequency), zt0.ParamRows.Select(n => n[2, 2].Imaginary), startSlope, endSlope);
-            /*
-            CubicSpline spline_s11_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 1].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s11_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 1].Phase), startSlope, endSlope);
-            CubicSpline spline_s12_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 2].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s12_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[1, 2].Phase), startSlope, endSlope);
-            CubicSpline spline_s21_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 1].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s21_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 1].Phase), startSlope, endSlope);
-            CubicSpline spline_s22_mag = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 2].Magnitude), startSlope, endSlope);
-            CubicSpline spline_s22_deg = new(zt.ParamRows.Select(n => n.Frequency), zt.ParamRows.Select(n => n[2, 2].Phase), startSlope, endSlope);
-            */
-
-            var freq_list = z2_list.Keys.OrderBy(n => n);
-
-            var result_s11_real = spline_s11_real.Evaluate(freq_list);
-            var result_s11_imag = spline_s11_imag.Evaluate(freq_list);
-            var result_s12_real = spline_s12_real.Evaluate(freq_list);
-            var result_s12_imag = spline_s12_imag.Evaluate(freq_list);
-            var result_s21_real = spline_s21_real.Evaluate(freq_list);
-            var result_s21_imag = spline_s21_imag.Evaluate(freq_list);
-            var result_s22_real = spline_s22_real.Evaluate(freq_list);
-            var result_s22_imag = spline_s22_imag.Evaluate(freq_list);
-
-            ParamTable zt = new(ParamType.Z, 2, zt0.Z0);
-
-            Dictionary<double, Complex> result = new();
-
-            int pt = 0;
-            foreach (double freq in freq_list)
-            {
-                ParamRow zr = new(freq, pt, zt);
-
-                Complex z11 = zr[1, 1] = new Complex(result_s11_real[pt], result_s11_imag[pt]);
-                Complex z12 = zr[1, 2] = new Complex(result_s12_real[pt], result_s12_imag[pt]);
-                Complex z21 = zr[2, 1] = new Complex(result_s21_real[pt], result_s21_imag[pt]);
-                Complex z22 = zr[2, 2] = new Complex(result_s22_real[pt], result_s22_imag[pt]);
-
-                Complex z2 = z2_list[freq];
-
-                result[freq] = z11 - (z12 * z21 / (z22 + z2));
-
-                pt++;
-                zt.ParamRows.Add(zr);
-            }
-
-            return result;
         }
 
         public FreqChart TestChart()
