@@ -2,6 +2,11 @@
 
 module fifo_dma_controller # (
 
+	parameter integer DEFAULT_WRITE_ADDRESS = 'h10000000,
+	parameter integer DEFAULT_READ_ADDRESS = 'h20000000,
+	parameter integer DEFAULT_TRANSFER_SIZE = 65536,
+	parameter integer DEFAULT_BURST_COUNT = 8,
+	parameter integer DEFAULT_BURST_LEN = 16,
 	parameter integer ID_WIDTH = 1 // Thread ID Width
 
 	) (
@@ -20,21 +25,18 @@ module fifo_dma_controller # (
 	output logic [127:0] 				ila_wdata,
 	output logic						ila_wlast, ila_wvalid, ila_wready,
 
-	output reg [127:0] 					expected_rdata,			// = 'b1;
-	output reg  						read_mismatch, // = 1'b0;
-	output reg							error_reg, // = 0;
+	//output reg [127:0] 					expected_rdata,			// = 'b1;
+	//output reg  						read_mismatch, // = 1'b0;
+	///output reg							error_reg, // = 0;
 	// ==============================================
 
 	// ************* Example design I/O *************
-	//input logic							init_axi_txn, // Initiate AXI transactions
-	output logic						ila_init_axi_txn, // Asserts when transaction is complete
-	output reg							compare_done, // Asserts when transaction is complete
-	output reg							error_out, // Asserts when error_out is detected
+
+	//output logic						ila_init_axi_txn, // Asserts when transaction is complete
+	//output reg							compare_done, // Asserts when transaction is complete
+	//output reg							error_out, // Asserts when error_out is detected
 	// ==============================================
 
-	// ************** Clock and Reset **************
-	output logic						clk_out, // Global Clock Signal.
-	//input logic						aresetn, // Global Reset Singal. This Signal is Active Low
 	// =============================================
 	
 	input logic							aclk, // Global Clock Signal.
@@ -56,9 +58,9 @@ module fifo_dma_controller # (
 	// =============================================
 
 	// ******* Master Write Data (W) Channel *******
-	output reg [127:0]					m_axi_wdata,
+	output logic [127:0]				m_axi_wdata,
 	output reg							m_axi_wlast, // Write last. This signal indicates the last transfer in a write burst.
-	output reg							m_axi_wvalid, // Write valid. This signal indicates that valid write data and strobes are available
+	output logic						m_axi_wvalid, // Write valid. This signal indicates that valid write data and strobes are available
 	input logic							m_axi_wready, // Write ready. This signal indicates that the slave can accept the write data.
 	// [NO USE]=====================================
 	output logic [15:0]					m_axi_wstrb, // [FIXED 'b1111] Write strobes. This signal indicates which byte lanes hold valid data. There is one write strobe bit for each eight bits of the write data bus.
@@ -75,7 +77,7 @@ module fifo_dma_controller # (
 
 	// ****** Master Read Address (AR) Channel ******
 	output reg [47:0]					m_axi_araddr, // Read address. This signal indicates the initial address of a read burst transaction.
-	output logic [7:0]					m_axi_arlen, // Burst length. The burst length gives the exact number of transfers in a burst
+	output reg [7:0]					m_axi_arlen, // Burst length. The burst length gives the exact number of transfers in a burst
 	output logic [2:0]					m_axi_arsize, // Burst size. This signal indicates the size of each transfer in the burst
 	output logic [1:0]					m_axi_arburst, // Burst type. The burst type and the size information, determine how the address for each transfer within the burst is calculated.
 	output reg							m_axi_arvalid, // Read address valid. This signal indicates that the channel is signaling valid read address and control information
@@ -101,38 +103,28 @@ module fifo_dma_controller # (
 
 	// ********************************************
 	// ********************************************
-	// ************ Slave AXI for CSR *************
+	// ************ RX (Write Ch) FIFO ************
 	// ********************************************
 	// ********************************************
 
-	input logic							rx_fifo_wr_clk, // for synchronize cross clock domain signal.
-	input logic							rx_fifo_ready,  // prog_full at least one burst
-	input logic							rx_fifo_full, // Overflows!!
-	output reg							rx_fifo_wren,
-	output reg							rx_fifo_reset,
+	input logic	[127:0]					s_axis_rx_tdata, // No need strb, because extra sample can be ignore by later analysis. Or use stream mode.
+	input logic							s_axis_rx_tvalid,
+	output logic						s_axis_rx_tready,
 
-
-
-
-	output reg							rx_fifo_rden,
-	input logic							rx_fifo_empty, // Bascially impossible to happen.
-	input logic [63:0]					rx_fifo_data,
+	input logic							rx_fifo_prog_full,
 
 	// ********************************************
 	// ********************************************
-	// ************ Slave AXI for CSR *************
+	// ************* TX (Read Ch) FIFO ************
 	// ********************************************
 	// ********************************************
-	// [RD Clock Domain]===========================
-	input logic							tx_fifo_rd_clk, // for synchronize cross clock domain signal.
-	input logic							tx_fifo_ready,
-	input logic							tx_fifo_empty, // Underflows!!
-	output reg							tx_fifo_rden,
-	// [WR Clock Domain]===========================
-	output reg							tx_fifo_reset,
-	output reg							tx_fifo_wren,
-	input logic							tx_fifo_full, // Bascially impossible to happen.
-	output reg [63:0]					tx_fifo_data,
+
+	output logic [127:0]				m_axis_tx_tdata,
+	output reg [15:0]					m_axis_tx_tstrb, // Need strb to precisely control the sample length.
+	output logic						m_axis_tx_tvalid,
+	input logic							m_axis_tx_tready,
+
+	input logic							tx_fifo_prog_empty,
 
 	// ********************************************
 	// ********************************************
@@ -176,49 +168,167 @@ module fifo_dma_controller # (
 	
 );
 
-	always_ff @(posedge rx_fifo_wr_clk) begin : proc_rx_fifo_wr
-		if(~rst_n) begin
-			rx_fifo_wren <= rx_fifo_wren_1;
-			rx_fifo_wren_1;
-		end else begin
-			rx_fifo_wren <= rx_fifo_wren_1;
-			rx_fifo_wren_1 <= rx_fifo_wren_2;
-		end
-	end
-
-
 wire	clk = aclk; //aclk;
 wire	rst_n = aresetn; //aresetn;
 
-// -----------------------------------
-// ***** Initialize Transactions *****
-// -----------------------------------
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// ******************  Initialize Transactions  ********************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
 
-reg		init_axi_txn = 0; // Initiate AXI transactions
-reg		init_txn_ff = 0, init_txn_ff2 = 0;
-wire	init_txn_pulse = (!init_txn_ff2) && init_txn_ff;
-wire	rst_or_init_txn_pulse = ((!rst_n) || init_txn_pulse);
+reg		single_write_trigger = 1'b0, single_write_ff = 1'b0, single_write_ff2 = 1'b0;
+reg		single_read_trigger = 1'b0, single_read_ff = 1'b0, single_read_ff2 = 1'b0;
 
-// Generate a pulse to initiate AXI transaction.
+wire	single_write_pulse = (!single_write_ff2) && single_write_ff;
+wire	rst_or_single_write_pulse = ((!rst_n) || single_write_pulse);
+wire	single_read_pulse = (!single_read_ff2) && single_read_ff;
+wire	rst_or_single_read_pulse = ((!rst_n) || single_read_pulse);
+
 always_ff@(posedge clk) begin
-	if (!rst_n) begin // Initiates AXI transaction delay
-		init_txn_ff <= 1'b0;
-		init_txn_ff2 <= 1'b0;
+	if (!rst_n) begin
+		single_write_ff <= 1'b0;
+		single_write_ff2 <= 1'b0;
+		single_read_ff <= 1'b0;
+		single_read_ff2 <= 1'b0;
 	end else begin  
-		init_txn_ff <= init_axi_txn;
-		init_txn_ff2 <= init_txn_ff;
+		single_write_ff <= single_write_trigger;
+		single_write_ff2 <= single_write_ff;
+		single_read_ff <= single_read_trigger;
+		single_read_ff2 <= single_read_ff;
 	end
 end
 
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
 
-	// ********************************************
-	// ********************************************
-	// ********************************************
-	// ********************************************
-	// ********************************************
+reg				stream_write_enable = 1'b0,
+reg				stream_read_enable = 1'b0,
 
+reg [31:0]		stream_write_next_address_offset = 0; // FIFO keyhole here
+reg [31:0]		stream_read_next_address_offset = 0;  // FIFO keyhole here 
 
+reg [31:0]		stream_write_buffer_size = 0; // base_address + buffer_size = upper bound
+reg [31:0]		stream_read_buffer_size = 0;
 
+reg				loop_read_enable = 1'b0;
+
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+
+reg [47:0]		write_base_address = DEFAULT_WRITE_ADDRESS;
+reg [31:0]		write_burst_count = DEFAULT_BURST_COUNT; 
+reg [8:0]		write_burst_len = DEFAULT_BURST_LEN;
+
+wire [7:0]		write_burst_len_1 = write_burst_len - 1; // 15;
+wire [7:0]		write_burst_len_2 = write_burst_len - 2; // 14;
+wire [12:0]		write_burst_size_bytes = { write_burst_len, 4'b0000 }; //256;
+
+assign	m_axi_awid = 'h0;
+assign	m_axi_awlen	= write_burst_len_1;
+assign	m_axi_awsize = 3'h4; //$clog2(DATA_BYTES_COUNT); //clogb2((DATA_WIDTH/8)-1); // Size should be DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
+assign	m_axi_awburst = 2'b01; // INCR burst type is usually used, except for keyhole bursts
+assign	m_axi_awlock = 1'b0;
+assign	m_axi_awcache = 4'b0010; // Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
+assign	m_axi_awprot = 3'h0;
+assign	m_axi_awqos	= 4'h0;
+assign	m_axi_wstrb	= 16'hFFFF;
+
+reg [2:0]	write_state = 0;
+
+wire		rx_fifo_rden = (write_state == 3);
+wire		write_busy = (write_state != 0) | single_write_trigger | single_write_ff2 | single_write_ff;
+
+assign		s_axis_rx_tready = rx_fifo_rden ? m_axi_wready : 1'b0;
+assign		m_axi_wvalid = rx_fifo_rden ? s_axis_rx_tvalid : 1'b0;
+assign		m_axi_wdata = s_axis_rx_tdata;
+
+reg [31:0]	write_burst_counter = 0;
+reg [8:0]	write_index = 0;
+wire		write_active = s_axis_rx_tready && m_axi_wvalid;
+reg	[1:0]	write_bresp;
+
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+
+reg [47:0]		read_base_address = DEFAULT_READ_ADDRESS;
+reg [31:0]		read_transfer_size = DEFAULT_TRANSFER_SIZE; // burst_count * (burst_len * 16 bytes), unit is bytes, round up against (burst_len * 16 bytes)
+reg [8:0]		read_burst_len = DEFAULT_BURST_LEN; // maximum burst len
+
+wire [7:0]		read_burst_len_1 = read_burst_len - 1; // 15;
+wire [7:0]		read_burst_len_2 = read_burst_len - 2; // 14;
+wire [12:0]		read_burst_size_bytes = { read_burst_len, 4'b0000 }; //256;
+
+assign	m_axi_arid = 'h0;
+assign	m_axi_arsize = 3'h4; //$clog2(DATA_BYTES_COUNT); //clogb2((DATA_WIDTH/8)-1); //Size should be DATA_WIDTH, in 2^n bytes, otherwise narrow bursts are used
+assign	m_axi_arburst = 2'b01; // INCR burst type is usually used, except for keyhole bursts
+assign	m_axi_arlock = 1'b0;
+assign	m_axi_arcache = 4'b0010; // Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
+assign	m_axi_arprot = 3'h0;
+assign	m_axi_arqos = 4'h0;
+
+reg [2:0]	read_state = 0;
+
+wire		tx_fifo_wren = (read_state == 3);
+wire		read_busy = (read_state != 0) | single_read_trigger | single_read_ff2 | single_read_ff;
+
+assign		m_axi_rready = tx_fifo_wren ? m_axis_tx_tready : 1'b0;
+assign		m_axis_tx_tvalid = tx_fifo_wren ? m_axi_rvalid : 1'b0;
+assign		m_axis_tx_tdata = m_axi_rdata;
+
+reg signed [32:0]	read_byte_remain = 0; //The burst counters are used to track the number of burst transfers of BURST_LEN burst length needed to transfer 2^MASTER_INDEX bytes of data.
+reg [8:0]	read_index = 0;
+wire		read_active = m_axi_rready && m_axis_tx_tvalid;
+reg	[1:0]	read_bresp;
+
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+
+assign ila_awaddr = m_axi_awaddr;
+
+assign ila_bresp = m_axi_bresp;
+
+assign ila_wdata = m_axi_wdata;
+assign ila_wlast = m_axi_wlast; // Write last. This signal indicates the last transfer in a write burst.
+assign ila_wvalid = m_axi_wvalid; // Write valid. This signal indicates that valid write data and strobes are available
+assign ila_wready =	m_axi_wready;
+
+assign ila_rdata = m_axi_rdata;
+assign ila_rlast = m_axi_rlast;
+assign ila_rvalid = m_axi_rvalid;
+assign ila_rready = m_axi_rready;
+
+assign ila_init_axi_txn = init_axi_txn;
+
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
 
 // --------------------------------------------
 // ***** Slave Write Address (AW) Channel *****
@@ -293,45 +403,6 @@ always_ff @(posedge clk) begin
 	end 
 end  
 
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-
-reg [47:0]	rx_base_address = 48'h10000000; //32'h40000000; // Base address of targeted slave
-reg [47:0]	tx_base_address = 48'h20000000;
-
-reg [31:0]	rx_transfer_size = 65536;  // either 16 bit sample or 32 bit sample...
-reg [31:0]	tx_transfer_size = 65536;
-
-reg			rx_sample_format = 0; // 0 = 16 bit / 1 = 32 bit;
-reg			tx_sample_format = 0;
-
-reg			update_param = 1'b0;
-
-
-
-
-
-reg [31:0]	rx_burst_num = 8;
-reg [8:0]	rx_burst_len = 16; //(8 << burst_len_select); // burst_len = 16; // (8 << burst_len_select)
-reg [7:0]	rx_burst_len_1 = 15;
-reg [7:0]	rx_burst_len_2 = 14;
-reg [12:0]	rx_burst_size_bytes = 256; //(8 << (burst_len_select + 4)); // 4096 maximum
-
-
-
-
-
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
 // Implement memory mapped register select and write logic generation
 // The write data is accepted and written to memory mapped registers when
 // s_axi_awready, s_axi_wvalid, axi_wready and s_axi_wvalid are asserted. Write strobes are used to
@@ -340,44 +411,54 @@ reg [12:0]	rx_burst_size_bytes = 256; //(8 << (burst_len_select + 4)); // 4096 m
 // Slave register write enable is asserted when valid address and data are available
 // and the slave is ready to accept the write address and write data.
 //integer		byte_index;
-wire		reg_write_enable = s_axi_wready && s_axi_wvalid && s_axi_awready && s_axi_awvalid;
+
+wire	s_axi_reg_write_enable = s_axi_wready && s_axi_wvalid && s_axi_awready && s_axi_awvalid;
 
 always_ff @(posedge clk) begin
 	if (!rst_n) begin
-		rx_base_address <= 48'h10000000;
-		tx_base_address <= 48'h20000000;
 
+		write_base_address <= DEFAULT_WRITE_ADDRESS;
+		write_transfer_size <= DEFAULT_TRANSFER_SIZE;
+		write_burst_count <= DEFAULT_BURST_COUNT;
+		write_burst_len <= DEFAULT_BURST_LEN;
 
-		transfer_size <= 65536;
-		burst_num <= 8;
-		burst_len <= 16;
-		burst_len_1 = 15;
-		burst_len_2 = 14;
-		burst_size_bytes <= 256;
+		read_base_address <= DEFAULT_READ_ADDRESS;
+		read_transfer_size <= DEFAULT_TRANSFER_SIZE;
+		read_burst_count <= DEFAULT_BURST_COUNT;
+		read_burst_len <= DEFAULT_BURST_LEN;
 
-		init_axi_txn <= 0;
+		single_write_trigger <= 1'b0;
+		single_read_trigger <= 1'b0;
+		loop_read_enable <= 1'b0;
 
 	end else begin
-		if (reg_write_enable && s_axi_wstrb == 4'b1111) begin
+		if (s_axi_reg_write_enable && s_axi_wstrb == 4'b1111) begin
 			case(s_awaddr[5:2])
 
-				4'h0: rx_base_address[31:0] <= s_axi_wdata;
-				4'h1: rx_base_address[47:32] <= s_axi_wdata[15:0];
-				4'h2: transfer_size <= s_axi_wdata;
-				4'h3: burst_num <= s_axi_wdata;
-				4'h4: begin
-					burst_len <= s_axi_wdata[8:0];
-					burst_len_1 <= s_axi_wdata[8:0] - 1;
-					burst_len_2 <= s_axi_wdata[8:0] - 2;
-					burst_size_bytes <= { s_axi_wdata[8:0], 4'b0000 };
-				end
+				4'h0: read_base_address[31:0] <= s_axi_wdata;
+				4'h1: read_base_address[47:32] <= s_axi_wdata[15:0];
+				4'h2: read_transfer_size <= s_axi_wdata;
+				4'h3: read_burst_count <= s_axi_wdata;
+				4'h4: read_burst_len <= s_axi_wdata[8:0];
 
-				4'h8: init_axi_txn <= s_axi_wdata[0];
+				4'h5: write_base_address[31:0] <= s_axi_wdata;
+				4'h6: write_base_address[47:32] <= s_axi_wdata[15:0];
+				4'h7: write_transfer_size <= s_axi_wdata;
+				4'h8: write_burst_count <= s_axi_wdata;
+				4'h9: write_burst_len <= s_axi_wdata[8:0];
+
+				4'hA: { single_write_trigger, single_read_trigger } <= s_axi_wdata[1:0];
+				4'hB: loop_read_enable <= s_axi_wdata[0];
 
 			endcase
 		end
 
-		else if (init_txn_ff2 || init_axi_txn) init_axi_txn <= 1'b0;
+		else begin
+
+			if (single_write_ff2 || single_write_trigger) single_write_trigger <= 1'b0;
+			if (single_read_ff2 || single_read_trigger) single_read_trigger <= 1'b0;
+
+		end 
 	end
 end
 
@@ -450,7 +531,7 @@ end
 // ***** Slave Read Data (and Response) (R) Channel *****
 // ------------------------------------------------------
 
-wire reg_read_enable = s_axi_arready & s_axi_arvalid & ~s_axi_rvalid;
+wire s_axi_reg_read_enable = s_axi_arready & s_axi_arvalid & ~s_axi_rvalid;
 
 always_ff @(posedge clk) begin
 	if (!rst_n) begin
@@ -458,7 +539,7 @@ always_ff @(posedge clk) begin
 		s_axi_rresp <= 0;
 	end else begin    
 		//if (s_axi_arready && s_axi_arvalid && ~s_axi_rvalid) begin
-		if (reg_read_enable) begin
+		if (s_axi_reg_read_enable) begin
 			// Valid read data is available at the read data bus
 			s_axi_rvalid <= 1'b1;
 			s_axi_rresp  <= 0; // 'OKAY' response
@@ -481,85 +562,38 @@ always_ff @(posedge clk) begin
 		// When there is a valid read address (S_AXI_ARVALID) with 
 		// acceptance of read address by the slave (axi_arready), 
 		// output the read dada 
-		if (reg_read_enable) begin
+		if (s_axi_reg_read_enable) begin
 
 			case(s_araddr[5:2])
 
-				4'h0: s_axi_rdata <= rx_base_address[31:0];// <= s_axi_wdata;
-				4'h1: s_axi_rdata <= { 16'h0, rx_base_address[47:32] };// <= s_axi_wdata[15:0];
-				4'h2: s_axi_rdata <= transfer_size;// <= s_axi_wdata;
-				4'h3: s_axi_rdata <= burst_num;// <= s_axi_wdata;
-				4'h4: s_axi_rdata <= { 23'h0, burst_len };// <= s_axi_wdata[8:0];
-				4'h5: s_axi_rdata <= { 24'h0, burst_len_1 };// <= s_axi_wdata[7:0];
-				4'h6: s_axi_rdata <= { 24'h0, burst_len_2 };// <= s_axi_wdata[7:0];
-				4'h7: s_axi_rdata <= { 19'h0, burst_size_bytes };// <= s_axi_wdata[12:0];
-				4'h8: s_axi_rdata <= { 30'h0, error_out, ~compare_done }; //init_axi_txn <= (init_txn_ff2) ? 1'b0 : s_axi_wdata[0];
-			endcase
+				4'h0: s_axi_rdata <= read_base_address[31:0];
+				4'h1: s_axi_rdata <= { 16'b0, read_base_address[47:32] };
+				4'h2: s_axi_rdata <= read_transfer_size;
+				4'h3: s_axi_rdata <= read_burst_count;
+				4'h4: s_axi_rdata <= { 23'b0, read_burst_len };
 
-			//s_axi_rdata <= regs[s_araddr[ADDR_WIDTH-1:REGS_LSB]]; // register read data
+				4'h5: s_axi_rdata <= write_base_address[31:0];
+				4'h6: s_axi_rdata <= { 16'b0, write_base_address[47:32] };
+				4'h7: s_axi_rdata <= write_transfer_size;
+				4'h8: s_axi_rdata <= write_burst_count;
+				4'h9: s_axi_rdata <= { 23'b0, write_burst_len };
+
+				4'hA: s_axi_rdata <= { 30'b0, write_busy, read_busy }
+				4'hB: s_axi_rdata <= { 31'b0, loop_read_enable };
+
+			endcase
+			
 		end
 	end
 end
 
-
-	// ********************************************
-	// ********************************************
-	// ********************************************
-	// ********************************************
-	// ********************************************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-assign ila_awaddr = m_axi_awaddr;
-
-assign ila_bresp = m_axi_bresp;
-
-assign ila_wdata = m_axi_wdata;
-assign ila_wlast = m_axi_wlast; // Write last. This signal indicates the last transfer in a write burst.
-assign ila_wvalid = m_axi_wvalid; // Write valid. This signal indicates that valid write data and strobes are available
-assign ila_wready =	m_axi_wready;
-
-assign ila_rdata = m_axi_rdata;
-assign ila_rlast = m_axi_rlast;
-assign ila_rvalid = m_axi_rvalid;
-assign ila_rready = m_axi_rready;
-
-assign ila_init_axi_txn = init_axi_txn;
-assign clk_out = aclk;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
 
 // ---------------------------------------------
 // ***** Master Write Address (AW) Channel *****
@@ -574,178 +608,115 @@ assign clk_out = aclk;
 // The address will be incremented on each accepted address transaction,
 // by burst_size_byte to point to the next address.
 
-assign	m_axi_awid = 'h0;
-assign	m_axi_awlen	= burst_len_1; // Burst LENgth is number of transaction beats, minus 1
-assign	m_axi_awsize = 3'h4; //$clog2(DATA_BYTES_COUNT); //clogb2((DATA_WIDTH/8)-1); // Size should be DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
-assign	m_axi_awburst = 2'b01; // INCR burst type is usually used, except for keyhole bursts
-assign	m_axi_awlock = 1'b0;
-assign	m_axi_awcache = 4'b0010; // Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
-assign	m_axi_awprot = 3'h0;
-assign	m_axi_awqos	= 4'h0;
+always_ff @(posedge clk or negedge rst_n) begin : proc_write_transfer
+	if(~rst_n) begin
 
-wire	aw_ready_and_valid = (m_axi_awready && m_axi_awvalid);
-
-reg [31:0]	write_burst_counter = 0;
-reg			start_single_burst_write = 1'b0;
-reg			burst_write_active = 1'b0;
-reg			writes_done = 1'b0;
-
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
+		write_state <= 0;
+		m_axi_awaddr <= write_base_address;
 		m_axi_awvalid <= 1'b0;
-	end else if (~m_axi_awvalid && start_single_burst_write) begin // If previously not valid , start next transaction
-		m_axi_awvalid <= 1'b1;
-	end else if (aw_ready_and_valid) begin // Once asserted, VALIDs cannot be deasserted, so m_axi_awvalid must wait until transaction is accepted
-		m_axi_awvalid <= 1'b0;
-	end
-end
-
-// Next address after AWREADY indicates previous address acceptance
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		m_axi_awaddr <= rx_base_address;
-	end else if (aw_ready_and_valid) begin
-		m_axi_awaddr <= m_axi_awaddr + burst_size_bytes;
-	end
-end
-
-
-
-
-
-// -----------------------------------------
-// ***** Master Write Data (W) Channel *****
-// -----------------------------------------
-
-// The write data will continually try to push write data across the interface.
-
-// The amount of data accepted will depend on the AXI slave and the AXI
-// Interconnect settings, such as if there are FIFOs enabled in interconnect.
-
-// Note that there is no explicit timing relationship to the write address channel.
-// The write channel has its own throttling flag, separate from the AW channel.
-
-// Synchronization between the channels must be determined by the user.
-
-// The simpliest but lowest performance would be to only issue one address write
-// and write data burst at a time.
-
-// In this example they are kept in sync by using the same address increment
-// and burst sizes. Then the AW and W channels have their transactions measured
-// with threshold counters as part of the user logic, to make sure neither 
-// channel gets too far ahead of each other.
-
-// All bursts are complete and aligned in this example
-
-assign	m_axi_wstrb	= 16'hFFFF;
-
-reg [8:0]	write_index = 0; // reg [BURST_INDEX_WIDTH:0]	write_index = 0; // write beat count in a burst
-wire		write_next = m_axi_wready & m_axi_wvalid; // Forward movement occurs when the write channel is valid and ready
-
-// WVALID logic, similar to the m_axi_awvalid always block above
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		m_axi_wvalid <= 1'b0; 
-	end else if (~m_axi_wvalid && start_single_burst_write) begin  // If previously not valid, start next transaction
-		m_axi_wvalid <= 1'b1;
-	end else if (write_next && m_axi_wlast) // If WREADY and too many writes, throttle WVALID Once asserted, VALIDs cannot be deasserted, so WVALID must wait until burst is complete with WLAST
-		m_axi_wvalid <= 1'b0;
-end 
-
-// WLAST generation on the MSB of a counter underflow WVALID logic, similar to the m_axi_awvalid always block above
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		m_axi_wlast <= 1'b0;
-	end else if (((write_index == burst_len_2 && burst_len >= 2) && write_next) || (burst_len == 1)) begin // m_axi_wlast is asserted when the write index count reaches the penultimate count to synchronize with the last write data when write_index is b1111 // else if (&(write_index[BURST_INDEX_WIDTH-1:1])&& ~write_index[0] && write_next)
-		m_axi_wlast <= 1'b1;
-	end else if (write_next) // Deassrt m_axi_wlast when the last write data has been accepted by the slave with a valid response
-		m_axi_wlast <= 1'b0;
-	else if (m_axi_wlast && burst_len == 1)
-		m_axi_wlast <= 1'b0;
-end
-
-// Burst length counter. Uses extra counter register bit to indicate terminal count to reduce decode logic
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse || start_single_burst_write) begin
 		write_index <= 0;
-	end else if (write_next && (write_index != burst_len_1)) begin
-		write_index <= write_index + 1;
-	end
-end
-
-// Write Data Generator Data pattern is only a simple incrementing count from 0 for each burst
-always_ff@(posedge clk) begin
-	if (!rst_n)
-		m_axi_wdata <= 'b1;
-	else if (rst_or_init_txn_pulse)
-		m_axi_wdata <= m_axi_wdata; //'b1;
-	else if (write_next) // else if (write_next && m_axi_wlast) m_axi_wdata <= 'b0;
-		m_axi_wdata <= rx_fifo_data;
-end
-
-
-
-
-
-// write_burst_counter counter keeps track with the number of burst transaction initiated
-// against the number of burst transactions the master needs to initiate
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		write_burst_counter <= 'b0;
-	end else if (aw_ready_and_valid) begin
-		if (write_burst_counter < burst_num) begin //if (write_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH] == 1'b0) begin // Use MSB as overflow detection. //write_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH] <= 1'b1; // Reset the bit??
-			write_burst_counter <= write_burst_counter + 1;
-		end
-	end
-end
-
-
-// ***************************************************************
-// Check for last write completion.
-// This logic is to qualify the last write count with the final write
-// response. This demonstrates how to confirm that a write has been
-// committed.
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse)
-		writes_done <= 1'b0;
-	else if (m_axi_bvalid && (write_burst_counter == burst_num) && m_axi_bready) // else if (m_axi_bvalid && (write_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH]) && m_axi_bready) // The writes_done should be associated with a bready response // else if (m_axi_bvalid && m_axi_bready && (write_burst_counter == {(MASTER_BURSTS_REQ_INDEX_WIDTH-1){1}}) && m_axi_wlast)
-		writes_done <= 1'b1;
-end
-
-
-
-
-
-
-// ---------------------------------------------
-// ***** Master Write Response (B) Channel *****
-// ---------------------------------------------
-
-//The write response channel provides feedback that the write has committed
-//to memory. BREADY will occur when all of the data and the write address
-//has arrived and been accepted by the slave.
-
-//The write issuance (number of outstanding write addresses) is started by 
-//the Address Write transfer, and is completed by a BREADY/BRESP.
-
-//While negating BREADY will eventually throttle the AWREADY signal, 
-//it is best not to throttle the whole data channel this way.
-
-//The BRESP bit [1] is used indicate any errors from the interconnect or
-//slave for the entire write burst. This example will capture the error 
-//into the error_out output. 
-
-wire	write_resp_error = m_axi_bready & m_axi_bvalid & m_axi_bresp[1]; // Flag any write response errors
-
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
+		m_axi_wlast <= 1'b0;
+		write_burst_counter <= 0;
 		m_axi_bready <= 1'b0;
-	end else if (m_axi_bvalid && ~m_axi_bready) begin // accept/acknowledge bresp with m_axi_bready by the master when m_axi_bvalid is asserted by slave
-		m_axi_bready <= 1'b1;
-	end else if (m_axi_bready) begin // deassert after one clock cycle
-		m_axi_bready <= 1'b0;
+		write_bresp <= 0;
+
+	end else begin
+
+		case(write_state)
+
+			0: begin // IDLE State
+
+				m_axi_awaddr <= write_base_address;
+				m_axi_awvalid <= 1'b0;
+				write_index <= 0;
+				m_axi_wlast <= 1'b0;
+				write_burst_counter <= 0;
+				m_axi_bready <= 1'b0;
+
+				if (single_write_pulse) begin 
+					write_state <= 1;
+
+			end
+
+			1: begin // Verify FIFO depth
+
+				write_index <= 0;
+				m_axi_wlast <= 1'b0;
+				m_axi_bready <= 1'b0;
+				write_bresp <= 0;
+
+				if (rx_fifo_prog_full) begin 
+					m_axi_awvalid <= 1'b1;
+					write_state <= 2; 
+				end else begin
+					m_axi_awvalid <= 1'b0;
+				end
+
+			end
+
+			2: begin // Write Address
+
+				write_index <= 0;
+				m_axi_wlast <= 1'b0;
+				m_axi_bready <= 1'b0;
+
+				if (m_axi_awready) begin // When it responses
+					m_axi_awaddr <= write_base_address + write_burst_size_bytes; // Set address to the next one.
+					m_axi_awvalid <= 1'b0;
+					write_state <= 3; // Enter Burst Write
+				end else begin
+					m_axi_awvalid <= 1'b1;
+				end
+
+			end
+
+			3: begin // Burst Write
+
+				if (write_active && write_index < write_burst_len_1)  // Max possilbe write_index is 15;
+					write_index <= write_index + 1;
+
+				if (write_active)
+					if ((write_index == write_burst_len_2 && write_burst_len > 1) || write_burst_len == 1)
+						m_axi_wlast <= 1'b1;
+					else if (m_axi_wlast) begin
+						m_axi_wlast <= 1'b0;
+						write_burst_counter <= write_burst_counter + 1;
+						write_state <= 4;
+					end
+
+			end
+
+			4: begin // Write Response
+
+				if (m_axi_bvalid) begin
+					m_axi_bready <= 1'b1;
+					write_bresp <= m_axi_bresp;
+
+					if (write_burst_counter < write_burst_count && !m_axi_bresp[1])
+						write_state <= 1;
+					else
+						write_state <= 0;
+					end
+				end
+
+			end
+
+			default: begin
+
+				m_axi_awaddr <= write_base_address;
+				m_axi_awvalid <= 1'b0;
+				write_index <= 0;
+				m_axi_wlast <= 1'b0;
+				write_burst_counter <= 0;
+				m_axi_bready <= 1'b0;
+				write_state <= 0;
+
+			end
+
+		endcase
+
 	end
-end
+end : proc_write_transfer
 
 // --------------------------------------------
 // ***** Master Read Address (AR) Channel *****
@@ -759,23 +730,117 @@ end
 
 //Read Address (AR)
 
-assign	m_axi_arid = 'h0;
-assign	m_axi_arlen = burst_len_1; //Burst LENgth is number of transaction beats, minus 1
-assign	m_axi_arsize = 3'h4; //$clog2(DATA_BYTES_COUNT); //clogb2((DATA_WIDTH/8)-1); //Size should be DATA_WIDTH, in 2^n bytes, otherwise narrow bursts are used
-assign	m_axi_arburst = 2'b01; // INCR burst type is usually used, except for keyhole bursts
-assign	m_axi_arlock = 1'b0;
-assign	m_axi_arcache = 4'b0010; // Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
-assign	m_axi_arprot = 3'h0;
-assign	m_axi_arqos = 4'h0;
+always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
+	if(~rst_n) begin
 
-wire	ar_ready_and_valid = (m_axi_arready && m_axi_arvalid);
+		read_state <= 0;
+		m_axi_araddr <= read_base_address;
+		m_axi_arlen <= read_burst_len_1; //Burst LENgth is number of transaction beats, minus 1
+		m_axi_arvalid <= 1'b0;
+		read_index <= 0;
+		read_byte_remain <= read_transfer_size;
+		read_bresp <= 0;
+		m_axis_tx_tstrb <= 16'hFFFF;
+		last_tx_tstrb <= 16'hFFFF;
 
-reg [31:0]	read_burst_counter = 0; //The burst counters are used to track the number of burst transfers of BURST_LEN burst length needed to transfer 2^MASTER_INDEX bytes of data.
-reg			start_single_burst_read = 1'b0;
-reg			burst_read_active = 1'b0;
-reg			reads_done = 1'b0;
+	end else begin
 
-reg [8:0]	read_index; //reg [BURST_INDEX_WIDTH:0]	read_index; //read beat count in a burst
+		case(read_state)
+			
+			0: begin // IDLE State
+
+				m_axi_araddr <= read_base_address;
+				m_axi_arlen <= read_burst_len_1;
+				m_axi_arvalid <= 1'b0;
+				read_index <= 0;
+				read_byte_remain <= read_transfer_size;
+				read_bresp <= 0;
+				m_axis_tx_tstrb <= 16'hFFFF;
+		
+				if (single_read_pulse) begin 
+					read_state <= 1;
+
+			end
+
+			1: begin // Check FIFO Prog Empty
+
+				read_index <= 0;
+
+				if (tx_fifo_prog_empty) begin 
+					m_axi_arvalid <= 1'b1;
+					read_state <= 2; 
+				end else begin
+					m_axi_arvalid <= 1'b0;
+				end
+
+			end
+
+			2: begin // Read address
+
+				read_index <= 0;
+
+				if (m_axi_arready) begin // When it responses
+					m_axi_araddr <= read_base_address + read_burst_size_bytes; // Set address to the next one.
+					m_axi_arvalid <= 1'b0;
+					read_state <= 3; // Enter Burst Read
+				end else begin
+					m_axi_arvalid <= 1'b1;
+				end	
+
+			end
+
+			3: begin // Burst Read, and check transfer size counter
+
+				if (read_active && read_index < read_burst_len_1)
+					read_index <= read_index + 1;
+
+				if (read_active) begin
+					read_bresp <= m_axi_rresp;
+					read_byte_remain <= read_byte_remain - 16;
+				end
+
+				if (read_byte_remain - 16 < 16) begin
+
+
+
+					
+				end
+
+				if (read_active && m_axi_rlast) begin
+					read_byte_remain <= read_byte_remain - read_burst_size_bytes;
+					read_state <= 4;
+				end
+
+			end
+
+			4: begin // Verify Byte Counter and Read Response and if it is looping
+
+				if (read_byte_remain[32] || read_byte_remain == 0 || read_bresp[1]) begin
+					write_state <= 0;
+				end else if (read_byte_remain < read_burst_size_bytes) begin
+					m_axi_arlen <= read_byte_remain[11:4];
+					case (read_byte_remain[3:0])
+
+						4'b0000: last_tx_tstrb 
+					endcase
+				end else begin
+					
+
+				end
+
+
+
+
+
+			end
+
+
+		endcase
+
+	end
+end
+
+
 
 always_ff@(posedge clk) begin
 	if (rst_or_init_txn_pulse) begin
@@ -790,7 +855,7 @@ end
 // Next address after ARREADY indicates previous address acceptance  
 always_ff@(posedge clk) begin
 	if (rst_or_init_txn_pulse) begin
-		m_axi_araddr <= tx_base_address;
+		m_axi_araddr <= read_base_address;
 	end else if (ar_ready_and_valid) begin
 		m_axi_araddr <= m_axi_araddr + burst_size_bytes;
 	end
@@ -802,7 +867,7 @@ always_ff@(posedge clk) begin
 	if (rst_or_init_txn_pulse) begin
 		read_burst_counter <= 'b0;
 	end else if (ar_ready_and_valid) begin
-		if (read_burst_counter < burst_num) begin //if (read_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH] == 1'b0) begin
+		if (read_burst_counter < burst_count) begin //if (read_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH] == 1'b0) begin
 			read_burst_counter <= read_burst_counter + 1;
 		end 
 	end
@@ -814,7 +879,7 @@ end
 always_ff@(posedge clk) begin
 	if (rst_or_init_txn_pulse)
 		reads_done <= 1'b0;
-	else if (m_axi_rvalid && m_axi_rready && (read_index == burst_len_1) && (read_burst_counter == burst_num)) // else if (m_axi_rvalid && m_axi_rready && (read_index == burst_len_1) && (read_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH])) // The reads_done should be associated with a rready response // else if (m_axi_bvalid && m_axi_bready && (write_burst_counter == {(MASTER_BURSTS_REQ_INDEX_WIDTH-1){1}}) && m_axi_wlast)
+	else if (m_axi_rvalid && m_axi_rready && (read_index == burst_len_1) && (read_burst_counter == burst_count))
 		reads_done <= 1'b1;
 end
 
