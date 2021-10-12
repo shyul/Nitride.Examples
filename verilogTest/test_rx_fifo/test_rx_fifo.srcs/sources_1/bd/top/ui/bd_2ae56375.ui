@@ -1,0 +1,60 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"0.851316",
+   "Default View_TopLeft":"-218,68",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:10.0 non-TLS
+#  -string -flagsOSRD
+preplace port m_axis_rx -pg 1 -lvl 3 -x 970 -y 380 -defaultsOSRD
+preplace port fifo_rd_valid -pg 1 -lvl 3 -x 970 -y 700 -defaultsOSRD
+preplace port fifo_prog_full -pg 1 -lvl 3 -x 970 -y 160 -defaultsOSRD
+preplace port fifo_wr_rst_busy -pg 1 -lvl 3 -x 970 -y 720 -defaultsOSRD
+preplace port fifo_rd_rst_busy -pg 1 -lvl 3 -x 970 -y 740 -defaultsOSRD
+preplace port data_ready -pg 1 -lvl 3 -x 970 -y 400 -defaultsOSRD
+preplace port aresetn -pg 1 -lvl 0 -x -20 -y 380 -defaultsOSRD
+preplace port aclk -pg 1 -lvl 0 -x -20 -y 360 -defaultsOSRD
+preplace port rx_enable -pg 1 -lvl 0 -x -20 -y 750 -defaultsOSRD
+preplace port data_clk -pg 1 -lvl 0 -x -20 -y 420 -defaultsOSRD
+preplace port data_valid -pg 1 -lvl 0 -x -20 -y 480 -defaultsOSRD
+preplace port fifo_rd_en -pg 1 -lvl 3 -x 970 -y 460 -defaultsOSRD
+preplace port fifo_rd_empty -pg 1 -lvl 3 -x 970 -y 660 -defaultsOSRD
+preplace port fifo_wr_full -pg 1 -lvl 3 -x 970 -y 680 -defaultsOSRD
+preplace port fifo_wr_en -pg 1 -lvl 3 -x 970 -y 520 -defaultsOSRD
+preplace port fifo_srst -pg 1 -lvl 3 -x 970 -y 420 -defaultsOSRD
+preplace portBus wr_data_buf -pg 1 -lvl 3 -x 970 -y 560 -defaultsOSRD
+preplace portBus data_write_state -pg 1 -lvl 3 -x 970 -y 540 -defaultsOSRD
+preplace portBus data_format -pg 1 -lvl 0 -x -20 -y 440 -defaultsOSRD
+preplace portBus data_in -pg 1 -lvl 0 -x -20 -y 460 -defaultsOSRD
+preplace portBus fifo_rd_data -pg 1 -lvl 3 -x 970 -y 640 -defaultsOSRD
+preplace portBus fifo_wr_data -pg 1 -lvl 3 -x 970 -y 500 -defaultsOSRD
+preplace inst fifo_generator_0 -pg 1 -lvl 1 -x 280 -y 170 -defaultsOSRD
+preplace inst rx_fifo_axis_0 -pg 1 -lvl 2 -x 720 -y 470 -defaultsOSRD
+preplace netloc fifo_generator_0_full 1 0 3 30 490 460 680 NJ
+preplace netloc rx_fifo_axis_0_fifo_wr_data 1 0 3 20 760 NJ 760 920
+preplace netloc rx_fifo_axis_0_fifo_wr_en 1 0 3 40 690 NJ 690 890
+preplace netloc fifo_generator_0_empty 1 0 3 70 480 480 670 930J
+preplace netloc fifo_generator_0_dout 1 0 3 80 470 500 660 900J
+preplace netloc rx_fifo_axis_0_fifo_rd_en 1 0 3 50 710 NJ 710 910
+preplace netloc rx_fifo_axis_0_fifo_srst 1 0 3 60 730 NJ 730 940
+preplace netloc rx_fifo_axis_0_fifo_wr_clk 1 0 3 90 340 500J 280 890
+preplace netloc rx_fifo_axis_0_fifo_rd_clk 1 0 3 100 330 480J 270 910
+preplace netloc fifo_generator_0_valid 1 1 2 510 700 NJ
+preplace netloc fifo_generator_0_prog_full 1 1 2 540 160 NJ
+preplace netloc fifo_generator_0_wr_rst_busy 1 1 2 490 720 NJ
+preplace netloc fifo_generator_0_rd_rst_busy 1 1 2 470 740 NJ
+preplace netloc rx_fifo_axis_0_wr_data_buf 1 2 1 NJ 560
+preplace netloc rx_fifo_axis_0_data_write_state 1 2 1 NJ 540
+preplace netloc rx_fifo_axis_0_data_ready 1 2 1 NJ 400
+preplace netloc aresetn_1 1 0 2 NJ 380 520J
+preplace netloc aclk_1 1 0 2 NJ 360 NJ
+preplace netloc rx_enable_1 1 0 2 NJ 750 530J
+preplace netloc data_format_1 1 0 2 0J 400 NJ
+preplace netloc data_clk_1 1 0 2 NJ 420 NJ
+preplace netloc data_valid_1 1 0 2 10J 440 NJ
+preplace netloc data_in_1 1 0 2 NJ 460 NJ
+preplace netloc rx_fifo_axis_0_m_axis_rx 1 2 1 NJ 380
+levelinfo -pg 1 -20 280 720 970
+pagesize -pg 1 -db -bbox -sgen -180 0 1160 790
+"
+}
+0
