@@ -11,32 +11,33 @@ module fifo_dma_controller # (
 
 	) (
 
-	// ******************* ILA IO *******************
+	// ****************** ILA IO *******************
 
-	output logic [1:0]					exec_state,
+	output logic			ila_single_read, ila_m_arready, ila_m_arvalid, ila_m_rready, ila_m_rvalid, ila_m_rlast,
+	output logic			ila_single_write, ila_m_awready, ila_m_awvalid, ila_m_wready, ila_m_wvalid, ila_m_wlast, ila_m_bvalid, ila_m_bready,
+	output logic [1:0]		ila_m_bresp,
+	output logic [47:0]		ila_m_araddr, ila_m_awaddr,
+	output logic [7:0]		ila_m_arlen, ila_m_awlen,
+	output logic [127:0]	ila_m_rdata, ila_m_wdata,
 
-	output logic [47:0]					ila_awaddr,
-	
-	output logic [1:0]					ila_bresp, 
+	output logic			ila_tx_ready, ila_tx_valid, ila_tx_prog_empty,
+	output logic			ila_rx_ready, ila_rx_valid, ila_rx_prog_full,
+	output logic [127:0]	ila_tx_data, ila_rx_data,
+	output logic [15:0]		ila_tx_strb,
 
-	output logic [127:0] 				ila_rdata,
-	output logic						ila_rlast, ila_rvalid, ila_rready,
+	output logic [2:0]		ila_read_state, 
+	output logic [1:0]		ila_read_bresp,
+	output logic			ila_tx_fifo_wren, ila_read_busy, ila_read_active,
+	output logic [32:0]		ila_read_byte_remain,
+	output logic [8:0]		ila_read_index,
 
-	output logic [127:0] 				ila_wdata,
-	output logic						ila_wlast, ila_wvalid, ila_wready,
+	output logic [2:0]		ila_write_state, 
+	output logic [1:0]		ila_write_bresp,
+	output logic			ila_rx_fifo_rden, ila_write_busy, ila_write_active,
+	output logic [31:0]		ila_write_burst_counter,
+	output logic [8:0]		ila_write_index,
 
-	//output reg [127:0] 					expected_rdata,			// = 'b1;
-	//output reg  						read_mismatch, // = 1'b0;
-	///output reg							error_reg, // = 0;
-	// ==============================================
-
-	// ************* Example design I/O *************
-
-	//output logic						ila_init_axi_txn, // Asserts when transaction is complete
-	//output reg							compare_done, // Asserts when transaction is complete
-	//output reg							error_out, // Asserts when error_out is detected
-	// ==============================================
-
+	// =============================================
 	// =============================================
 	
 	input logic							aclk, // Global Clock Signal.
@@ -209,8 +210,8 @@ end
 // *****************************************************************
 // *****************************************************************
 
-reg				stream_write_enable = 1'b0,
-reg				stream_read_enable = 1'b0,
+reg				stream_write_enable = 1'b0;
+reg				stream_read_enable = 1'b0;
 
 reg [31:0]		stream_write_next_address_offset = 0; // FIFO keyhole here
 reg [31:0]		stream_read_next_address_offset = 0;  // FIFO keyhole here 
@@ -261,7 +262,37 @@ wire		write_active = s_axis_rx_tready && m_axi_wvalid;
 reg	[1:0]	write_bresp;
 
 // *****************************************************************
-// *****************************************************************
+// **************************** ILA ********************************
+
+assign	ila_single_write = single_write_pulse;
+
+assign	ila_m_awready = m_axi_awready;
+assign	ila_m_awvalid = m_axi_awvalid;
+assign	ila_m_awaddr = m_axi_awaddr;
+assign	ila_m_awlen = m_axi_awlen;
+
+assign	ila_m_wready = m_axi_wready;
+assign	ila_m_wvalid = m_axi_wvalid;
+assign	ila_m_wdata = m_axi_wdata;
+assign	ila_m_wlast = m_axi_wlast;
+
+assign	ila_m_bvalid = m_axi_bvalid;
+assign	ila_m_bready = m_axi_bready;
+assign	ila_m_bresp = m_axi_bresp;
+
+assign	ila_rx_ready = s_axis_rx_tready;
+assign	ila_rx_valid = s_axis_rx_tvalid;
+assign	ila_rx_data = s_axis_rx_tdata;
+assign	ila_rx_prog_full = rx_fifo_prog_full;
+
+assign	ila_write_state = write_state;
+assign	ila_rx_fifo_rden = rx_fifo_rden;
+assign	ila_write_busy = write_busy; // AXI_S_ reg indicator only...
+assign	ila_write_burst_counter = write_burst_counter;
+assign	ila_write_index = write_index;
+assign	ila_write_active = write_active;
+assign	ila_write_bresp = write_bresp;
+
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
@@ -299,31 +330,34 @@ wire		read_active = m_axi_rready && m_axis_tx_tvalid;
 reg	[1:0]	read_bresp;
 
 // *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
+// **************************** ILA ********************************
 
-assign ila_awaddr = m_axi_awaddr;
+assign	ila_single_read = single_read_pulse;
 
-assign ila_bresp = m_axi_bresp;
+assign	ila_m_arready = m_axi_arready;
+assign	ila_m_arvalid = m_axi_arvalid;
+assign	ila_m_araddr = m_axi_araddr;
+assign	ila_m_arlen = m_axi_arlen;
 
-assign ila_wdata = m_axi_wdata;
-assign ila_wlast = m_axi_wlast; // Write last. This signal indicates the last transfer in a write burst.
-assign ila_wvalid = m_axi_wvalid; // Write valid. This signal indicates that valid write data and strobes are available
-assign ila_wready =	m_axi_wready;
+assign	ila_m_rready = m_axi_rready;
+assign	ila_m_rvalid = m_axi_rvalid;
+assign	ila_m_rdata = m_axi_rdata;
+assign	ila_m_rlast = m_axi_rlast;
 
-assign ila_rdata = m_axi_rdata;
-assign ila_rlast = m_axi_rlast;
-assign ila_rvalid = m_axi_rvalid;
-assign ila_rready = m_axi_rready;
+assign	ila_tx_ready = m_axis_tx_tready;
+assign	ila_tx_valid = m_axis_tx_tvalid;
+assign	ila_tx_data = m_axis_tx_tdata;
+assign	ila_tx_strb = m_axis_tx_tstrb;
+assign	ila_tx_prog_empty = tx_fifo_prog_empty;
 
-assign ila_init_axi_txn = init_axi_txn;
+assign	ila_read_state = read_state;
+assign	ila_tx_fifo_wren = tx_fifo_wren;
+assign	ila_read_busy = read_busy;
+assign	ila_read_byte_remain = read_byte_remain;
+assign	ila_read_index = read_index;
+assign	ila_read_active = read_active;
+assign	ila_read_bresp = read_bresp;
 
-// *****************************************************************
-// *****************************************************************
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
@@ -418,13 +452,11 @@ always_ff @(posedge clk) begin
 	if (!rst_n) begin
 
 		write_base_address <= DEFAULT_WRITE_ADDRESS;
-		write_transfer_size <= DEFAULT_TRANSFER_SIZE;
 		write_burst_count <= DEFAULT_BURST_COUNT;
 		write_burst_len <= DEFAULT_BURST_LEN;
 
 		read_base_address <= DEFAULT_READ_ADDRESS;
 		read_transfer_size <= DEFAULT_TRANSFER_SIZE;
-		read_burst_count <= DEFAULT_BURST_COUNT;
 		read_burst_len <= DEFAULT_BURST_LEN;
 
 		single_write_trigger <= 1'b0;
@@ -438,17 +470,15 @@ always_ff @(posedge clk) begin
 				4'h0: read_base_address[31:0] <= s_axi_wdata;
 				4'h1: read_base_address[47:32] <= s_axi_wdata[15:0];
 				4'h2: read_transfer_size <= s_axi_wdata;
-				4'h3: read_burst_count <= s_axi_wdata;
-				4'h4: read_burst_len <= s_axi_wdata[8:0];
+				4'h3: read_burst_len <= s_axi_wdata[8:0];
 
-				4'h5: write_base_address[31:0] <= s_axi_wdata;
-				4'h6: write_base_address[47:32] <= s_axi_wdata[15:0];
-				4'h7: write_transfer_size <= s_axi_wdata;
-				4'h8: write_burst_count <= s_axi_wdata;
-				4'h9: write_burst_len <= s_axi_wdata[8:0];
+				4'h4: write_base_address[31:0] <= s_axi_wdata;
+				4'h5: write_base_address[47:32] <= s_axi_wdata[15:0];
+				4'h6: write_burst_count <= s_axi_wdata;
+				4'h7: write_burst_len <= s_axi_wdata[8:0];
 
-				4'hA: { single_write_trigger, single_read_trigger } <= s_axi_wdata[1:0];
-				4'hB: loop_read_enable <= s_axi_wdata[0];
+				4'h8: { single_write_trigger, single_read_trigger } <= s_axi_wdata[1:0];
+				4'h9: loop_read_enable <= s_axi_wdata[0];
 
 			endcase
 		end
@@ -569,17 +599,15 @@ always_ff @(posedge clk) begin
 				4'h0: s_axi_rdata <= read_base_address[31:0];
 				4'h1: s_axi_rdata <= { 16'b0, read_base_address[47:32] };
 				4'h2: s_axi_rdata <= read_transfer_size;
-				4'h3: s_axi_rdata <= read_burst_count;
-				4'h4: s_axi_rdata <= { 23'b0, read_burst_len };
+				4'h3: s_axi_rdata <= { 23'b0, read_burst_len };
 
-				4'h5: s_axi_rdata <= write_base_address[31:0];
-				4'h6: s_axi_rdata <= { 16'b0, write_base_address[47:32] };
-				4'h7: s_axi_rdata <= write_transfer_size;
-				4'h8: s_axi_rdata <= write_burst_count;
-				4'h9: s_axi_rdata <= { 23'b0, write_burst_len };
+				4'h4: s_axi_rdata <= write_base_address[31:0];
+				4'h5: s_axi_rdata <= { 16'b0, write_base_address[47:32] };
+				4'h6: s_axi_rdata <= write_burst_count;
+				4'h7: s_axi_rdata <= { 23'b0, write_burst_len };
 
-				4'hA: s_axi_rdata <= { 30'b0, write_busy, read_busy }
-				4'hB: s_axi_rdata <= { 31'b0, loop_read_enable };
+				4'h8: s_axi_rdata <= { 30'b0, write_busy, read_busy };
+				4'h9: s_axi_rdata <= { 31'b0, loop_read_enable };
 
 			endcase
 			
@@ -608,7 +636,7 @@ end
 // The address will be incremented on each accepted address transaction,
 // by burst_size_byte to point to the next address.
 
-always_ff @(posedge clk or negedge rst_n) begin : proc_write_transfer
+always_ff @(posedge clk) begin : proc_write_transfer
 	if(~rst_n) begin
 
 		write_state <= 0;
@@ -635,7 +663,7 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_write_transfer
 
 				if (single_write_pulse) begin 
 					write_state <= 1;
-
+                end
 			end
 
 			1: begin // Verify FIFO depth
@@ -661,7 +689,7 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_write_transfer
 				m_axi_bready <= 1'b0;
 
 				if (m_axi_awready) begin // When it responses
-					m_axi_awaddr <= write_base_address + write_burst_size_bytes; // Set address to the next one.
+					m_axi_awaddr <= m_axi_awaddr + write_burst_size_bytes; // Set address to the next one.
 					m_axi_awvalid <= 1'b0;
 					write_state <= 3; // Enter Burst Write
 				end else begin
@@ -681,6 +709,7 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_write_transfer
 					else if (m_axi_wlast) begin
 						m_axi_wlast <= 1'b0;
 						write_burst_counter <= write_burst_counter + 1;
+						m_axi_bready <= 1'b1;
 						write_state <= 4;
 					end
 
@@ -689,14 +718,13 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_write_transfer
 			4: begin // Write Response
 
 				if (m_axi_bvalid) begin
-					m_axi_bready <= 1'b1;
+					m_axi_bready <= 1'b0;
 					write_bresp <= m_axi_bresp;
 
 					if (write_burst_counter < write_burst_count && !m_axi_bresp[1])
 						write_state <= 1;
 					else
 						write_state <= 0;
-					end
 				end
 
 			end
@@ -730,7 +758,7 @@ end : proc_write_transfer
 
 //Read Address (AR)
 
-always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
+always_ff @(posedge clk) begin : proc_read_transfer
 	if(~rst_n) begin
 
 		read_state <= 0;
@@ -741,7 +769,7 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
 		read_byte_remain <= read_transfer_size;
 		read_bresp <= 0;
 		m_axis_tx_tstrb <= 16'hFFFF;
-		last_tx_tstrb <= 16'hFFFF;
+		//last_tx_tstrb <= 16'hFFFF;
 
 	end else begin
 
@@ -759,7 +787,7 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
 		
 				if (single_read_pulse) begin 
 					read_state <= 1;
-
+                end
 			end
 
 			1: begin // Check FIFO Prog Empty
@@ -780,7 +808,7 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
 				read_index <= 0;
 
 				if (m_axi_arready) begin // When it responses
-					m_axi_araddr <= read_base_address + read_burst_size_bytes; // Set address to the next one.
+					m_axi_araddr <= m_axi_araddr + read_burst_size_bytes; // Set address to the next one.
 					m_axi_arvalid <= 1'b0;
 					read_state <= 3; // Enter Burst Read
 				end else begin
@@ -816,15 +844,19 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
 			4: begin // Verify Byte Counter and Read Response and if it is looping
 
 				if (read_byte_remain[32] || read_byte_remain == 0 || read_bresp[1]) begin
-					write_state <= 0;
+					read_state <= 0;
 				end else if (read_byte_remain < read_burst_size_bytes) begin
+					
 					m_axi_arlen <= read_byte_remain[11:4];
+					read_state <= 1;
+					
 					case (read_byte_remain[3:0])
 
-						4'b0000: last_tx_tstrb 
+						//4'b0000: last_tx_tstrb 
 					endcase
-				end else begin
 					
+				end else begin
+					read_state <= 1;
 
 				end
 
@@ -839,279 +871,5 @@ always_ff @(posedge clk or negedge rst_n) begin : proc_read_transfer
 
 	end
 end
-
-
-
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		m_axi_arvalid <= 1'b0;
-	end else if (~m_axi_arvalid && start_single_burst_read) begin // If previously not valid , start next transaction
-		m_axi_arvalid <= 1'b1;
-	end else if (ar_ready_and_valid) begin
-		m_axi_arvalid <= 1'b0;
-	end
-end
-
-// Next address after ARREADY indicates previous address acceptance  
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		m_axi_araddr <= read_base_address;
-	end else if (ar_ready_and_valid) begin
-		m_axi_araddr <= m_axi_araddr + burst_size_bytes;
-	end
-end
-
-// read_burst_counter counter keeps track with the number of burst transaction initiated
-// against the number of burst transactions the master needs to initiate
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		read_burst_counter <= 'b0;
-	end else if (ar_ready_and_valid) begin
-		if (read_burst_counter < burst_count) begin //if (read_burst_counter[MASTER_BURSTS_REQ_INDEX_WIDTH] == 1'b0) begin
-			read_burst_counter <= read_burst_counter + 1;
-		end 
-	end
-end
-
-// Check for last read completion.
-// This logic is to qualify the last read count with the final read
-// response. This demonstrates how to confirm that a read has been committed.
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse)
-		reads_done <= 1'b0;
-	else if (m_axi_rvalid && m_axi_rready && (read_index == burst_len_1) && (read_burst_counter == burst_count))
-		reads_done <= 1'b1;
-end
-
-// -------------------------------------------------------
-// ***** Master Read Data (and Response) (R) Channel *****
-// -------------------------------------------------------
-
-// The Read Data channel returns the results of the read request
-
-
-wire		read_next = m_axi_rvalid && m_axi_rready; // Forward movement occurs when the channel is valid and ready
-wire		read_resp_error = m_axi_rready & m_axi_rvalid & m_axi_rresp[1]; //Flag any read response errors
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Burst length counter. Uses extra counter register bit to indicate terminal count to reduce decode logic
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse || start_single_burst_read) begin
-		read_index <= 0;
-	end else if (read_next && (read_index != burst_len_1)) begin // TODO: (read_index < burst_len_1)
-		read_index <= read_index + 1;
-	end
-end
-
-// *****
-// In this example the data checker is always able to accept more data, so no need to throttle the RREADY signal
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		m_axi_rready <= 1'b0;
-	end else if (m_axi_rvalid) begin // accept/acknowledge rdata/rresp with m_axi_rready by the master when m_axi_rvalid is asserted by slave
-		if (m_axi_rlast && m_axi_rready) begin
-			m_axi_rready <= 1'b0;
-		end else begin
-			m_axi_rready <= 1'b1;
-		end
-	end
-end
-
-// burst_read_active signal is asserted when there is a burst write transaction
-// is initiated by the assertion of start_single_burst_write. start_single_burst_read
-// signal remains asserted until the burst read is accepted by the master
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse)
-		burst_read_active <= 1'b0;
-	else if (start_single_burst_read) //The burst_write_active is asserted when a write burst transaction is initiated
-		burst_read_active <= 1'b1;
-	else if (m_axi_rvalid && m_axi_rready && m_axi_rlast)
-		burst_read_active <= 1'b0;
-end
-
-
-
-
-
-// *****
-// Check received read data against data generator 
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		read_mismatch <= 1'b0;
-	end else if (read_next && (m_axi_rdata != expected_rdata)) begin // Only check data when RVALID is active
-		read_mismatch <= 1'b1;
-	end else
-		read_mismatch <= 1'b0;
-end
-
-// *****
-// Generate expected read data to check against actual read data
-always_ff@(posedge clk) begin
-
-	if (!rst_n)
-		expected_rdata <= 'b1;
-	//else if (rst_or_init_txn_pulse)
-		//m_axi_wdata <= m_axi_wdata; //'b1;
-
-	else if (rst_or_init_txn_pulse) // || m_axi_rlast)
-		expected_rdata <= m_axi_rdata; //expected_rdata; //'b1;
-	else if (m_axi_rvalid && m_axi_rready)
-		expected_rdata <= expected_rdata + 1;
-end
-
-// *****
-//----------------------------------
-//   Example design error register
-//----------------------------------
-//Register and hold any data mismatches, or read/write interface errors 
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse) begin
-		error_reg <= 1'b0;
-	end else if (read_mismatch || write_resp_error || read_resp_error) begin
-		error_reg <= 1'b1;
-	end
-end
-
-// -------------------------------------
-// ***** Example design throttling *****
-// -------------------------------------
-
-// For maximum port throughput, this user example code will try to allow
-// each channel to run as independently and as quickly as possible.
-
-// However, there are times when the flow of data needs to be throtted by
-// the user application. This example application requires that data is
-// not read before it is written and that the write channels do not
-// advance beyond an arbitrary threshold (say to prevent an 
-// overrun of the current read address by the write address).
-
-// From AXI4 Specification, 13.13.1: "If a master requires ordering between
-// read and write transactions, it must ensure that a response is received 
-// for the previous transaction before issuing the next transaction."
-
-// This example accomplishes this user application throttling through:
-// -Reads wait for writes to fully complete
-// -Address writes wait when not read + issued transaction counts pass 
-// a parameterized threshold
-// -Writes wait when a not read + active data burst count pass 
-// a parameterized threshold
-
-
-
-
-
-// Example State machine to initialize counter, initialize write transactions,
-// initialize read transactions and comparison of read data with the 
-// written data words.
-
-enum reg [1:0] 
-{
-	IDLE = 2'b00, // This state initiates AXI4Lite transaction after the state machine changes state to INIT_WRITE when there is 0 to 1 transition on init_axi_txn
-	INIT_WRITE = 2'b01, // This state initializes write transaction, once writes are done, the state machine changes state to INIT_READ
-	INIT_READ = 2'b10, // This state initializes read transaction once reads are done, the state machine changes state to INIT_COMPARE
-	INIT_COMPARE = 2'b11 // This state issues the status of comparison of the written data with the read data
-} mst_exec_state;
-
-assign exec_state = mst_exec_state;
-
-// implement master command interface state machine
-always_ff@(posedge clk) begin
-	if (!rst_n) begin // All the signals are assigned default values under reset condition
-		mst_exec_state <= IDLE;
-		start_single_burst_write <= 1'b0;
-		start_single_burst_read <= 1'b0;
-		compare_done <= 1'b0;
-		error_out <= 1'b0;
-	end else begin
-
-		// state transition
-		case (mst_exec_state)
-
-		// This state is responsible to wait for user defined C_M_START_COUNT number of clock cycles.
-		IDLE:
-			if (init_txn_pulse) begin
-				mst_exec_state <= INIT_WRITE;
-				error_out <= 1'b0;
-				compare_done <= 1'b0;
-			end else begin
-				mst_exec_state <= IDLE;
-			end
-
-		// This state is responsible to issue start_single_write pulse to
-		// initiate a write transaction. Write transactions will be
-		// issued until burst_write_active signal is asserted.
-		// write controller
-		INIT_WRITE:
-			if (writes_done) begin
-				mst_exec_state <= INIT_READ;
-			end else begin
-				mst_exec_state  <= INIT_WRITE;
-				if (~m_axi_awvalid && ~start_single_burst_write && ~burst_write_active) begin
-					start_single_burst_write <= 1'b1;
-				end else begin
-					start_single_burst_write <= 1'b0; // Negate to generate a pulse
-				end   
-			end
-
-		// This state is responsible to issue start_single_read pulse to
-		// initiate a read transaction. Read transactions will be
-		// issued until burst_read_active signal is asserted.
-		// read controller
-		INIT_READ:
-			if (reads_done) begin
-				mst_exec_state <= INIT_COMPARE;
-			end else begin
-				//mst_exec_state  <= INIT_READ;
-				if (~m_axi_arvalid && ~burst_read_active && ~start_single_burst_read) begin
-					start_single_burst_read <= 1'b1;
-				end else begin
-					start_single_burst_read <= 1'b0; // Negate to generate a pulse
-				end
-			end
-
-		// This state is responsible to issue the state of comparison
-		// of written data with the read data. If no error flags are set,
-		// compare_done signal will be asseted to indicate success.
-		INIT_COMPARE:
-			//if (~error_reg) 
-			begin
-				error_out <= error_reg;
-				mst_exec_state <= IDLE;
-				compare_done <= 1'b1;
-			end
-
-		default:
-			begin
-				mst_exec_state  <= IDLE;
-			end
-
-		endcase
-	end
-end //MASTER_EXECUTION_PROC
-
-// burst_write_active signal is asserted when there is a burst write transaction
-// is initiated by the assertion of start_single_burst_write. burst_write_active
-// signal remains asserted until the burst write is accepted by the slave
-always_ff@(posedge clk) begin
-	if (rst_or_init_txn_pulse)
-		burst_write_active <= 1'b0;
-	else if (start_single_burst_write) //The burst_write_active is asserted when a write burst transaction is initiated
-		burst_write_active <= 1'b1;
-	else if (m_axi_bvalid && m_axi_bready)
-		burst_write_active <= 1'b0;
-end
-
-
 
 endmodule : fifo_dma_controller
