@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="top_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="top_tb" />
+            <top_module name="vcomponents" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="121.850001 us"></ZoomEndTime>
+      <Cursor1Time time="17.065900 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="413"></NameColumnWidth>
+      <ValueColumnWidth column_width="98"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="26" />
+   <wvobject fp_name="/top_tb/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_format" type="array">
+      <obj_property name="ElementShortName">data_format[2:0]</obj_property>
+      <obj_property name="ObjectShortName">data_format[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_ready" type="logic">
+      <obj_property name="ElementShortName">data_ready</obj_property>
+      <obj_property name="ObjectShortName">data_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_prog_full" type="logic">
+      <obj_property name="ElementShortName">fifo_prog_full</obj_property>
+      <obj_property name="ObjectShortName">fifo_prog_full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_prog_empty" type="logic">
+      <obj_property name="ElementShortName">fifo_prog_empty</obj_property>
+      <obj_property name="ObjectShortName">fifo_prog_empty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_rd_empty" type="logic">
+      <obj_property name="ElementShortName">fifo_rd_empty</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_empty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/aclk" type="logic">
+      <obj_property name="ElementShortName">aclk</obj_property>
+      <obj_property name="ObjectShortName">aclk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_rd_data" type="array">
+      <obj_property name="ElementShortName">fifo_rd_data[127:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_data[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/m_axis_rx_tdata" type="array">
+      <obj_property name="ElementShortName">m_axis_rx_tdata[127:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rx_tdata[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/m_axis_rx_tvalid" type="logic">
+      <obj_property name="ElementShortName">m_axis_rx_tvalid</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rx_tvalid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_rd_valid" type="logic">
+      <obj_property name="ElementShortName">fifo_rd_valid</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/m_axis_rx_tready" type="logic">
+      <obj_property name="ElementShortName">m_axis_rx_tready</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rx_tready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_rd_en" type="logic">
+      <obj_property name="ElementShortName">fifo_rd_en</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_clk" type="logic">
+      <obj_property name="ElementShortName">data_clk</obj_property>
+      <obj_property name="ObjectShortName">data_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_valid" type="logic">
+      <obj_property name="ElementShortName">data_valid</obj_property>
+      <obj_property name="ObjectShortName">data_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_i" type="array">
+      <obj_property name="ElementShortName">data_i[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_q" type="array">
+      <obj_property name="ElementShortName">data_q[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_q[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/wr_data_buf" type="array">
+      <obj_property name="ElementShortName">wr_data_buf[119:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_data_buf[119:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_wr_data" type="array">
+      <obj_property name="ElementShortName">fifo_wr_data[127:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_data[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_wr_en" type="logic">
+      <obj_property name="ElementShortName">fifo_wr_en</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/data_write_state" type="array">
+      <obj_property name="ElementShortName">data_write_state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_write_state[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_wr_full" type="logic">
+      <obj_property name="ElementShortName">fifo_wr_full</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/rx_enable" type="logic">
+      <obj_property name="ElementShortName">rx_enable</obj_property>
+      <obj_property name="ObjectShortName">rx_enable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_srst" type="logic">
+      <obj_property name="ElementShortName">fifo_srst</obj_property>
+      <obj_property name="ObjectShortName">fifo_srst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_wr_rst_busy" type="logic">
+      <obj_property name="ElementShortName">fifo_wr_rst_busy</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_rst_busy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/fifo_rd_rst_busy" type="logic">
+      <obj_property name="ElementShortName">fifo_rd_rst_busy</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_rst_busy</obj_property>
+   </wvobject>
+</wave_config>

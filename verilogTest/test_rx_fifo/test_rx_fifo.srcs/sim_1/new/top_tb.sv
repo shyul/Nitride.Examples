@@ -4,7 +4,7 @@ module top_tb();
 
 bit aclk = 0, rst_n = 0;
 bit data_clk = 0;
-bit [2:0]   data_format = 3'b100;
+bit [2:0]   data_format = 3'b101;
 
 reg [15:0]      data_i = 256, data_q = 512;
 //bit [127:0]     data_in; //= { 48'h0, data_q, 48'h0, data_i };
@@ -12,7 +12,7 @@ reg [15:0]      data_i = 256, data_q = 512;
 bit             data_ready;
 bit             data_valid = 1;
 bit [7:0]       data_write_state;
-bit             fifo_prog_full;
+bit             fifo_prog_full, fifo_prog_empty;
 bit [127:0]     fifo_rd_data;
 bit             fifo_rd_empty;
 bit             fifo_rd_en;
@@ -33,11 +33,12 @@ top_wrapper DUT (
     .aclk(aclk),
     .aresetn(rst_n),
     .data_clk(data_clk),
-    .data_format(),
+    .data_format(data_format),
     .data_in({ 48'h0, data_q, 48'h0, data_i }),
     .data_ready(data_ready),
     .data_valid(data_valid),
     .data_write_state(data_write_state),
+    .fifo_prog_empty(fifo_prog_empty),
     .fifo_prog_full(fifo_prog_full),
     .fifo_rd_data(fifo_rd_data),
     .fifo_rd_empty(fifo_rd_empty),
@@ -60,20 +61,20 @@ always #2ns data_clk = ~data_clk;
 always #4ns data_q--;
 always #4ns data_i++;
 
-always @(data_ready or fifo_rd_empty) begin
+always @(data_ready or fifo_prog_empty) begin
     if (data_ready & !m_axis_rx_tready) m_axis_rx_tready = 1;
-    else if (m_axis_rx_tready & fifo_rd_empty) m_axis_rx_tready = 0;
+    else if (fifo_prog_empty) m_axis_rx_tready = 0;
 end
 
 initial begin
-    data_format = 3'b100;
+    data_format = 3'b101;
     rst_n = 0;
     rx_enable = 0;
     m_axis_rx_tready = 0;
     #50ns;
     rst_n = 1;
     #50ns;
-    m_axis_rx_tready = 1;
+    //m_axis_rx_tready = 1;
     #20ns;
     rx_enable = 1;
     //#10000ns;

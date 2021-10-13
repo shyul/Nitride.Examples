@@ -1,0 +1,18 @@
+{
+	"version": "1.0",
+	"modules": {
+		"top": {
+			"proto_instances": {
+				"/rx_fifo_axis_0/m_axis_rx": {
+					"interface": "xilinx.com:interface:axis:1.0",
+					"ports": {
+						"ACLK": { "actual": "aclk"},
+						"TDATA": { "actual": "m_axis_rx_tdata"},
+						"TREADY": { "actual": "m_axis_rx_tready"},
+						"TVALID": { "actual": "m_axis_rx_tvalid"}
+					}
+				}
+			}
+		}
+	}
+}

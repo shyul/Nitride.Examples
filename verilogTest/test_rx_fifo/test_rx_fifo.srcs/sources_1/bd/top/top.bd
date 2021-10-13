@@ -1,13 +1,13 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x2BB1CB18D735685B",
+      "boundary_crc": "0x3C0C5790D7C813C9",
       "device": "xczu3cg-sfvc784-1-e",
       "gen_directory": "../../../../test_rx_fifo.gen/sources_1/bd/top",
       "name": "top",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2020.2.2",
+      "tool_version": "2021.1.1",
       "validated": "true"
     },
     "design_tree": {
@@ -17,6 +17,7 @@
     "interface_ports": {
       "m_axis_rx": {
         "mode": "Master",
+        "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
         "vlnv": "xilinx.com:interface:axis_rtl:1.0",
         "parameters": {
           "CLK_DOMAIN": {
@@ -207,6 +208,9 @@
       },
       "fifo_srst": {
         "direction": "O"
+      },
+      "fifo_prog_empty": {
+        "direction": "O"
       }
     },
     "components": {
@@ -216,6 +220,9 @@
         "xci_path": "ip\\top_fifo_generator_0_0\\top_fifo_generator_0_0.xci",
         "inst_hier_path": "fifo_generator_0",
         "parameters": {
+          "Empty_Threshold_Assert_Value": {
+            "value": "256"
+          },
           "Fifo_Implementation": {
             "value": "Independent_Clocks_Builtin_FIFO"
           },
@@ -224,6 +231,9 @@
           },
           "Input_Data_Width": {
             "value": "128"
+          },
+          "Programmable_Empty_Type": {
+            "value": "Single_Programmable_Empty_Threshold_Constant"
           },
           "Programmable_Full_Type": {
             "value": "Single_Programmable_Full_Threshold_Constant"
@@ -240,7 +250,7 @@
         }
       },
       "rx_fifo_axis_0": {
-        "vlnv": "merckgroup.com:user:rx_fifo_axis:1.01",
+        "vlnv": "merckgroup.com:user:rx_fifo_axis:1.02",
         "xci_name": "top_rx_fifo_axis_0_0",
         "xci_path": "ip\\top_rx_fifo_axis_0_0\\top_rx_fifo_axis_0_0.xci",
         "inst_hier_path": "rx_fifo_axis_0"
@@ -255,25 +265,47 @@
       }
     },
     "nets": {
-      "fifo_generator_0_full": {
+      "aclk_1": {
         "ports": [
-          "fifo_generator_0/full",
-          "fifo_wr_full",
-          "rx_fifo_axis_0/fifo_wr_full"
+          "aclk",
+          "rx_fifo_axis_0/aclk"
         ]
       },
-      "rx_fifo_axis_0_fifo_wr_data": {
+      "aresetn_1": {
         "ports": [
-          "rx_fifo_axis_0/fifo_wr_data",
-          "fifo_generator_0/din",
-          "fifo_wr_data"
+          "aresetn",
+          "rx_fifo_axis_0/aresetn"
         ]
       },
-      "rx_fifo_axis_0_fifo_wr_en": {
+      "data_clk_1": {
         "ports": [
-          "rx_fifo_axis_0/fifo_wr_en",
-          "fifo_generator_0/wr_en",
-          "fifo_wr_en"
+          "data_clk",
+          "rx_fifo_axis_0/data_clk"
+        ]
+      },
+      "data_format_1": {
+        "ports": [
+          "data_format",
+          "rx_fifo_axis_0/data_format"
+        ]
+      },
+      "data_in_1": {
+        "ports": [
+          "data_in",
+          "rx_fifo_axis_0/data_in"
+        ]
+      },
+      "data_valid_1": {
+        "ports": [
+          "data_valid",
+          "rx_fifo_axis_0/data_valid"
+        ]
+      },
+      "fifo_generator_0_dout": {
+        "ports": [
+          "fifo_generator_0/dout",
+          "fifo_rd_data",
+          "rx_fifo_axis_0/fifo_rd_data"
         ]
       },
       "fifo_generator_0_empty": {
@@ -283,11 +315,69 @@
           "rx_fifo_axis_0/fifo_rd_empty"
         ]
       },
-      "fifo_generator_0_dout": {
+      "fifo_generator_0_full": {
         "ports": [
-          "fifo_generator_0/dout",
-          "fifo_rd_data",
-          "rx_fifo_axis_0/fifo_rd_data"
+          "fifo_generator_0/full",
+          "fifo_wr_full",
+          "rx_fifo_axis_0/fifo_wr_full"
+        ]
+      },
+      "fifo_generator_0_prog_empty": {
+        "ports": [
+          "fifo_generator_0/prog_empty",
+          "fifo_prog_empty"
+        ]
+      },
+      "fifo_generator_0_prog_full": {
+        "ports": [
+          "fifo_generator_0/prog_full",
+          "fifo_prog_full",
+          "rx_fifo_axis_0/fifo_prog_full"
+        ]
+      },
+      "fifo_generator_0_rd_rst_busy": {
+        "ports": [
+          "fifo_generator_0/rd_rst_busy",
+          "fifo_rd_rst_busy",
+          "rx_fifo_axis_0/fifo_rd_rst_busy"
+        ]
+      },
+      "fifo_generator_0_valid": {
+        "ports": [
+          "fifo_generator_0/valid",
+          "fifo_rd_valid",
+          "rx_fifo_axis_0/fifo_rd_valid"
+        ]
+      },
+      "fifo_generator_0_wr_rst_busy": {
+        "ports": [
+          "fifo_generator_0/wr_rst_busy",
+          "fifo_wr_rst_busy",
+          "rx_fifo_axis_0/fifo_wr_rst_busy"
+        ]
+      },
+      "rx_enable_1": {
+        "ports": [
+          "rx_enable",
+          "rx_fifo_axis_0/rx_enable"
+        ]
+      },
+      "rx_fifo_axis_0_data_ready": {
+        "ports": [
+          "rx_fifo_axis_0/data_ready",
+          "data_ready"
+        ]
+      },
+      "rx_fifo_axis_0_data_write_state": {
+        "ports": [
+          "rx_fifo_axis_0/ila_data_write_state",
+          "data_write_state"
+        ]
+      },
+      "rx_fifo_axis_0_fifo_rd_clk": {
+        "ports": [
+          "rx_fifo_axis_0/fifo_rd_clk",
+          "fifo_generator_0/rd_clk"
         ]
       },
       "rx_fifo_axis_0_fifo_rd_en": {
@@ -310,98 +400,24 @@
           "fifo_generator_0/wr_clk"
         ]
       },
-      "rx_fifo_axis_0_fifo_rd_clk": {
+      "rx_fifo_axis_0_fifo_wr_data": {
         "ports": [
-          "rx_fifo_axis_0/fifo_rd_clk",
-          "fifo_generator_0/rd_clk"
+          "rx_fifo_axis_0/fifo_wr_data",
+          "fifo_generator_0/din",
+          "fifo_wr_data"
         ]
       },
-      "fifo_generator_0_valid": {
+      "rx_fifo_axis_0_fifo_wr_en": {
         "ports": [
-          "fifo_generator_0/valid",
-          "fifo_rd_valid",
-          "rx_fifo_axis_0/fifo_rd_valid"
-        ]
-      },
-      "fifo_generator_0_prog_full": {
-        "ports": [
-          "fifo_generator_0/prog_full",
-          "fifo_prog_full",
-          "rx_fifo_axis_0/fifo_prog_full"
-        ]
-      },
-      "fifo_generator_0_wr_rst_busy": {
-        "ports": [
-          "fifo_generator_0/wr_rst_busy",
-          "fifo_wr_rst_busy",
-          "rx_fifo_axis_0/fifo_wr_rst_busy"
-        ]
-      },
-      "fifo_generator_0_rd_rst_busy": {
-        "ports": [
-          "fifo_generator_0/rd_rst_busy",
-          "fifo_rd_rst_busy",
-          "rx_fifo_axis_0/fifo_rd_rst_busy"
+          "rx_fifo_axis_0/fifo_wr_en",
+          "fifo_generator_0/wr_en",
+          "fifo_wr_en"
         ]
       },
       "rx_fifo_axis_0_wr_data_buf": {
         "ports": [
           "rx_fifo_axis_0/ila_wr_data_buf",
           "wr_data_buf"
-        ]
-      },
-      "rx_fifo_axis_0_data_write_state": {
-        "ports": [
-          "rx_fifo_axis_0/ila_data_write_state",
-          "data_write_state"
-        ]
-      },
-      "rx_fifo_axis_0_data_ready": {
-        "ports": [
-          "rx_fifo_axis_0/data_ready",
-          "data_ready"
-        ]
-      },
-      "aresetn_1": {
-        "ports": [
-          "aresetn",
-          "rx_fifo_axis_0/aresetn"
-        ]
-      },
-      "aclk_1": {
-        "ports": [
-          "aclk",
-          "rx_fifo_axis_0/aclk"
-        ]
-      },
-      "rx_enable_1": {
-        "ports": [
-          "rx_enable",
-          "rx_fifo_axis_0/rx_enable"
-        ]
-      },
-      "data_format_1": {
-        "ports": [
-          "data_format",
-          "rx_fifo_axis_0/data_format"
-        ]
-      },
-      "data_clk_1": {
-        "ports": [
-          "data_clk",
-          "rx_fifo_axis_0/data_clk"
-        ]
-      },
-      "data_valid_1": {
-        "ports": [
-          "data_valid",
-          "rx_fifo_axis_0/data_valid"
-        ]
-      },
-      "data_in_1": {
-        "ports": [
-          "data_in",
-          "rx_fifo_axis_0/data_in"
         ]
       }
     }

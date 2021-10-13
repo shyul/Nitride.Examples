@@ -96,15 +96,15 @@ always_ff @(posedge data_clk) begin : proc_write_fifo
 		fifo_wr_data <= 0;
 		wr_data_buf <= 0;
 		case (data_format)
-			3'h0: begin data_write_state <= 8'd10; end
-			3'h1: begin data_write_state <= 8'd20; end
-			3'h2: begin data_write_state <= 8'd30; end
-			3'h3: begin data_write_state <= 8'd40; end
+			3'b000: begin data_write_state <= 8'd10; end
+			3'b001: begin data_write_state <= 8'd20; end
+			3'b010: begin data_write_state <= 8'd30; end
+			3'b011: begin data_write_state <= 8'd40; end
 			3'b100: begin data_write_state <= 8'd50; end
-			3'h5: begin data_write_state <= 8'd60; end
-			3'h6: begin data_write_state <= 8'd70; end
-			3'h7: begin data_write_state <= 8'd80; end
-			default: begin data_write_state <= 8'd50; end
+			3'b101: begin data_write_state <= 8'd60; end
+			3'b110: begin data_write_state <= 8'd70; end
+			3'b111: begin data_write_state <= 8'd80; end
+			//default: begin data_write_state <= 8'd50; end
 		endcase
 	end else begin
 
