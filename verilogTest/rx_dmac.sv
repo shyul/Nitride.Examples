@@ -15,7 +15,7 @@ module rx_dmac (
 
 	output logic [2:0]		ila_write_state, 
 	output logic [1:0]		ila_write_bresp,
-	output logic			ila_rx_fifo_rden, ila_write_active,
+	output logic			ila_rx_fifo_rden,
 	output logic [31:0]		ila_write_burst_counter,
 	output logic [8:0]		ila_write_index,
 	output logic [31:0]		ila_write_ddr_occupation,
@@ -34,7 +34,7 @@ module rx_dmac (
 	// ============== RX Write DDR =================
 
 	input logic				write_enable,
-	output logic			write_busy,
+	output logic			write_busy, write_active,
 	input logic [47:0]		write_base_address,
 	input logic [31:0]		write_burst_count,
 	input logic [8:0]		write_burst_len, // 16 beats
@@ -42,11 +42,14 @@ module rx_dmac (
 	output reg	[1:0]		write_bresp,
 
 	// Sync signals for Looping + DMA
-	output reg				write_burst_tick, // Interrup source: It ticks each time a burst is happened to notify the host the data is available in the memory.
 	output reg [31:0]		write_total_burst_count,
 	output reg [31:0]		write_current_burst_address,
 	input logic [16:0]		write_access_size_bytes,
 	input logic 			write_access_tick,
+	output reg 				write_access_tick_ack, // make it self clear...
+	output reg				write_burst_tick, // Interrup source: It ticks each time a burst is happened to notify the host the data is available in the memory.
+	output reg 				write_burst_tick_ack,
+	output reg [31:0]		write_ddr_occupation,
 	output reg				write_overflow_ins, // Interrup source: this interrupt will trigger if the packet is tread on. and send an update packet to notify the host for an updated timestamp.
 	output reg [7:0]		write_overflow_count,
 
@@ -59,41 +62,28 @@ module rx_dmac (
 	input logic	[127:0]		s_axis_rx_tdata, // No need strb, because extra sample can be ignore by later analysis. Or use stream mode.
 	input logic				s_axis_rx_tvalid,
 	output logic			s_axis_rx_tready,
-
 	input logic				rx_fifo_data_ready,
+
+	// =============================================
+	// =============================================
+	// =============================================
 
 	// ***** Master Write Address (AW) Channel *****
 	output reg [47:0]		m_axi_awaddr, // Master Interface Write Address
 	output logic [7:0]		m_axi_awlen, // Burst length. The burst length gives the exact number of transfers in a burst
-	output logic [2:0]		m_axi_awsize, // Burst size. This signal indicates the size of each transfer in the burst
-	output logic [1:0]		m_axi_awburst, // Burst type. The burst type and the size information, determine how the address for each transfer within the burst is calculated.
 	output reg				m_axi_awvalid, // Write address valid. This signal indicates that the channel is signaling valid write address and control information.
 	input logic				m_axi_awready, // Write address ready. This signal indicates that the slave is ready to accept an address and associated control signals
-	// [NO USE]=====================================
-	//output logic [0:0]	m_axi_awid, // [NO USE] Master Interface Write Address ID
-	output logic			m_axi_awlock, // [NO USE] Lock type. Provides additional information about the atomic characteristics of the transfer.
-	output logic [3:0]		m_axi_awcache, // [FIXED 4'b0010] Memory type. This signal indicates how transactions are required to progress through a system.
-	output logic [2:0]		m_axi_awprot, // [NO USE] Protection type. This signal indicates the privilege and security level of the transaction, and whether the transaction is a data access or an instruction access.
-	output logic [3:0]		m_axi_awqos, // [NO USE] Quality of Service, QoS identifier sent for each write transaction.
-	// =============================================
 
 	// ******* Master Write Data (W) Channel *******
 	output logic [127:0]	m_axi_wdata,
 	output reg				m_axi_wlast, // Write last. This signal indicates the last transfer in a write burst.
 	output logic			m_axi_wvalid, // Write valid. This signal indicates that valid write data and strobes are available
 	input logic				m_axi_wready, // Write ready. This signal indicates that the slave can accept the write data.
-	// [NO USE]=====================================
-	output logic [15:0]		m_axi_wstrb, // [FIXED 'b1111] Write strobes. This signal indicates which byte lanes hold valid data. There is one write strobe bit for each eight bits of the write data bus.
-	
-	// =============================================
 
 	// ***** Master Write Response (B) Channel *****
 	input logic [1:0]		m_axi_bresp, // Write response. This signal indicates the status of the write transaction.
 	input logic				m_axi_bvalid, // Write response valid. This signal indicates that the channel is signaling a valid write response.
 	output reg				m_axi_bready, // Response ready. This signal indicates that the master can accept a write response.
-	// [NO USE]=====================================
-	//input logic [0:0]		m_axi_bid,
-	// =============================================
 );
 
 wire	clk = aclk; //aclk;
@@ -103,37 +93,6 @@ wire	rst_n = aresetn; //aresetn;
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-
-wire [7:0]		write_burst_len_1 = write_burst_len - 1; // 15;
-wire [7:0]		write_burst_len_2 = write_burst_len - 2; // 14;
-wire [12:0]		write_burst_size_bytes = { write_burst_len, 4'b0000 }; //256;
-
-//assign	m_axi_awid = 'h0;
-assign	m_axi_awlen	= write_burst_len_1;
-assign	m_axi_awsize = 3'h4; //$clog2(DATA_BYTES_COUNT); //clogb2((DATA_WIDTH/8)-1); // Size should be DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
-assign	m_axi_awburst = 2'b01; // INCR burst type is usually used, except for keyhole bursts
-assign	m_axi_awlock = 1'b0;
-assign	m_axi_awcache = 4'b0010; // Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
-assign	m_axi_awprot = 3'h0;
-assign	m_axi_awqos	= 4'h0;
-assign	m_axi_wstrb	= 16'hFFFF;
-
-reg [2:0]	write_state = 0;
-
-wire		rx_fifo_rden = (write_state == 3);
-assign		write_busy = (write_state != 0);
-
-assign		s_axis_rx_tready = rx_fifo_rden ? m_axi_wready : 1'b0;
-assign		m_axi_wvalid = rx_fifo_rden ? s_axis_rx_tvalid : 1'b0;
-assign		m_axi_wdata = s_axis_rx_tdata;
-
-reg [31:0]	write_burst_counter = 0;
-reg [8:0]	write_index = 0;
-wire		write_active = s_axis_rx_tready && m_axi_wvalid;
-
 // *****************************************************************
 // **************************** ILA ********************************
 
@@ -159,21 +118,41 @@ assign	ila_write_state = write_state;
 assign	ila_rx_fifo_rden = rx_fifo_rden;
 assign	ila_write_burst_counter = write_burst_counter;
 assign	ila_write_index = write_index;
-assign	ila_write_active = write_active;
 assign	ila_write_bresp = write_bresp;
 
+assign	ila_write_ddr_occupation = write_ddr_occupation;
+assign	ila_write_burst_tick_ack = write_burst_tick_ack;
+assign	ila_write_access_tick_ack = write_access_tick_ack;
+assign	ila_write_ddr_has_space = write_ddr_has_space;
+assign	ila_write_ddr_full = write_ddr_full;
+
+// *****************************************************************
+// *****************************************************************
+// *****************************************************************
 // *****************************************************************
 
-reg [31:0]	write_ddr_occupation = 0;
-reg 		write_burst_tick_ack = 0, write_access_tick_ack = 0; // make it self clear...
-wire 		write_ddr_has_space = write_ddr_size - write_ddr_occupation > write_burst_size_bytes;
-wire		write_ddr_full = write_ddr_occupation >= write_ddr_size;
+wire [7:0]		write_burst_len_1 = write_burst_len - 1; // 15;
+wire [7:0]		write_burst_len_2 = write_burst_len - 2; // 14;
+wire [12:0]		write_burst_size_bytes = { write_burst_len, 4'b0000 }; //256;
+assign			m_axi_awlen	= write_burst_len_1;
 
-assign		ila_write_ddr_occupation = write_ddr_occupation;
-assign		ila_write_burst_tick_ack = write_burst_tick_ack;
-assign		ila_write_access_tick_ack = write_access_tick_ack;
-assign		ila_write_ddr_has_space = write_ddr_has_space;
-assign		ila_write_ddr_full = write_ddr_full;
+reg [2:0]		write_state = 0;
+reg [31:0]		write_burst_counter = 0;
+reg [8:0]		write_index = 0;
+wire			rx_fifo_rden = (write_state == 3);
+assign	write_busy = (write_state != 0);
+assign	write_active = s_axis_rx_tready && m_axi_wvalid;
+
+assign	s_axis_rx_tready = rx_fifo_rden ? m_axi_wready : 1'b0;
+assign	m_axi_wvalid = rx_fifo_rden ? s_axis_rx_tvalid : 1'b0;
+assign	m_axi_wdata = s_axis_rx_tdata;
+
+wire 			write_ddr_has_space = write_ddr_size - write_ddr_occupation > write_burst_size_bytes;
+wire			write_ddr_full = write_ddr_occupation >= write_ddr_size;
+
+// ---------------------------------------------
+// ***** Master Write Address (AW) Channel *****
+// ---------------------------------------------
 
 always_ff @(posedge clk) begin : proc_write_ddr_occupation
 	if(~rst_n) begin

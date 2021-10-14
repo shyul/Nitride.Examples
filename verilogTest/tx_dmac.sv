@@ -63,16 +63,8 @@ module tx_dmac (
 	// ****** Master Read Address (AR) Channel ******
 	output reg [47:0]		m_axi_araddr, // Read address. This signal indicates the initial address of a read burst transaction.
 	output logic [7:0]		m_axi_arlen, // Burst length. The burst length gives the exact number of transfers in a burst
-	output logic [2:0]		m_axi_arsize, // Burst size. This signal indicates the size of each transfer in the burst
-	output logic [1:0]		m_axi_arburst, // Burst type. The burst type and the size information, determine how the address for each transfer within the burst is calculated.
 	output reg				m_axi_arvalid, // Read address valid. This signal indicates that the channel is signaling valid read address and control information
 	input logic				m_axi_arready, // Read address ready. This signal indicates that the slave is ready to accept an address and associated control signals
-	// [NO USE]======================================
-	output logic			m_axi_arlock, // [NO USE] Lock type. Provides additional information about the atomic characteristics of the transfer.
-	output logic [3:0]		m_axi_arcache, // [FIXED  4'b0010] Memory type. This signal indicates how transactions are required to progress through a system.
-	output logic [2:0]		m_axi_arprot, // [NO USE] Protection type. This signal indicates the privilege and security level of the transaction, and whether the transaction is a data access or an instruction access.
-	output logic [3:0]		m_axi_arqos, // [NO USE] Quality of Service, QoS identifier sent for each read transaction
-	// ==============================================
 
 	// ****** Master Read Data (R) Channel ********
 	input logic [127:0]		m_axi_rdata, // Master Read Data
@@ -92,14 +84,7 @@ wire [7:0]		read_burst_len_1 = read_burst_len - 1; // 15;
 wire [7:0]		read_burst_len_2 = read_burst_len - 2; // 14;
 wire [12:0]		read_burst_size_bytes = { read_burst_len, 4'b0000 }; //256;
 
-//assign	m_axi_arid = 'h0;
 assign		m_axi_arlen = read_burst_len_1;
-assign		m_axi_arsize = 3'h4; //$clog2(DATA_BYTES_COUNT); //clogb2((DATA_WIDTH/8)-1); //Size should be DATA_WIDTH, in 2^n bytes, otherwise narrow bursts are used
-assign		m_axi_arburst = 2'b01; // INCR burst type is usually used, except for keyhole bursts
-assign		m_axi_arlock = 1'b0;
-assign		m_axi_arcache = 4'b0010; // Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
-assign		m_axi_arprot = 3'h0;
-assign		m_axi_arqos = 4'h0;
 
 reg [2:0]	read_state = 0;
 
