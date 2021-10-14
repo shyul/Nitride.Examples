@@ -4,12 +4,12 @@ module data_path_dmac (
 
 	// ****************** ILA IO *******************
 
-	output logic			ila_single_read, ila_m_arready, ila_m_arvalid, ila_m_rready, ila_m_rvalid, ila_m_rlast,
-	output logic			ila_single_write, ila_m_awready, ila_m_awvalid, ila_m_wready, ila_m_wvalid, ila_m_wlast, ila_m_bvalid, ila_m_bready,
-	output logic [1:0]		ila_m_bresp,
-	output logic [47:0]		ila_m_araddr, ila_m_awaddr,
-	output logic [7:0]		ila_m_arlen, ila_m_awlen,
-	output logic [127:0]	ila_m_rdata, ila_m_wdata,
+	output logic			ilamaxi_arready, ilamaxi_arvalid, ilamaxi_rready, ilamaxi_rvalid, ilamaxi_rlast,
+	output logic			ilamaxi_awready, ilamaxi_awvalid, ilamaxi_wready, ilamaxi_wvalid, ilamaxi_wlast, ilamaxi_bvalid, ilamaxi_bready,
+	output logic [1:0]		ilamaxi_bresp,
+	output logic [47:0]		ilamaxi_araddr, ilamaxi_awaddr,
+	output logic [7:0]		ilamaxi_arlen, ilamaxi_awlen,
+	output logic [127:0]	ilamaxi_rdata, ilamaxi_wdata,
 
 	output logic			ila_tx_ready, ila_tx_valid, ila_tx_prog_empty,
 	output logic			ila_rx_ready, ila_rx_valid, ila_rx_fifo_data_ready,
@@ -17,7 +17,7 @@ module data_path_dmac (
 
 	output logic [2:0]		ila_read_state, 
 	output logic [1:0]		ila_read_bresp,
-	output logic			ila_tx_fifo_wren, ila_read_busy, ila_read_active,
+	output logic			ila_tx_fifo_wren, ila_read_active,
 	output logic [32:0]		ila_read_burst_count,
 	output logic [8:0]		ila_read_index,
 	output logic [31:0]		ila_read_ddr_occupation,
@@ -28,7 +28,7 @@ module data_path_dmac (
 
 	output logic [2:0]		ila_write_state, 
 	output logic [1:0]		ila_write_bresp,
-	output logic			ila_rx_fifo_rden, ila_write_busy, ila_write_active,
+	output logic			ila_rx_fifo_rden, ila_write_active,
 	output logic [31:0]		ila_write_burst_counter,
 	output logic [8:0]		ila_write_index,
 	output logic [31:0]		ila_write_ddr_occupation,
@@ -171,36 +171,6 @@ wire	rst_n = aresetn; //aresetn;
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
-// ******************  Initialize Transactions  ********************
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
-
-reg		single_write_trigger = 1'b0, single_write_ff = 1'b0, single_write_ff2 = 1'b0;
-reg		single_read_trigger = 1'b0, single_read_ff = 1'b0, single_read_ff2 = 1'b0;
-
-wire	single_write_pulse = (!single_write_ff2) && single_write_ff;
-wire	rst_or_single_write_pulse = ((!rst_n) || single_write_pulse);
-wire	single_read_pulse = (!single_read_ff2) && single_read_ff;
-wire	rst_or_single_read_pulse = ((!rst_n) || single_read_pulse);
-
-always_ff@(posedge clk) begin
-	if (!rst_n) begin
-		single_write_ff <= 1'b0;
-		single_write_ff2 <= 1'b0;
-		single_read_ff <= 1'b0;
-		single_read_ff2 <= 1'b0;
-	end else begin  
-		single_write_ff <= single_write_trigger;
-		single_write_ff2 <= single_write_ff;
-		single_read_ff <= single_read_trigger;
-		single_read_ff2 <= single_read_ff;
-	end
-end
-
-// *****************************************************************
-// *****************************************************************
-// *****************************************************************
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
@@ -223,7 +193,7 @@ assign	m_axi_wstrb	= 16'hFFFF;
 reg [2:0]	write_state = 0;
 
 wire		rx_fifo_rden = (write_state == 3);
-wire		write_busy = (write_state != 0);
+assign		write_busy = (write_state != 0);
 
 assign		s_axis_rx_tready = rx_fifo_rden ? m_axi_wready : 1'b0;
 assign		m_axi_wvalid = rx_fifo_rden ? s_axis_rx_tvalid : 1'b0;
@@ -237,21 +207,19 @@ wire		write_active = s_axis_rx_tready && m_axi_wvalid;
 // *****************************************************************
 // **************************** ILA ********************************
 
-assign	ila_single_write = single_write_pulse;
+assign	ilamaxi_awready = m_axi_awready;
+assign	ilamaxi_awvalid = m_axi_awvalid;
+assign	ilamaxi_awaddr = m_axi_awaddr;
+assign	ilamaxi_awlen = m_axi_awlen;
 
-assign	ila_m_awready = m_axi_awready;
-assign	ila_m_awvalid = m_axi_awvalid;
-assign	ila_m_awaddr = m_axi_awaddr;
-assign	ila_m_awlen = m_axi_awlen;
+assign	ilamaxi_wready = m_axi_wready;
+assign	ilamaxi_wvalid = m_axi_wvalid;
+assign	ilamaxi_wdata = m_axi_wdata;
+assign	ilamaxi_wlast = m_axi_wlast;
 
-assign	ila_m_wready = m_axi_wready;
-assign	ila_m_wvalid = m_axi_wvalid;
-assign	ila_m_wdata = m_axi_wdata;
-assign	ila_m_wlast = m_axi_wlast;
-
-assign	ila_m_bvalid = m_axi_bvalid;
-assign	ila_m_bready = m_axi_bready;
-assign	ila_m_bresp = m_axi_bresp;
+assign	ilamaxi_bvalid = m_axi_bvalid;
+assign	ilamaxi_bready = m_axi_bready;
+assign	ilamaxi_bresp = m_axi_bresp;
 
 assign	ila_rx_ready = s_axis_rx_tready;
 assign	ila_rx_valid = s_axis_rx_tvalid;
@@ -259,7 +227,6 @@ assign	ila_rx_data = s_axis_rx_tdata;
 
 assign	ila_write_state = write_state;
 assign	ila_rx_fifo_rden = rx_fifo_rden;
-assign	ila_write_busy = write_busy; // AXI_S_ reg indicator only...
 assign	ila_write_burst_counter = write_burst_counter;
 assign	ila_write_index = write_index;
 assign	ila_write_active = write_active;
@@ -477,7 +444,7 @@ assign		m_axi_arqos = 4'h0;
 reg [2:0]	read_state = 0;
 
 wire		tx_fifo_wren = (read_state == 3);
-wire		read_busy = (read_state != 0);
+assign		read_busy = (read_state != 0);
 
 assign		m_axi_rready = tx_fifo_wren ? m_axis_tx_tready : 1'b0;
 assign		m_axis_tx_tvalid = tx_fifo_wren ? m_axi_rvalid : 1'b0;
@@ -491,17 +458,15 @@ reg	[1:0]	read_bresp;
 // *****************************************************************
 // **************************** ILA ********************************
 
-assign	ila_single_read = single_read_pulse;
+assign	ilamaxi_arready = m_axi_arready;
+assign	ilamaxi_arvalid = m_axi_arvalid;
+assign	ilamaxi_araddr = m_axi_araddr;
+assign	ilamaxi_arlen = m_axi_arlen;
 
-assign	ila_m_arready = m_axi_arready;
-assign	ila_m_arvalid = m_axi_arvalid;
-assign	ila_m_araddr = m_axi_araddr;
-assign	ila_m_arlen = m_axi_arlen;
-
-assign	ila_m_rready = m_axi_rready;
-assign	ila_m_rvalid = m_axi_rvalid;
-assign	ila_m_rdata = m_axi_rdata;
-assign	ila_m_rlast = m_axi_rlast;
+assign	ilamaxi_rready = m_axi_rready;
+assign	ilamaxi_rvalid = m_axi_rvalid;
+assign	ilamaxi_rdata = m_axi_rdata;
+assign	ilamaxi_rlast = m_axi_rlast;
 
 assign	ila_tx_ready = m_axis_tx_tready;
 assign	ila_tx_valid = m_axis_tx_tvalid;
@@ -509,7 +474,6 @@ assign	ila_tx_data = m_axis_tx_tdata;
 
 assign	ila_read_state = read_state;
 assign	ila_tx_fifo_wren = tx_fifo_wren;
-assign	ila_read_busy = read_busy;
 assign	ila_read_burst_count = read_burst_count;
 assign	ila_read_index = read_index;
 assign	ila_read_active = read_active;
