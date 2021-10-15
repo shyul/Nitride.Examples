@@ -2,6 +2,8 @@
 
 module rx_dmac (
 
+	// Looping challenge: Buffer overflows due to slow USB 3.0 transfer to the host.
+
 	// ****************** ILA IO *******************
 
 	output logic			debug_awready, debug_awvalid, debug_wready, debug_wvalid, debug_wlast, debug_bvalid, debug_bready,
@@ -13,7 +15,6 @@ module rx_dmac (
 	output logic			debug_rx_ready, debug_rx_valid, debug_rx_fifo_data_ready,
 	output logic [127:0]	debug_rx_data,
 
-	output logic [31:0]		ila_write_burst_counter,
 
 	// =============================================
 	// =============================================
@@ -24,43 +25,52 @@ module rx_dmac (
 	// =============================================
 	// ============== RX Write DDR =================
 
-	input logic				write_enable,
-	output logic			write_busy, write_active,
-	input logic [47:0]		write_base_address,
-	input logic [31:0]		write_burst_count,
-	input logic [8:0]		write_burst_len, // 16 beats
-	input logic [31:0]		write_ddr_size,
+	// ---- General Control ----
+
+	input logic				write_enable,					// Keep the loop running when set
+	output reg [2:0]		write_state,					// Used for more sophisiticated detection: burst_counter >= burst_count_set => write_enable == 1'b0
 	output reg [1:0]		write_bresp,
-	output reg [2:0]		write_state,
-	output reg [8:0]		write_index,
-	// Sync signals for Looping + DMA
-	output reg [31:0]		write_total_burst_count,
-	output reg [31:0]		write_current_burst_address,
-	input logic [16:0]		write_access_size_bytes,
-	input logic 			write_access_tick,
-	output reg 				write_access_tick_ack, // make it self clear...
-	output reg				write_burst_tick, // Interrup source: It ticks each time a burst is happened to notify the host the data is available in the memory.
-	output reg 				write_burst_tick_ack,
-	output reg [31:0]		write_ddr_occupation,
-	output logic			write_ddr_has_space,
-	output logic			write_ddr_full,
-	output reg				write_overflow_ins, // Interrup source: this interrupt will trigger if the packet is tread on. and send an update packet to notify the host for an updated timestamp.
-	output reg [7:0]		write_overflow_count,
+
+	// -------- Buffer Setting -------- (from DDR to USB interface, OUT)
+
+	input logic [47:0]		buffer_base_address,			// ** Setting ** Base address in the DDR
+	input logic [31:0]		buffer_size,					// ** Setting ** Buffer size in the DDR, = burst_count_set * burst_length_set * 16 (128 bit data)
+
+	input logic [16:0]		buffer_packet_size_bytes,		// ** Setting ** Size of each DMA transfer
+	input logic 			buffer_packet_tick,				// ** Proc ** Strobe this bit after each (DMA) transfer from the Buffer
+	output reg 				buffer_packet_tick_ack, 		// ** Proc ** clear buffer_packet_tick when this bit goes high. Non-self-clear bit
+
+	output reg [31:0]		buffer_occupation,				// ** debug and status only **
+	output logic			buffer_full,					// ** debug and status only **
+	output logic			buffer_empty,					// ** Proc ** Check this bit before and DMA transfer. from PS side
+	output reg				buffer_overflow, 				// ** debug and status only ** TODO: check how overflow recovers: 1. Tread over; 2. Stop until the full flag is cleared.
+	output reg [31:0]		buffer_overflow_count,			// ** debug and status only ** Showing total amount of 
+
+	// -------- Burst Setting --------
+
+	input logic [31:0]		burst_count_set,				// ** Setting ** Total burst count
+	input logic [8:0]		burst_length_set,				// ** Setting ** 16 beats by default, upto 256 beats
+
+	output reg [31:0]		burst_count_total,				// ** debug and status only **
+	output reg [31:0]		burst_counter,					// ** debug and status only **
+	output reg [31:0]		burst_current_address,			// ** debug and status only **
+	output reg				burst_tick, 					// ** debug and status only ** Tick each time before each burst starts, and buffer occupation will increase
+	output reg 				burst_tick_ack,					// ** debug and status only **
+
+	output reg [8:0]		burst_index,					// ** debug and status only **
+	output logic			burst_write_active,				// ** debug and status only ** When set, one beat of data is strobed
 
 	// ********************************************
-	// ********************************************
 	// ************ RX (Write Ch) FIFO ************
-	// ********************************************
 	// ********************************************
 
 	input logic	[127:0]		s_axis_rx_tdata, // No need strb, because extra sample can be ignore by later analysis. Or use stream mode.
 	input logic				s_axis_rx_tvalid,
 	output logic			s_axis_rx_tready,
 	input logic				rx_fifo_data_ready,
-	output logic			rx_fifo_rden,
 
 	// =============================================
-	// =============================================
+	// ************ AXI Master ************
 	// =============================================
 
 	// ***** Master Write Address (AW) Channel *****
@@ -81,55 +91,51 @@ module rx_dmac (
 	output reg				m_axi_bready // Response ready. This signal indicates that the master can accept a write response.
 );
 
-wire	clk = aclk; //aclk;
-wire	rst_n = aresetn; //aresetn;
+wire	clk = aclk;
+wire	rst_n = aresetn;
 
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
 // *****************************************************************
 
-wire [7:0]		write_burst_len_1 = write_burst_len - 1; // 15;
-wire [7:0]		write_burst_len_2 = write_burst_len - 2; // 14;
-wire [12:0]		write_burst_size_bytes = { write_burst_len, 4'b0000 }; //256;
-assign			m_axi_awlen	= write_burst_len_1;
+wire [7:0]		burst_length_set_1 = burst_length_set - 1; // 15;
+wire [7:0]		burst_length_set_2 = burst_length_set - 2; // 14;
+wire [12:0]		write_burst_size_bytes = { burst_length_set, 4'b0000 }; //256;
+assign			m_axi_awlen	= burst_length_set_1;
 
-reg [31:0]		write_burst_counter = 0;
+assign	burst_write_active = s_axis_rx_tready && m_axi_wvalid;
 
-assign	rx_fifo_rden = (write_state == 3);
-assign	write_busy = (write_state != 0);
-assign	write_active = s_axis_rx_tready && m_axi_wvalid;
-
-assign	s_axis_rx_tready = rx_fifo_rden ? m_axi_wready : 1'b0;
-assign	m_axi_wvalid = rx_fifo_rden ? s_axis_rx_tvalid : 1'b0;
+assign	s_axis_rx_tready = write_state == 3 ? m_axi_wready : 1'b0;
+assign	m_axi_wvalid = write_state == 3 ? s_axis_rx_tvalid : 1'b0;
 assign	m_axi_wdata = s_axis_rx_tdata;
 
-assign	write_ddr_has_space = write_ddr_size - write_ddr_occupation > write_burst_size_bytes;
-assign	write_ddr_full = write_ddr_occupation >= write_ddr_size;
+assign	buffer_full = buffer_occupation > buffer_size - write_burst_size_bytes;
+assign	buffer_empty = buffer_occupation < buffer_packet_size_bytes;
 
 // ---------------------------------------------
 // ***** Master Write Address (AW) Channel *****
 // ---------------------------------------------
 
-always_ff @(posedge clk) begin : proc_write_ddr_occupation
+always_ff @(posedge clk) begin : proc_buffer_occupation
 	if(~rst_n) begin
-		write_ddr_occupation <= 0;
-		write_burst_tick_ack <= 1'b0;
-		write_access_tick_ack <= 1'b0;
+		buffer_occupation <= 0;
+		burst_tick_ack <= 1'b0;
+		buffer_packet_tick_ack <= 1'b0;
 	end else begin
-		if (write_burst_tick && ~write_burst_tick_ack) begin
-			write_ddr_occupation <= write_ddr_occupation + write_burst_size_bytes; // 256 in this case.
-			write_burst_tick_ack <= 1'b1;
-		end else if (~write_burst_tick) begin
-			write_burst_tick_ack <= 1'b0;
-		end else if (write_access_tick && ~write_access_tick_ack && write_ddr_occupation >= write_access_size_bytes) begin
-			write_ddr_occupation <= write_ddr_occupation - write_access_size_bytes; // 65536 maybe...
-			write_access_tick_ack <= 1'b1;
-		end else if (~write_access_tick) begin
-			write_access_tick_ack <= 1'b0;
+		if (burst_tick && ~burst_tick_ack) begin
+			buffer_occupation <= buffer_occupation + write_burst_size_bytes; // 256 in this case.
+			burst_tick_ack <= 1'b1;
+		end else if (~burst_tick) begin
+			burst_tick_ack <= 1'b0;
+		end else if (buffer_packet_tick && ~buffer_packet_tick_ack && buffer_occupation >= buffer_packet_size_bytes) begin
+			buffer_occupation <= buffer_occupation - buffer_packet_size_bytes; // 65536 maybe...
+			buffer_packet_tick_ack <= 1'b1;
+		end else if (~buffer_packet_tick) begin
+			buffer_packet_tick_ack <= 1'b0;
 		end
 	end
-end : proc_write_ddr_occupation
+end : proc_buffer_occupation
 
 // ---------------------------------------------
 // ***** Master Write Address (AW) Channel *****
@@ -148,19 +154,18 @@ always_ff @(posedge clk) begin : proc_write
 	if(~rst_n) begin
 
 		write_state <= 0;
-		m_axi_awaddr <= write_base_address;
+		write_bresp <= 0;
+		buffer_overflow <= 1'b0;
+		buffer_overflow_count <= 0;
+		burst_count_total <= 0;
+		burst_counter <= 0;
+		burst_current_address <= buffer_base_address[31:0];
+		burst_tick <= 1'b0;
+		burst_index <= 0;
+		m_axi_awaddr <= buffer_base_address;
 		m_axi_awvalid <= 1'b0;
-		write_index <= 0;
 		m_axi_wlast <= 1'b0;
 		m_axi_bready <= 1'b0;
-		write_bresp <= 0;
-
-		write_total_burst_count <= 0;
-		write_burst_counter <= 0;
-		write_burst_tick <= 1'b0;
-		write_current_burst_address <= write_base_address[31:0];
-		write_overflow_ins <= 1'b0;
-		write_overflow_count <= 0;
 
 	end else begin
 
@@ -168,58 +173,58 @@ always_ff @(posedge clk) begin : proc_write
 
 			0: begin // IDLE, CHECK, AND RESET BASE ADDRESS State
 
-				write_index <= 0;
+				write_bresp <= 0;
+				buffer_overflow <= 1'b0;
+				burst_counter <= 0;
+				burst_current_address <= buffer_base_address[31:0];
+				burst_tick <= 1'b0;
+				burst_index <= 0;
+				m_axi_awaddr <= buffer_base_address;
+				m_axi_awvalid <= 1'b0;
 				m_axi_wlast <= 1'b0;
 				m_axi_bready <= 1'b0;
-				m_axi_awvalid <= 1'b0;
-				m_axi_awaddr <= write_base_address;
-				write_current_burst_address <= write_base_address[31:0];
-				write_burst_counter <= 0; // Burst Counter in a single loop resets here.
-				write_burst_tick <= 1'b0;
-				write_overflow_ins <= 1'b0;
-				write_overflow_count <= 0;
-				write_bresp <= 0;
 
 				if (write_enable) begin 
 					write_state <= 1;
 				end else begin
-					write_total_burst_count <= 0;
-					write_overflow_count <= 0;
+					write_state <= 0;
+					burst_count_total <= 0;
+					buffer_overflow_count <= 0;
 				end
 			end
 
 			1: begin // Verify FIFO depth, and strobe the address into AW
 
-				write_index <= 0;
+				burst_index <= 0;
 				m_axi_wlast <= 1'b0;
 				m_axi_bready <= 1'b0;
 
-				if (rx_fifo_data_ready && write_ddr_has_space) begin
+				if (rx_fifo_data_ready && !buffer_full) begin
 					m_axi_awvalid <= 1'b1; // Strobe Address Here
-					write_burst_tick <= 1'b1;
-					write_current_burst_address <= m_axi_awaddr[31:0];
+					burst_tick <= 1'b1;
+					burst_current_address <= m_axi_awaddr[31:0];
 					write_state <= 2;
 				end else begin
 					m_axi_awvalid <= 1'b0;
-					write_burst_tick <= 1'b0;
+					burst_tick <= 1'b0;
 				end
 
-				if (write_ddr_full & write_total_burst_count > 0) begin
-					write_overflow_ins <= 1'b1;
-					write_overflow_count <= write_overflow_count + 1;
+				if (buffer_full & burst_count_total > 0) begin
+					buffer_overflow <= 1'b1;
+					buffer_overflow_count <= buffer_overflow_count + 1;
 				end else begin
-					write_overflow_ins <= 1'b0;
+					buffer_overflow <= 1'b0;
 				end
 
             end
 
 			2: begin // Write Address (AW)
 
-				write_index <= 0;
+				burst_index <= 0;
 				m_axi_wlast <= 1'b0;
 				m_axi_bready <= 1'b0;
-				write_overflow_ins <= 1'b0;
-				write_burst_tick <= 1'b0;
+				buffer_overflow <= 1'b0;
+				burst_tick <= 1'b0;
 
 				if (m_axi_awready) begin // When it responses
 					m_axi_awvalid <= 1'b0;
@@ -233,18 +238,18 @@ always_ff @(posedge clk) begin : proc_write
 
 			3: begin // Burst Write Beats (W)
 
-				write_burst_tick <= 1'b0;
+				burst_tick <= 1'b0;
 
-				if (write_active && write_index < write_burst_len_1)  // Max possilbe write_index is 15;
-					write_index <= write_index + 1;
+				if (burst_write_active && burst_index < burst_length_set_1)  // Max possilbe burst_index is 15;
+					burst_index <= burst_index + 1;
 
-				if (write_active)
-					if ((write_index == write_burst_len_2 && write_burst_len > 1) || write_burst_len == 1)
+				if (burst_write_active)
+					if ((burst_index == burst_length_set_2 && burst_length_set > 1) || burst_length_set == 1)
 						m_axi_wlast <= 1'b1;
 					else if (m_axi_wlast) begin
 						m_axi_wlast <= 1'b0;
-						write_burst_counter <= write_burst_counter + 1;
-						write_total_burst_count <= write_total_burst_count + 1;
+						burst_counter <= burst_counter + 1;
+						burst_count_total <= burst_count_total + 1;
 						m_axi_bready <= 1'b1;
 						write_state <= 4;
 					end
@@ -253,13 +258,13 @@ always_ff @(posedge clk) begin : proc_write
 
 			4: begin // Write Response (B)
 
-				write_burst_tick <= 1'b0;
+				burst_tick <= 1'b0;
 
 				if (m_axi_bvalid) begin
 					m_axi_bready <= 1'b0;
 					write_bresp <= m_axi_bresp;
 
-					if (write_burst_counter < write_burst_count && !m_axi_bresp[1] && write_enable) begin
+					if (burst_counter < burst_count_set && !m_axi_bresp[1] && write_enable) begin
 						write_state <= 1;
 					end else
 						write_state <= 0;
@@ -270,16 +275,18 @@ always_ff @(posedge clk) begin : proc_write
 			default: begin
 
 				write_state <= 0;
-				write_index <= 0;
+				write_bresp <= 0;
+				buffer_overflow <= 1'b0;
+				buffer_overflow_count <= 0;
+				burst_count_total <= 0;
+				burst_counter <= 0;
+				burst_current_address <= buffer_base_address[31:0];
+				burst_tick <= 1'b0;
+				burst_index <= 0;
+				m_axi_awaddr <= buffer_base_address;
+				m_axi_awvalid <= 1'b0;
 				m_axi_wlast <= 1'b0;
 				m_axi_bready <= 1'b0;
-				m_axi_awvalid <= 1'b0;
-				m_axi_awaddr <= write_base_address;
-				write_current_burst_address <= write_base_address[31:0];
-				write_burst_counter <= 0; // Burst Counter in a single loop resets here.
-				write_overflow_ins <= 1'b0;
-				write_total_burst_count <= 0;
-				write_overflow_count <= 0;
 
 			end
 
@@ -312,7 +319,6 @@ assign	debug_bresp = m_axi_bresp;
 assign	debug_rx_ready = s_axis_rx_tready;
 assign	debug_rx_valid = s_axis_rx_tvalid;
 assign	debug_rx_data = s_axis_rx_tdata;
-
-assign	ila_write_burst_counter = write_burst_counter;
+assign	debug_rx_fifo_data_ready = rx_fifo_data_ready;
 
 endmodule : rx_dmac
