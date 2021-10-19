@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>tidalloft.com</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>fifo_read_test</spirit:name>
+  <spirit:version>1.04</spirit:version>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
+        <spirit:displayName>Synthesis</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>fifo_read_test</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagesynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>9a73a8a9</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
+        <spirit:displayName>Simulation</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>fifo_read_test</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>9a73a8a9</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>f64a5dae</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>read_clk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>reset</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>fifo_data</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">63</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>wdata_0</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">15</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>wdata_1</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">15</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>wdata_2</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">15</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>wdata_3</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">15</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>burst_ready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>rd_en</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>maxi_valid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>state</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>read_cnt</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">8</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>wait_cnt</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">8</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+  </spirit:model>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/fifo_read_test.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_9a73a8a9</spirit:userFileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/fifo_read_test.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/fifo_read_test_v1_04.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_f64a5dae</spirit:userFileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>fifo_read_test_v1_0</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">fifo_read_test_v1_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Production">virtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qvirtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">versal</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">akintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qzynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">azynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">spartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aspartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexu</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynquplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplusHBM</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus58g</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexu</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>/Tidalloft</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>fifo_read_test_v1_0</xilinx:displayName>
+      <xilinx:definitionSource>package_project</xilinx:definitionSource>
+      <xilinx:coreRevision>1</xilinx:coreRevision>
+      <xilinx:upgrades>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:fifo_read_test:1.0</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:fifo_read_test:1.01</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:fifo_read_test:1.02</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:fifo_read_test:1.03</xilinx:canUpgradeFrom>
+      </xilinx:upgrades>
+      <xilinx:coreCreationDateTime>2021-10-07T03:30:30Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@291c2a72_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@64b538f9_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@b7c95fb_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@75867719_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5e242bb6_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@394e115d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@318c8b81_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4234ee9c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@357497b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3621d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2834331_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1c47b01d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@314b54ad_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4a16f355_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4a85d840_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@557a0d31_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6158f162_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1753e94a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2cb772ff_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@766d6185_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2f9ed101_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@71ab41bc_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@368e3d8_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5b809dd1_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1818c578_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@316a82e6_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@22761ce7_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@25c8e20b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@29dfed5b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4e65009a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@67ee23c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@77a1e264_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3a5a1738_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4c6d32c3_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@51fcbeed_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@758ab65f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@556662a2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@402d1e22_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@13f92258_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1aaba92f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@40c311d9_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1e133d42_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6aa3e1b4_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4cd03b9d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@336f6ff2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2f257579_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1994ef39_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@25c63055_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7407d4ad_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3337bad8_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5d541d6c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5ada79de_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1a7145c3_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4989a30f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4854e922_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@27a98a22_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@10bb9919_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@dde1bda_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7d393de0_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5e78c9d2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1242037d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6704da95_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@39f0c68f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@43621e18_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@45421929_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6927d0f0_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@46932459_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@32faf725_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6ae4104_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@13e11bbf_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@193d94e7_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@72c60f28_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7ea2d19f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6b0a4688_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@874574f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3542b265_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@483ff262_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/fifo_read_test</xilinx:tag>
+      </xilinx:tags>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2021.1.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="45d81bd9"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="3e8682be"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="ec39b5e6"/>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>

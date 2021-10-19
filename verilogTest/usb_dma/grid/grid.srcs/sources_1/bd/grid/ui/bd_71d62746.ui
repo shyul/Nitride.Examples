@@ -1,0 +1,42 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"1.0",
+   "Default View_TopLeft":"-359,-357",
+   "ExpandedHierarchyInLayout":"",
+   "PinnedBlocks":"/tungsten_mpsoc|",
+   "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:10.0 non-TLS
+#  -string -flagsOSRD
+preplace port port-id_pl_reset_b -pg 1 -lvl 5 -x 1460 -y 30 -defaultsOSRD
+preplace port port-id_pl_clk_100MHz -pg 1 -lvl 5 -x 1460 -y 50 -defaultsOSRD
+preplace inst tungsten_mpsoc -pg 1 -lvl 1 -x 20 -y 170 -defaultsOSRD
+preplace inst axi_fifo_mm_s_0 -pg 1 -lvl 4 -x 1250 -y 270 -defaultsOSRD
+preplace inst tungsten_mpsoc_axi_periph -pg 1 -lvl 3 -x 850 -y 190 -defaultsOSRD
+preplace inst rst_tungsten_mpsoc_100M -pg 1 -lvl 2 -x 510 -y 310 -defaultsOSRD
+preplace inst xlslice_0 -pg 1 -lvl 2 -x 510 -y 170 -defaultsOSRD
+preplace inst ila_0 -pg 1 -lvl 4 -x 1250 -y 540 -defaultsOSRD
+preplace inst rxd_ctrl_0 -pg 1 -lvl 3 -x 850 -y 560 -defaultsOSRD
+preplace netloc axi_fifo_mm_s_0_axi_str_rxd_tready 1 3 1 1020 260n
+preplace netloc axi_fifo_mm_s_0_interrupt 1 0 5 -280 420 NJ 420 NJ 420 N 420 1440
+preplace netloc rst_tungsten_mpsoc_100M_peripheral_aresetn 1 2 2 700 360 N
+preplace netloc rxd_ctrl_0_axi_str_tdata 1 3 1 1010 220n
+preplace netloc rxd_ctrl_0_axi_str_tlast 1 3 1 1030 240n
+preplace netloc rxd_ctrl_0_axi_str_tvalid 1 3 1 1040 280n
+preplace netloc rxd_ctrl_0_keyhole_addr 1 3 1 1060 320n
+preplace netloc rxd_ctrl_0_state 1 3 1 N 600
+preplace netloc tungsten_mpsoc_emio_gpio_o 1 1 1 330 150n
+preplace netloc tungsten_mpsoc_pl_clk0 1 0 4 -290 290 330 410 690 340 1050
+preplace netloc tungsten_mpsoc_pl_clk1 1 1 4 320 50 NJ 50 N 50 NJ
+preplace netloc tungsten_mpsoc_pl_resetn0 1 1 4 340 30 N 30 N 30 N
+preplace netloc xlslice_0_Dout 1 2 2 680 440 1000
+preplace netloc tungsten_mpsoc_M_AXI_HPM0_LPD 1 1 2 NJ 110 N
+preplace netloc tungsten_mpsoc_axi_periph_M00_AXI 1 3 1 N 180
+preplace netloc tungsten_mpsoc_axi_periph_M01_AXI 1 3 1 1060 200n
+levelinfo -pg 1 -310 20 510 850 1250 1460
+pagesize -pg 1 -db -bbox -sgen -310 -910 1610 3630
+"
+}
+{
+   "da_axi4_cnt":"3",
+   "da_board_cnt":"1",
+   "da_clkrst_cnt":"2"
+}

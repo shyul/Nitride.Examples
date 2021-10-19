@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>tidalloft.com</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>ad9643_data_adapter</spirit:name>
+  <spirit:version>1.012</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>m_axis</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>m_axis_tdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>m_axis_tvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>m_axis_tready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>aresetn</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>RST</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>aresetn</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>POLARITY</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.ARESETN.POLARITY" spirit:choiceRef="choice_list_9d8b0d81">ACTIVE_LOW</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>aclk</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>CLK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>aclk</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_BUSIF</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.ACLK.ASSOCIATED_BUSIF">m_axis</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
+        <spirit:displayName>Synthesis</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>ad9643_data_adapter</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagesynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>ef7dcb5a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
+        <spirit:displayName>Simulation</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>ad9643_data_adapter</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>ef7dcb5a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>f64a5dae</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>aclk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>aresetn</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_dco_p</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_dco_n</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_data_p</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">14</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_data_n</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">14</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>sample_count</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">31</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic unsigned</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>start_trigger</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>start_trigger_ack</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>sample_counter</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">31</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg unsigned</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>sample_state</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">1</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg unsigned</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_clk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_data_out_1</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">14</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_data_out_2</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">14</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_or_1</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_or_2</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>m_axis_tdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">127</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>m_axis_tvalid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>m_axis_tready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="long">1</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+  </spirit:model>
+  <spirit:choices>
+    <spirit:choice>
+      <spirit:name>choice_list_9d8b0d81</spirit:name>
+      <spirit:enumeration>ACTIVE_HIGH</spirit:enumeration>
+      <spirit:enumeration>ACTIVE_LOW</spirit:enumeration>
+    </spirit:choice>
+  </spirit:choices>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/ad9643_data_adapter.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_ef7dcb5a</spirit:userFileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/ad9643_data_adapter.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/ad9643_data_adapter_v1_012.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_f64a5dae</spirit:userFileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>ad9643_data_adapter_v1_0</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">ad9643_data_adapter_v1_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Production">virtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qvirtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">versal</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">akintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qzynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">azynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">spartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aspartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexu</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynquplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplusHBM</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus58g</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexu</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>/Tidalloft</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>ad9643_data_adapter_v1_0</xilinx:displayName>
+      <xilinx:definitionSource>package_project</xilinx:definitionSource>
+      <xilinx:coreRevision>1</xilinx:coreRevision>
+      <xilinx:upgrades>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:ad9643_data_adapter:1.0</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:ad9643_data_adapter:1.01</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:ad9643_data_adapter:1.011</xilinx:canUpgradeFrom>
+      </xilinx:upgrades>
+      <xilinx:coreCreationDateTime>2021-10-18T23:37:44Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2c6b38f3_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@459cfca1_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1b40c853_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@9c6fb1e_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3d3fac62_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2e9f063_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@600dd375_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@94aa1ee_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1b7f2178_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@317f5664_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5364a4c6_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2ae3ff4e_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@43c22d1a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@750793f2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@652e4135_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3905d998_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f184447_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7b970f1f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4eeb8817_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@346b15e5_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5191ea89_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1f31d473_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f823206_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@26c866bf_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@38441cf2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2a07b67a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@70db135b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4000e131_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6474f62e_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@163e1c39_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7ae9447c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1532a3ca_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1cc0a1_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@23c6cda0_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@ec0bd6b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@51406728_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4d15e718_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@53a76e9c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@47021dfa_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6dff99d4_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@75f144e2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@e782cf0_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@c392a32_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@26f98701_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4d802889_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f8e44ee_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@58fffb67_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@75be95f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4c9386b7_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@ac2f0_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@23c4039b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2746627e_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@34f58015_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@57c41350_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@58951012_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2a3ea710_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/ad9643_data_adapter</xilinx:tag>
+      </xilinx:tags>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2021.1.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="b862e60b"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ad1197c2"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="791eab5b"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="39c5cddf"/>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>

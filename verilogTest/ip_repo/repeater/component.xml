@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>tidalloft.com</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>repeater</spirit:name>
+  <spirit:version>1.02</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>clk</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>CLK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>clk</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_RESET</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_RESET">resetn</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>resetn</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>RST</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>resetn</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>POLARITY</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.RESETN.POLARITY" spirit:choiceRef="choice_list_74b5137e">ACTIVE_LOW</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
+        <spirit:displayName>Synthesis</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>repeater</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagesynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>19a8675a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
+        <spirit:displayName>Simulation</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>repeater</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>19a8675a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>f64a5dae</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>clk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>resetn</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>enable_in</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>enable</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+  </spirit:model>
+  <spirit:choices>
+    <spirit:choice>
+      <spirit:name>choice_list_74b5137e</spirit:name>
+      <spirit:enumeration>ACTIVE_HIGH</spirit:enumeration>
+      <spirit:enumeration>ACTIVE_LOW</spirit:enumeration>
+    </spirit:choice>
+  </spirit:choices>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/repeater.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_19a8675a</spirit:userFileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/repeater.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/repeater_v1_02.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_f64a5dae</spirit:userFileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>repeater_v1_0</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">repeater_v1_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Production">virtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qvirtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">versal</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">akintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qzynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">azynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">spartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aspartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexu</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynquplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplusHBM</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus58g</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexu</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>/Tidalloft</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>repeater_v1_0</xilinx:displayName>
+      <xilinx:definitionSource>package_project</xilinx:definitionSource>
+      <xilinx:vendorDisplayName>Tidalloft</xilinx:vendorDisplayName>
+      <xilinx:coreRevision>1</xilinx:coreRevision>
+      <xilinx:upgrades>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:repeater:1.0</xilinx:canUpgradeFrom>
+      </xilinx:upgrades>
+      <xilinx:coreCreationDateTime>2021-10-02T20:03:18Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6e90ea35_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@68d1d1ca_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@151804c3_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@79355578_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4513f770_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@41cdaaf_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3c18fe18_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@735e0a04_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@652acdb9_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@20a3ac56_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@77b309d7_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@339c85b8_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7d068c5a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4622d879_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7f50be5c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@36be3e1f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@28a058fa_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@40efa599_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@625cabb4_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5b31e305_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@58972e2a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2ef19b02_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1e6e1af8_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3c034b62_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3ccd26d3_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3f4706a8_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@273a4fcf_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@86f03dc_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6ed37054_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@15e44dd1_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6abd3b5d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2be92213_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid/ip_repo/repeater</xilinx:tag>
+      </xilinx:tags>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2021.1.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="d7076b07"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="efe133fb"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="347b741f"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="b9123238"/>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>

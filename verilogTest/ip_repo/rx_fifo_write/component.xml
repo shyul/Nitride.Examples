@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>tidalloft.com</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>rx_fifo_write</spirit:name>
+  <spirit:version>1.021</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>s_axis</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>s_axis_tdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>s_axis_tvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>s_axis_tready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>data_clk</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>CLK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>data_clk</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_BUSIF</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.DATA_CLK.ASSOCIATED_BUSIF">s_axis</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
+        <spirit:displayName>Synthesis</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>rx_fifo_write</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagesynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>d9809438</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
+        <spirit:displayName>Simulation</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>SystemVerilog</spirit:language>
+        <spirit:modelName>rx_fifo_write</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>d9809438</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>f64a5dae</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>data_clk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>data_enable</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>data_format</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">2</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>fifo_srst</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>fifo_wr_rst_busy</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>fifo_full</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>fifo_din</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">127</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>fifo_wr_en</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="bitString" spirit:bitStringLength="1">0x0</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>s_axis_tdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">127</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>s_axis_tvalid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>s_axis_tready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>data_write_state</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="bitString" spirit:bitStringLength="8">0x32</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>wr_data_buf</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">119</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>reg</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+  </spirit:model>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/rx_fifo_write.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_d9809438</spirit:userFileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/rx_fifo_write.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/rx_fifo_write_v1_021.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_f64a5dae</spirit:userFileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>rx_fifo_write_v1_0</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">rx_fifo_write_v1_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Production">virtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qvirtex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">versal</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qkintex7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">akintex7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">artix7l</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qartix7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">qzynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">azynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">spartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">aspartan7</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexu</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">zynquplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplusHBM</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">virtexuplus58g</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexuplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Production">kintexu</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>/Tidalloft</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>rx_fifo_write_v1_0</xilinx:displayName>
+      <xilinx:definitionSource>package_project</xilinx:definitionSource>
+      <xilinx:coreRevision>1</xilinx:coreRevision>
+      <xilinx:upgrades>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:rx_fifo_write:1.0</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:rx_fifo_write:1.01</xilinx:canUpgradeFrom>
+        <xilinx:canUpgradeFrom>tidalloft.com:user:rx_fifo_write:1.02</xilinx:canUpgradeFrom>
+      </xilinx:upgrades>
+      <xilinx:coreCreationDateTime>2021-10-18T23:32:33Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@29ab3100_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@68e4c623_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2224b4f2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1f7da97_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3c666e52_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3a4d27cc_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6052b9b2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@14b5e26e_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@75e451c2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@9319c07_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@166d28aa_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2610174b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@23e83498_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5a1684d1_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7e90064a_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@544ab2f2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@b40456d_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1ee0f2dc_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5ff03546_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1578e260_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7bbb0226_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3d272669_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6282fbf_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7ea7dae7_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@74dfb434_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4dbca3c2_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2cdf7929_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3fb33648_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@53086191_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@280dfc18_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4c4b0229_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@724da8f1_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5ecdbca8_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@780ccb62_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6b3d3629_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3eb66739_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1978bf1b_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2717d6f_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@42dd4cc7_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6eef650c_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@453c1912_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2edbb94e_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6a9858f4_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@86fa2fc_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@786908ca_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@204157bc_ARCHIVE_LOCATION">c:/Users/uxli/Documents/Tidalloft/tungsten-grid-dev/ip_repo/rx_fifo_write</xilinx:tag>
+      </xilinx:tags>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2021.1.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="0363e6d8"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a63335cb"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="75a3356f"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="aa85bbd4"/>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>
