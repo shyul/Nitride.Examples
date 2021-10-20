@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
 namespace Nitride.EE.WinUSB
 {
-    public class WinUsbDevice
+    public class WinUsbDevice : IDisposable
     {
-        public WinUsbDevice(Guid guid) : this(NativeMethods.FindDevicePathName(guid)) { }
+        public WinUsbDevice(Guid guid) : this(NativeMethods.FindDevicePathList(guid).Last()) { }
 
         public WinUsbDevice(string pathName)
         {
@@ -27,7 +26,6 @@ namespace Nitride.EE.WinUSB
                     if (NativeMethods.WinUsb_QueryInterfaceSettings(handle, interfaceIndex, ref ifaceDescriptor))
                     {
                         var iface = new UsbInterface(this, ifaceDescriptor);
-                        List<UsbEndPoint> endpoints = new();
 
                         for (int i = 0; i < ifaceDescriptor.bNumEndpoints; i++)
                         {
@@ -47,34 +45,33 @@ namespace Nitride.EE.WinUSB
                                     break;*/
 
                                 case (UsbdPipeType.Bulk, true): // Bulk In
-                                    endpoints.Add(new BulkInEndPoint(iface, pipeInfo));
+                                    iface.EndPoints.Add(new BulkInEndPoint(iface, pipeInfo));
                                     break;
 
                                 case (UsbdPipeType.Bulk, false): // Bulk Out
-                                    endpoints.Add(new BulkOutEndPoint(iface, pipeInfo));
+                                    iface.EndPoints.Add(new BulkOutEndPoint(iface, pipeInfo));
                                     break;
 
                                 case (UsbdPipeType.Interrupt, true): // Interrupt In
-                                    endpoints.Add(new InterruptInEndPoint(iface, pipeInfo));
+                                    iface.EndPoints.Add(new InterruptInEndPoint(iface, pipeInfo));
                                     break;
 
                                 case (UsbdPipeType.Interrupt, false): // Interrupt Out
-                                    endpoints.Add(new InterruptOutEndPoint(iface, pipeInfo));
+                                    iface.EndPoints.Add(new InterruptOutEndPoint(iface, pipeInfo));
                                     break;
 
                                 case (UsbdPipeType.Isochronous, true): // Isochronous In
-                                    endpoints.Add(new IsochronousInEndPoint(iface, pipeInfo));
+                                    iface.EndPoints.Add(new IsochronousInEndPoint(iface, pipeInfo));
                                     break;
 
                                 case (UsbdPipeType.Isochronous, false): // Isochronous Out
-                                    endpoints.Add(new IsochronousOutEndPoint(iface, pipeInfo));
+                                    iface.EndPoints.Add(new IsochronousOutEndPoint(iface, pipeInfo));
                                     break;
 
                                 default: break;
                             }
                         }
 
-                        iface.EndPoints = endpoints.ToDictionary(n => n.PipeId, n => n);
                         Interfaces.Add(iface);
                     }
                     else
@@ -93,6 +90,13 @@ namespace Nitride.EE.WinUSB
         {
             Handle.Release();
             Handle.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Handle.Release();
+            Handle.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public WinUsbHandle Handle { get; }
@@ -143,6 +147,16 @@ namespace Nitride.EE.WinUSB
             };
 
             return NativeMethods.WinUsb_ControlTransfer(Handle, setupPacket, dataStage, dataStageLength, ref bytesReturned, IntPtr.Zero);
+        }
+
+        public void PrintInfo()
+        {
+            foreach (var iface in Interfaces)
+            {
+                Console.WriteLine("Interface: " + iface.InterfaceClass);
+                iface.PrintInfo();
+                
+            }
         }
     }
 }

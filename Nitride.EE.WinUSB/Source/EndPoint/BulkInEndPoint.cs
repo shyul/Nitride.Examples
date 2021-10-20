@@ -16,7 +16,5 @@ namespace Nitride.EE.WinUSB
             Timeout = 2000;
             IgnoreShortPackets = false;
         }
-
-
     }
 }

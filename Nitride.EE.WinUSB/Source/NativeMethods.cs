@@ -128,35 +128,26 @@ namespace Nitride.EE.WinUSB
 		[DllImport("setupapi.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		internal static extern bool SetupDiGetDeviceInterfaceDetail(IntPtr DeviceInfoSet, ref SP_DEVICE_INTERFACE_DATA DeviceInterfaceData, IntPtr DeviceInterfaceDetailData, int DeviceInterfaceDetailDataSize, ref int RequiredSize, IntPtr DeviceInfoData);
 
-		public static string FindDevicePathName(Guid guid)
+		public static string[] FindDevicePathList(Guid guid)
 		{
 			int bufferSize = 0;
-			bool lastDevice = false;
 			var myDeviceInterfaceData = new SP_DEVICE_INTERFACE_DATA();
 			myDeviceInterfaceData.cbSize = Marshal.SizeOf(myDeviceInterfaceData);
 			var deviceInfoSet = SetupDiGetClassDevs(ref guid, IntPtr.Zero, IntPtr.Zero, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 			int memberIndex = 0;
-			string devicePathName = null;
+			List<string> deviceList = new();
 
-			do
+			while (SetupDiEnumDeviceInterfaces(deviceInfoSet, IntPtr.Zero, ref guid, memberIndex, ref myDeviceInterfaceData))
 			{
-				if (SetupDiEnumDeviceInterfaces(deviceInfoSet, IntPtr.Zero, ref guid, memberIndex, ref myDeviceInterfaceData))
-				{
-					SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref myDeviceInterfaceData, IntPtr.Zero, 0, ref bufferSize, IntPtr.Zero);
-					IntPtr detailDataBuffer = Marshal.AllocHGlobal(bufferSize);
-					Marshal.WriteInt32(detailDataBuffer, (IntPtr.Size == 4) ? (4 + Marshal.SystemDefaultCharSize) : 8);
-					SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref myDeviceInterfaceData, detailDataBuffer, bufferSize, ref bufferSize, IntPtr.Zero);
-					var pDevicePathName = new IntPtr(detailDataBuffer.ToInt64() + 4);
-					devicePathName = Marshal.PtrToStringAuto(pDevicePathName);
-				}
-				else
-				{
-					lastDevice = true;
-				}
+				SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref myDeviceInterfaceData, IntPtr.Zero, 0, ref bufferSize, IntPtr.Zero);
+				IntPtr detailDataBuffer = Marshal.AllocHGlobal(bufferSize);
+				Marshal.WriteInt32(detailDataBuffer, (IntPtr.Size == 4) ? (4 + Marshal.SystemDefaultCharSize) : 8);
+				SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref myDeviceInterfaceData, detailDataBuffer, bufferSize, ref bufferSize, IntPtr.Zero);
+				var pDevicePathName = new IntPtr(detailDataBuffer.ToInt64() + 4);
+				deviceList.Add(Marshal.PtrToStringAuto(pDevicePathName));
+			}
 
-			} while (lastDevice != true);
-
-			return devicePathName;
+			return deviceList.ToArray();
 		}
 
 		#endregion setupapi.dll
