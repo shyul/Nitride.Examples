@@ -8,7 +8,7 @@ namespace Nitride.EE.WinUSB
 {
     public abstract class UsbInEndPoint : UsbEndPoint
     {
-        public virtual bool ReceiveData(ref uint byteCount, ref byte[] buffer)
+        public virtual bool ReceiveData(ref uint byteCount, byte[] buffer)
         {
             uint byteCountIn = byteCount;
             return NativeMethods.WinUsb_ReadPipe(Device.Handle, PipeId, buffer, byteCountIn, ref byteCount, IntPtr.Zero);

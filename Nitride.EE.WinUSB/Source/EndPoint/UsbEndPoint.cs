@@ -47,6 +47,6 @@ namespace Nitride.EE.WinUSB
 
         public bool SetPolicy(uint policyType, ref uint val) => NativeMethods.WinUsb_SetPipePolicyUint(Device.Handle, PipeId, policyType, 4, ref val);
 
-        public override string ToString() => GetType().Name + ": 0x" + PipeId.ToString("X" + " Timeout = " + Timeout + "ms");
+        public override string ToString() => GetType().Name + ": 0x" + PipeId.ToString("X") + " Timeout = " + Timeout + "ms";
     }
 }

@@ -33,6 +33,7 @@ namespace Nitride.Example
             this.label1 = new System.Windows.Forms.Label();
             this.BtnFindDevice = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.BtnSingleReceive = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBoxGuid
@@ -41,7 +42,7 @@ namespace Nitride.Example
             this.textBoxGuid.Name = "textBoxGuid";
             this.textBoxGuid.Size = new System.Drawing.Size(338, 23);
             this.textBoxGuid.TabIndex = 0;
-            this.textBoxGuid.Text = "4872aaa8-E3DD-49ce-aca2-062132b9effd";
+            this.textBoxGuid.Text = "{7e9a56c8-cfe1-4619-94fb-86faf3200c3c}";
             // 
             // label1
             // 
@@ -71,11 +72,22 @@ namespace Nitride.Example
             this.label2.TabIndex = 3;
             this.label2.Text = "http://woshub.com/how-to-sign-an-unsigned-driver-for-windows-7-x64/";
             // 
+            // BtnSingleReceive
+            // 
+            this.BtnSingleReceive.Location = new System.Drawing.Point(484, 93);
+            this.BtnSingleReceive.Name = "BtnSingleReceive";
+            this.BtnSingleReceive.Size = new System.Drawing.Size(100, 23);
+            this.BtnSingleReceive.TabIndex = 4;
+            this.BtnSingleReceive.Text = "Single Receive";
+            this.BtnSingleReceive.UseVisualStyleBackColor = true;
+            this.BtnSingleReceive.Click += new System.EventHandler(this.BtnSingleReceive_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BtnSingleReceive);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.BtnFindDevice);
             this.Controls.Add(this.label1);
@@ -93,6 +105,7 @@ namespace Nitride.Example
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnFindDevice;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button BtnSingleReceive;
     }
 }
 

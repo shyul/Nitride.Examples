@@ -130,21 +130,29 @@ namespace Nitride.EE.WinUSB
 
 		public static string[] FindDevicePathList(Guid guid)
 		{
+			//Console.WriteLine("Start 0...");
 			int bufferSize = 0;
 			var myDeviceInterfaceData = new SP_DEVICE_INTERFACE_DATA();
 			myDeviceInterfaceData.cbSize = Marshal.SizeOf(myDeviceInterfaceData);
+			//Console.WriteLine("Start...");
+
 			var deviceInfoSet = SetupDiGetClassDevs(ref guid, IntPtr.Zero, IntPtr.Zero, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 			int memberIndex = 0;
 			List<string> deviceList = new();
 
-			while (SetupDiEnumDeviceInterfaces(deviceInfoSet, IntPtr.Zero, ref guid, memberIndex, ref myDeviceInterfaceData))
+			Console.WriteLine("Start searching for devices...");
+			int i = 0;
+			while (SetupDiEnumDeviceInterfaces(deviceInfoSet, IntPtr.Zero, ref guid, memberIndex, ref myDeviceInterfaceData) && i < 5)
 			{
 				SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref myDeviceInterfaceData, IntPtr.Zero, 0, ref bufferSize, IntPtr.Zero);
 				IntPtr detailDataBuffer = Marshal.AllocHGlobal(bufferSize);
 				Marshal.WriteInt32(detailDataBuffer, (IntPtr.Size == 4) ? (4 + Marshal.SystemDefaultCharSize) : 8);
 				SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref myDeviceInterfaceData, detailDataBuffer, bufferSize, ref bufferSize, IntPtr.Zero);
 				var pDevicePathName = new IntPtr(detailDataBuffer.ToInt64() + 4);
+				Console.WriteLine("Found..." + pDevicePathName + " / " + Marshal.PtrToStringAuto(pDevicePathName));
 				deviceList.Add(Marshal.PtrToStringAuto(pDevicePathName));
+				i++;
+				
 			}
 
 			return deviceList.ToArray();
