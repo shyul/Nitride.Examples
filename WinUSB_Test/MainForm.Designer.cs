@@ -32,6 +32,7 @@ namespace Nitride.Example
             this.textBoxGuid = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.BtnFindDevice = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxGuid
@@ -61,11 +62,21 @@ namespace Nitride.Example
             this.BtnFindDevice.UseVisualStyleBackColor = true;
             this.BtnFindDevice.Click += new System.EventHandler(this.BtnFindDevice_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(97, 137);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(400, 15);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "http://woshub.com/how-to-sign-an-unsigned-driver-for-windows-7-x64/";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.BtnFindDevice);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxGuid);
@@ -81,6 +92,7 @@ namespace Nitride.Example
         private System.Windows.Forms.TextBox textBoxGuid;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnFindDevice;
+        private System.Windows.Forms.Label label2;
     }
 }
 
