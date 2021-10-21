@@ -57,10 +57,10 @@ namespace Nitride.Example
 
             if (success)
             {
-                List<int> data = new List<int>();
+                List<int> data = new();
 
-
-                for (int i = 0; i < databuffer.Length; i += 2)
+                int i = 0;
+                for (; i < databuffer.Length; i += 2)
                 {
                     //short d = (short)(((char)databuffer[i + 1]) * 256);
 
@@ -75,19 +75,118 @@ namespace Nitride.Example
                 }
 
                 string s = "";
-
-                foreach (short b in data.Take(64))
+                i = 1;
+                foreach (var b in data.Take(64))
                 {
                     s += b.ToString() + "\t";
-
+                    if (i % 16 == 0) s += "\n";
+                    i++;
                 }
 
-                Console.WriteLine(s);
+                Console.WriteLine(s + "\nbytesRead = " + bytesRead);
             }
             else
             {
-                Console.Write("failed");
+                Console.WriteLine("failed");
             }
+        }
+
+        private void BtnBulkReceive_Click(object sender, EventArgs e)
+        {
+            /*
+            int packetLength = 65536;
+            int packetCount = 512;
+
+
+
+            List<byte[]> buffer = new();
+
+            int i = 0;
+            for(; i < packetCount; i++) 
+            {
+
+
+
+                buffer.Add(new byte[packetLength]);
+            }
+            */
+
+
+            byte[] databuffer = new byte[65536];
+            uint bytesRead = (uint)databuffer.Length;
+
+            int i = 0;
+
+
+
+            while (i < 512 && BulkIn.ReceiveData(ref bytesRead, databuffer))//databuffer)) 
+            {
+                //buffer.AddRange(databuffer);
+                i++;
+            }
+
+            Console.WriteLine("count: " + i);
+            //Console.WriteLine("Buffer count: " + buffer.Count);
+        }
+
+        private void BtnBulkReceive2_Click(object sender, EventArgs e)
+        {
+            int packetLength = 65536;
+            int packetCount = 16;
+            List<byte> buffer = new();
+
+            int success = 0;
+            //List<int> data = new();
+
+
+            for (int i = 0; i < packetCount; i++)
+            {
+                byte[] databuffer = new byte[65536];
+                uint bytesRead = (uint)databuffer.Length;
+
+                if (BulkIn.ReceiveData(ref bytesRead, databuffer))
+                {
+                    buffer.AddRange(databuffer);
+                    success++;
+                }
+            }
+            Console.WriteLine("success count: " + success);
+            Console.WriteLine("Buffer count: " + buffer.Count);
+
+            StringBuilder s = new();
+
+            if(success == packetCount) 
+            {
+                int j = 0;
+                string ch1 = string.Empty;
+                for (int i = 0; i < buffer.Count; i += 2)
+                {
+                    int d = (buffer[i + 1] << 10) | (buffer[i] << 2);
+
+                    d = ((d < 32768) ? d : (d - 65536)) / 4;
+
+                    //short d = (short)(((databuffer[i + 1] << 10) | (databuffer[i] << 2)) / 4);
+                    //data.Add(d);
+
+                   
+                    if (j % 2 == 0)
+                    {
+                        ch1 = d.ToString();
+                    }
+                    else
+                    {
+                        s.AppendLine(ch1 + "," + d.ToString());
+                    }
+
+
+
+                    j++;
+                }
+
+            }
+
+
+            s.ToFile("B:\\samples.txt");
         }
     }
 }

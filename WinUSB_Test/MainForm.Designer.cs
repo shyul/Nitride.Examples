@@ -34,6 +34,8 @@ namespace Nitride.Example
             this.BtnFindDevice = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.BtnSingleReceive = new System.Windows.Forms.Button();
+            this.BtnBulkReceive = new System.Windows.Forms.Button();
+            this.BtnBulkReceive2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBoxGuid
@@ -66,7 +68,7 @@ namespace Nitride.Example
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(97, 137);
+            this.label2.Location = new System.Drawing.Point(130, 271);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(400, 15);
             this.label2.TabIndex = 3;
@@ -82,11 +84,33 @@ namespace Nitride.Example
             this.BtnSingleReceive.UseVisualStyleBackColor = true;
             this.BtnSingleReceive.Click += new System.EventHandler(this.BtnSingleReceive_Click);
             // 
+            // BtnBulkReceive
+            // 
+            this.BtnBulkReceive.Location = new System.Drawing.Point(484, 122);
+            this.BtnBulkReceive.Name = "BtnBulkReceive";
+            this.BtnBulkReceive.Size = new System.Drawing.Size(100, 23);
+            this.BtnBulkReceive.TabIndex = 5;
+            this.BtnBulkReceive.Text = "Bulk Receive";
+            this.BtnBulkReceive.UseVisualStyleBackColor = true;
+            this.BtnBulkReceive.Click += new System.EventHandler(this.BtnBulkReceive_Click);
+            // 
+            // BtnBulkReceive2
+            // 
+            this.BtnBulkReceive2.Location = new System.Drawing.Point(484, 151);
+            this.BtnBulkReceive2.Name = "BtnBulkReceive2";
+            this.BtnBulkReceive2.Size = new System.Drawing.Size(100, 23);
+            this.BtnBulkReceive2.TabIndex = 6;
+            this.BtnBulkReceive2.Text = "Bulk Receive 2";
+            this.BtnBulkReceive2.UseVisualStyleBackColor = true;
+            this.BtnBulkReceive2.Click += new System.EventHandler(this.BtnBulkReceive2_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BtnBulkReceive2);
+            this.Controls.Add(this.BtnBulkReceive);
             this.Controls.Add(this.BtnSingleReceive);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.BtnFindDevice);
@@ -106,6 +130,8 @@ namespace Nitride.Example
         private System.Windows.Forms.Button BtnFindDevice;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button BtnSingleReceive;
+        private System.Windows.Forms.Button BtnBulkReceive;
+        private System.Windows.Forms.Button BtnBulkReceive2;
     }
 }
 
