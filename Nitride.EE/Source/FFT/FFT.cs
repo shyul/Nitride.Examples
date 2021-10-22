@@ -140,59 +140,20 @@ namespace Nitride.EE
         {
             double maxVal = t.Rows.Select(n => Math.Abs(n[inputColumn])).Max();
             //double minVal = t.Rows.Select(n => n[inputColumn]).Min();
-
-            double factor = 8191 / maxVal;
-
+            //double factor = 8191 / maxVal;
 
             Complex[] dsw = new Complex[Length];
-
-            // Apply window to input sample
-
-            Complex[] dsw2 = new Complex[Length * 2];
-            int r = 0;
-            //for (int i = startPt; i < (Length * 2) + startPt; i++)
+            Complex[] dsw2 = new Complex[Length];
             for (int i = startPt; i < Length + startPt; i++)
             {
                 double input = t[i][inputColumn];// * factor;
-
-                Complex c = new(input, 0);
-                /*
-                switch (r)
-                {
-                    case 0: c = new(0, input); break;
-                    case 1: c = new(input, 0); break;
-                    case 2: c = new(0, -input); break;
-                    case 3: c = new(-input, 0); break;
-                }*/
-
                 dsw2[i] = new(input, 0);
-
-                r++;
-                if (r >= 4) r = 0;
             }
-
 
             for (int i = 0; i < Length; i++)
             {
-                //dsw[i] = (dsw2[i * 2] + dsw2[(i * 2) + 1]) * WinF[i] / 2;
-
                 dsw[i] = dsw2[i] * WinF[i];
             }
-
-            /*
-            int r = 0;
-            for (int i = startPt; i < (Length * 2) + startPt; i++)
-            {
-                double input = t[i][inputColumn];
-                if (i % 2 == 0)
-                {
-                    Complex c = new(input, 0);
-                    dsw[r] = c * WinF[r];
-                    r++;
-                }
-            }*/
-
-            Console.WriteLine("r = " + r);
 
             int LengthBy2 = Length / 2;
             //int LengthBy4 = LengthBy2 / 2;
@@ -242,8 +203,6 @@ namespace Nitride.EE
             for (uint i = 0; i < dsw.Length; i++)
             {
                 res[i] = dsw[i.EndianInverse(m)];
-
-
                 /*
                 FreqRow row = ft[(int)i];
                 Complex c = row[Column_Result] = dsw[i.EndianInverse(m)];
@@ -254,10 +213,8 @@ namespace Nitride.EE
             for (int i = 0; i < ft.Count; i++) 
             {
                 FreqRow row = ft[i];
-                //Complex c = row[Column_Result] = dsw[i.EndianInverse(m)];
-
                 double mag = row[Column_ResultMag] = res.Skip(i * 64).Take(64).Select(c => c.Magnitude).Max();
-                row[Column_ResultDb] = (20 * Math.Log10(mag)) - 180.6 ;
+                row[Column_ResultDb] = (20 * Math.Log10(mag)) - 180.6;
 
             }
 

@@ -36,11 +36,11 @@ namespace Nitride.Chart
             AxisRight.MinimumTickHeight = 20;
         }
 
-        public double FixedTickStep_Right { get; set; } = double.NaN;
+        //public double FixedTickStep_Right { get; set; } = double.NaN;
 
-        public double FixedTickStep_Left { get; set; } = double.NaN;
+        //public double FixedTickStep_Left { get; set; } = double.NaN;
 
-        public virtual double Reference { get; set; } = 0;
+        //public virtual double Reference { get; set; } = 0;
 
         public virtual double UpperLimit { get; set; } = double.NaN;
 

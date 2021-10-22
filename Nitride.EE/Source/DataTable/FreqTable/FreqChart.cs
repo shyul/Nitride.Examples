@@ -38,16 +38,15 @@ namespace Nitride.EE
             {
                 HasXAxisBar = true,
                 Reference = 0,
-                UpperLimit = 20,
-                LowerLimit = -20,
-                UpperColor = Color.Green,
-                LowerColor = Color.DarkOrange,
                 FixedTickStep_Right = 10,
-
             });*/
+
+            
             AddArea(MainArea = new Area(this, "Main", 0.3f)
             {
+                Reference = 0,
                 HasXAxisBar = true,
+                FixedTickStep_Right = 10,
             });
 
             EnableChartShift = false;

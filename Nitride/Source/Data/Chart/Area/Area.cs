@@ -76,6 +76,8 @@ namespace Nitride.Chart
 
         public int StartPt => Chart.StartPt;
 
+        public virtual double Reference { get; set; } = double.NaN;
+
         public IndexAxis AxisX => Chart.AxisX;
 
         public virtual int IndexCount => Chart.IndexCount;
@@ -206,6 +208,10 @@ namespace Nitride.Chart
 
         public int TimeLabelY { get; set; }
 
+        public double FixedTickStep_Right { get; set; } = double.NaN;
+
+        public double FixedTickStep_Left { get; set; } = double.NaN;
+
         public virtual void Coordinate()
         {
             RightCursorX = Right - 4; // AxisX.HalfTickWidth;
@@ -222,7 +228,7 @@ namespace Nitride.Chart
                 }
 
             AxisRight.Coordinate(Height, Top);
-            GenerateTicks(AxisRight);
+            GenerateTicks(AxisRight, FixedTickStep_Right);
 
             if (AxisLeft.HeightRatio < 1)
             {
@@ -243,7 +249,7 @@ namespace Nitride.Chart
             else
                 AxisLeft.Coordinate(Height, Top);
 
-            GenerateTicks(AxisLeft);
+            GenerateTicks(AxisLeft, FixedTickStep_Left);
 
             // *****************************
             // Update Legend
@@ -310,11 +316,17 @@ namespace Nitride.Chart
             }
         }
 
-        public virtual void GenerateTicks(ContinuousAxis axis)
+        public virtual void GenerateTicks(ContinuousAxis axis, double fixedTickStep)
         {
             int actual_size = (axis.HeightRatio * Height).ToInt32();
 
             int tickCount = (1.0 * actual_size / axis.MinimumTickHeight).ToInt32(); // It needs at least 10 pixel for a tick
+            
+            if (!double.IsNaN(Reference))
+            {
+                axis.Range.Insert(Reference);
+                axis.TickList.CheckAdd(Reference, (Importance.Major, Reference.ToSINumberString("0.##").String));
+            }
 
             if (tickCount > 0)
             {
@@ -322,24 +334,44 @@ namespace Nitride.Chart
 
                 if (tickStep > 0)
                 {
-                    tickStep = tickStep.FitDacades(axis.TickDacades);
+                    tickStep = double.IsNaN(fixedTickStep) ? tickStep.FitDacades(axis.TickDacades) : fixedTickStep;
 
-                    axis.Range.Insert(axis.Range.Minimum - axis.Range.Minimum % tickStep);
-
-                    double max_remainder = axis.Range.Maximum % tickStep;
-
-                    if (max_remainder > 0)
-                        axis.Range.Insert(axis.Range.Maximum - max_remainder + tickStep); // * 1.0001); // Fix the last tick
-                    else if (max_remainder < -0)
-                        axis.Range.Insert(axis.Range.Maximum + max_remainder - tickStep); // * 1.0001); // Fix the last tick
-
-                    double tickVal = axis.Range.Minimum;
-
-                    while (tickVal <= axis.Range.Maximum)
+                    if (!double.IsNaN(Reference) && Reference >= axis.Range.Maximum) 
                     {
-                        axis.TickList.CheckAdd(tickVal, (Importance.Minor, tickVal.ToSINumberString("0.##").String));
-                        tickVal += tickStep;
+                        double tickVal = Reference;
+
+                        while (tickVal >= axis.Range.Minimum)
+                        {
+                            axis.TickList.CheckAdd(tickVal, (Importance.Minor, tickVal.ToSINumberString("0.##").String));
+                            tickVal -= tickStep;
+                        }
                     }
+                    else
+                    {
+                        axis.Range.Insert(axis.Range.Minimum - axis.Range.Minimum % tickStep);
+
+                        double max_remainder = axis.Range.Maximum % tickStep;
+
+                        if (max_remainder > 0)
+                            axis.Range.Insert(axis.Range.Maximum - max_remainder + tickStep); // * 1.0001); // Fix the last tick
+                        else if (max_remainder < -0)
+                            axis.Range.Insert(axis.Range.Maximum + max_remainder - tickStep); // * 1.0001); // Fix the last tick
+
+                        double tickVal = axis.Range.Minimum;
+
+                        while (tickVal <= axis.Range.Maximum)
+                        {
+                            axis.TickList.CheckAdd(tickVal, (Importance.Minor, tickVal.ToSINumberString("0.##").String));
+                            tickVal += tickStep;
+                        }
+
+                    }
+
+
+
+
+
+
                 }
             }
         }

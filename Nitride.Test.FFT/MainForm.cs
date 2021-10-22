@@ -126,16 +126,16 @@ namespace Nitride.Example
                 SampleChart.Dock = DockStyle.Fill;
                 Program.ChartForm.AddForm(SampleChart);
 
-                
-                FFT fft = new(262144/2);// 65536, WindowsType.BlackmanHarris);
 
-                FreqTable = fft.Transform2(SampleTable, Column_Channel2, 0);
+                FFT fft = new(262144);// 65536, WindowsType.BlackmanHarris);
+
+                FreqTable = fft.Transform(SampleTable, Column_Channel1, 0);
 
                 FreqChart = new("Freq Chart", FreqTable)
                 {
-                    IndexCount = FreqTable.Count,
+                    IndexCount = FreqTable.Count / 2,
                     ReadyToShow = true,
-                    StopPt = FreqTable.Count
+                    StopPt = FreqTable.Count / 2
                 };
 
                 FreqChart.MainArea.AddSeries(new LineSeries(FFT.Column_ResultDb)
