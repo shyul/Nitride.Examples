@@ -51,7 +51,7 @@ namespace Nitride.Example
 
         private void BtnSingleReceive_Click(object sender, EventArgs e)
         {
-            byte[] databuffer = new byte[65536];
+            byte[] databuffer = new byte[1024];
             uint bytesRead =  (uint)databuffer.Length;
             bool success = BulkIn.ReceiveData(ref bytesRead, databuffer);
 

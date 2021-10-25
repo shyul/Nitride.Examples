@@ -82,4 +82,14 @@ namespace Nitride.EE.WinUSB
 		public int DevInst;
 		public int Reserved;
 	}
+
+	[ComVisible(true)]
+	public struct NativeOverlapped
+	{
+		public IntPtr InternalLow;
+		public IntPtr InternalHigh;
+		public int OffsetLow;
+		public int OffsetHigh;
+		public IntPtr EventHandle;
+	}
 }

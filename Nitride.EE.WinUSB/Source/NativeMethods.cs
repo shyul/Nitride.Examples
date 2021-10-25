@@ -43,8 +43,13 @@ namespace Nitride.EE.WinUSB
 		[DllImport("winusb.dll", SetLastError = true)]
 		internal static extern bool WinUsb_ReadIsochPipeAsap(IntPtr BufferHandle, uint Offset, uint Length, bool ContinueStream, uint NumberOfPackets, ref USBD_ISO_PACKET_DESCRIPTOR IsoPacketDescriptors, IntPtr Overlapped);
 
+
 		[DllImport("winusb.dll", SetLastError = true)]
-		internal static extern bool WinUsb_ReadPipe(WinUsbHandle usbHandle, byte PipeID, byte[] Buffer, uint BufferLength, ref uint LengthTransferred, IntPtr Overlapped);
+		internal static unsafe extern bool WinUsb_ReadPipe(IntPtr InterfaceHandle, byte PipeID, byte* pBuffer, uint BufferLength, out uint LengthTransferred, IntPtr Overlapped);
+
+		[DllImport("winusb.dll", SetLastError = true)]
+		internal static unsafe extern bool WinUsb_ReadPipe(IntPtr InterfaceHandle, byte PipeID, byte* pBuffer, uint BufferLength, out uint LengthTransferred, NativeOverlapped* pOverlapped);
+
 
 		[DllImport("winusb.dll", SetLastError = true)]
 		internal static extern bool WinUsb_RegisterIsochBuffer(WinUsbHandle usbHandle, byte PipeID, byte[] Buffer, uint BufferLength, out IntPtr BufferHandle);

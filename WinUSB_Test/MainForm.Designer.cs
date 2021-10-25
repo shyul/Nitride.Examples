@@ -44,7 +44,7 @@ namespace Nitride.Example
             this.textBoxGuid.Name = "textBoxGuid";
             this.textBoxGuid.Size = new System.Drawing.Size(338, 23);
             this.textBoxGuid.TabIndex = 0;
-            this.textBoxGuid.Text = "{7e9a56c8-cfe1-4619-94fb-86faf3200c3c}";
+            this.textBoxGuid.Text = "{6AE77B78-518B-493D-A9DD-3A64E87EA3F9}";
             // 
             // label1
             // 

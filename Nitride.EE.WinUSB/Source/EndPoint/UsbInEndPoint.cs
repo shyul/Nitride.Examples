@@ -11,7 +11,13 @@ namespace Nitride.EE.WinUSB
         public virtual bool ReceiveData(ref uint byteCount, byte[] buffer)
         {
             uint byteCountIn = byteCount;
-            return NativeMethods.WinUsb_ReadPipe(Device.Handle, PipeId, buffer, byteCountIn, ref byteCount, IntPtr.Zero);
+            unsafe
+            {
+                fixed (byte* pBuffer = buffer)
+                {
+                    return NativeMethods.WinUsb_ReadPipe(Device.Handle.GetHandle(), PipeId, pBuffer, byteCountIn, out byteCount, IntPtr.Zero);
+                }
+            }
         }
     }
 }
