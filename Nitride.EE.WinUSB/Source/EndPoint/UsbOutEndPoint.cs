@@ -9,21 +9,23 @@ namespace Nitride.EE.WinUSB
 {
     public abstract class UsbOutEndPoint : UsbEndPoint
     {
-        public virtual bool SendData(byte[] buffer, int offset, ref int length)
+        public bool Write(byte[] buffer)
         {
-            uint bytesWritten;
+            return Write(buffer, 0, (uint)buffer.Length, out _);
+        }
+
+        public bool Write(byte[] buffer, int offset, uint bytesToWrite, out uint bytesWritten)
+        {
             bool success;
             unsafe
             {
                 fixed (byte* pBuffer = buffer)
                 {
-                    success = WinUsb_WritePipe(Device.Handle, PipeId, pBuffer + offset, (uint)length,
-                            out bytesWritten, IntPtr.Zero);
+                    success = WinUsb_WritePipe(Device.Handle, PipeId, pBuffer + offset, bytesToWrite, out bytesWritten, IntPtr.Zero);
                 }
             }
 
-            length = (int)bytesWritten;
-            return success && (bytesWritten == length);
+            return success && (bytesWritten == bytesToWrite);
         }
 
         [DllImport("winusb.dll", SetLastError = true)]

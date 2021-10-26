@@ -9,14 +9,18 @@ namespace Nitride.EE.WinUSB
 {
     public abstract class UsbInEndPoint : UsbEndPoint
     {
-        public virtual bool ReceiveData(ref uint byteCount, byte[] buffer)
+        public virtual bool Read(byte[] buffer)
         {
-            uint byteCountIn = byteCount;
+            return Read(buffer, 0, (uint)buffer.Length, out _);
+        }
+
+        public bool Read(byte[] buffer, int offset, uint bytesToRead, out uint bytesRead)
+        {
             unsafe
             {
                 fixed (byte* pBuffer = buffer)
                 {
-                    return WinUsb_ReadPipe(Device.Handle, PipeId, pBuffer, byteCountIn, out byteCount, IntPtr.Zero);
+                    return WinUsb_ReadPipe(Device.Handle, PipeId, pBuffer + offset, bytesToRead, out bytesRead, IntPtr.Zero);
                 }
             }
         }
