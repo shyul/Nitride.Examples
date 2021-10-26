@@ -128,7 +128,7 @@ namespace MadWizard.WinUSBNet
             }
             catch (API.APIException e)
             {
-                throw new USBException("Failed to read from pipe.", e);
+                throw new USBException("Failed to read from pipe. 0x" + _pipeInfo.PipeId.ToString("X"), e);
             }
         }
 
