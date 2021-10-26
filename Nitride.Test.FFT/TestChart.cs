@@ -43,10 +43,11 @@ namespace Nitride.Example
                 UpperLimit = 20,
                 LowerLimit = -20,
                 UpperColor = Color.Green,
-                LowerColor = Color.DarkOrange,
-                FixedTickStep_Right = 10,
+                LowerColor = Color.DarkOrange
 
             });
+
+            MainArea.AxisY(AlignType.Right).TickStep = 10;
 
             MainArea.AddSeries(MainSeries = new LineSeries(Column_Amplitude)
             {

@@ -41,13 +41,14 @@ namespace Nitride.EE
                 FixedTickStep_Right = 10,
             });*/
 
-            
+
             AddArea(MainArea = new Area(this, "Main", 0.3f)
             {
                 Reference = 0,
                 HasXAxisBar = true,
-                FixedTickStep_Right = 10,
             });
+
+            MainArea.AxisY(AlignType.Right).TickStep = 10;
 
             EnableChartShift = false;
 
@@ -120,7 +121,7 @@ namespace Nitride.EE
 
                         double tickNum = Width / minTextWidth;
 
-                        if(tickNum > 0) 
+                        if (tickNum > 0)
                         {
                             int tickStep = Math.Round((StopPt - StartPt) / tickNum).ToInt32();
                             //Console.WriteLine("totalTicks =" + totalTicks);
@@ -178,7 +179,7 @@ namespace Nitride.EE
                             }
                         }
 
-                        
+
 
 
 
