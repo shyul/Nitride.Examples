@@ -27,7 +27,7 @@ namespace Nitride.Example
             Guid guid = Guid.Parse(textBoxGuid.Text);
             Console.WriteLine("GUID is: " + guid.ToString().ToUpper());
             //Console.WriteLine("Start -1...");
-            var pathList = NativeMethods.FindDevicePathList(guid);
+            var pathList = WinUsbDevice.FindDevicePathList(guid);
 
             Console.WriteLine("found devices: " + pathList.Length);
 

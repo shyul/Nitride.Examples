@@ -7,6 +7,35 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Nitride.EE.WinUSB
 {
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+	public struct WINUSB_SETUP_PACKET
+	{
+		public byte RequestType;
+		public byte Request;
+		public ushort Value;
+		public ushort Index;
+		public ushort Length;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct USB_DEVICE_DESCRIPTOR
+	{
+		public byte bLength;
+		public byte bDescriptorType;
+		public ushort bcdUSB;
+		public byte bDeviceClass;
+		public byte bDeviceSubClass;
+		public byte bDeviceProtocol;
+		public byte bMaxPacketSize0;
+		public ushort idVendor;
+		public ushort idProduct;
+		public ushort bcdDevice;
+		public byte iManufacturer;
+		public byte iProduct;
+		public byte iSerialNumber;
+		public byte bNumConfigurations;
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	public struct USB_CONFIGURATION_DESCRIPTOR
 	{
@@ -49,16 +78,6 @@ namespace Nitride.EE.WinUSB
 		public uint Offset;
 		public uint Length;
 		public uint Status;
-	}
-
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public struct WINUSB_SETUP_PACKET
-	{
-		public byte RequestType;
-		public byte Request;
-		public ushort Value;
-		public ushort Index;
-		public ushort Length;
 	}
 
 	public struct SP_DEVICE_INTERFACE_DATA

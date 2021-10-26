@@ -1,36 +1,36 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Nitride.EE.WinUSB
 {
-    public class WinUsbDevice : IDisposable
+    public partial class WinUsbDevice : IDisposable
     {
-        public WinUsbDevice(Guid guid) : this(NativeMethods.FindDevicePathList(guid).Last()) { }
+        public WinUsbDevice(Guid guid) : this(FindDevicePathList(guid).Last()) { }
 
         public WinUsbDevice(string pathName)
         {
-            WinUsbHandle handle = new();
+            IntPtr handle = IntPtr.Zero;
 
             if (pathName is not null &&
-                NativeMethods.GetDeviceFileHandle(pathName) is var fileHandle &&
-                !fileHandle.IsInvalid &&
-                NativeMethods.WinUsb_Initialize(fileHandle, ref handle))
+                GetDeviceFileHandle(pathName) is var devHandle &&
+                !devHandle.IsInvalid &&
+                WinUsb_Initialize(devHandle, ref handle))
             {
+                DeviceHandle = devHandle;
                 Handle = handle;
                 byte interfaceIndex = 0;
                 while (true)
                 {
-                    USB_INTERFACE_DESCRIPTOR ifaceDescriptor = new();
-                    if (NativeMethods.WinUsb_QueryInterfaceSettings(handle, interfaceIndex, ref ifaceDescriptor))
+                    if (WinUsb_QueryInterfaceSettings(handle, interfaceIndex, out USB_INTERFACE_DESCRIPTOR ifaceDescriptor))
                     {
                         var iface = new UsbInterface(this, ifaceDescriptor);
 
                         for (int i = 0; i < ifaceDescriptor.bNumEndpoints; i++)
                         {
-                            WINUSB_PIPE_INFORMATION pipeInfo = new();
-                            NativeMethods.WinUsb_QueryPipe(handle, interfaceIndex, Convert.ToByte(i), ref pipeInfo);
+                            WinUsb_QueryPipe(handle, interfaceIndex, Convert.ToByte(i), out WINUSB_PIPE_INFORMATION pipeInfo);
                             bool IsDirectionIn = (pipeInfo.PipeId & 0x80) == 0x80; // false == out;
 
                             switch ((pipeInfo.PipeType, IsDirectionIn))
@@ -88,18 +88,45 @@ namespace Nitride.EE.WinUSB
 
         ~WinUsbDevice()
         {
-            Handle.Release();
-            Handle.Dispose();
+            Dispose(false);
         }
 
         public void Dispose()
         {
-            Handle.Release();
-            Handle.Dispose();
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        public WinUsbHandle Handle { get; }
+        public bool IsDisposed { get; private set; } = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+
+            if (disposing)
+            {
+                // Dispose managed resources
+                if (DeviceHandle is not null && !DeviceHandle.IsInvalid)
+                    DeviceHandle.Dispose();
+                DeviceHandle = null;
+            }
+
+            // Dispose unmanaged resources
+            FreeWinUSB();
+            IsDisposed = true;
+        }
+
+        private void FreeWinUSB()
+        {
+            if (Handle != IntPtr.Zero)
+                WinUsb_Free(Handle);
+            Handle = IntPtr.Zero;
+        }
+
+        private SafeFileHandle DeviceHandle { get; set; }
+
+        public IntPtr Handle { get; set; }
 
         public List<UsbInterface> Interfaces { get; } = new();
 
@@ -108,10 +135,9 @@ namespace Nitride.EE.WinUSB
             get
             {
                 uint length = 1;
-                var speed = new byte[1];
 
-                if (NativeMethods.WinUsb_QueryDeviceInformation(Handle, NativeMethods.DEVICE_SPEED, ref length, ref speed[0]))
-                    return Convert.ToUInt32(speed[0]);
+                if (WinUsb_QueryDeviceInformation(Handle, DEVICE_SPEED, ref length, out byte speed))
+                    return Convert.ToUInt32(speed);
                 else
                     throw new Exception("Failed to check device speed.");
             }
@@ -130,7 +156,7 @@ namespace Nitride.EE.WinUSB
                 Value = 0
             };
 
-            return NativeMethods.WinUsb_ControlTransfer(Handle, setupPacket, dataStage, dataStageLength, ref bytesReturned, IntPtr.Zero);
+            return WinUsb_ControlTransfer(Handle, setupPacket, dataStage, dataStageLength, ref bytesReturned, IntPtr.Zero);
         }
 
         public bool ControlWrite(ref byte[] dataStage, ref uint bytesReturned, ushort value = 0)
@@ -146,7 +172,7 @@ namespace Nitride.EE.WinUSB
                 Value = value
             };
 
-            return NativeMethods.WinUsb_ControlTransfer(Handle, setupPacket, dataStage, dataStageLength, ref bytesReturned, IntPtr.Zero);
+            return WinUsb_ControlTransfer(Handle, setupPacket, dataStage, dataStageLength, ref bytesReturned, IntPtr.Zero);
         }
 
         public void PrintInfo()

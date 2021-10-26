@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace Nitride.EE.WinUSB
 {
@@ -15,9 +16,17 @@ namespace Nitride.EE.WinUSB
             {
                 fixed (byte* pBuffer = buffer)
                 {
-                    return NativeMethods.WinUsb_ReadPipe(Device.Handle.GetHandle(), PipeId, pBuffer, byteCountIn, out byteCount, IntPtr.Zero);
+                    return WinUsb_ReadPipe(Device.Handle, PipeId, pBuffer, byteCountIn, out byteCount, IntPtr.Zero);
                 }
             }
         }
+
+        [DllImport("winusb.dll", SetLastError = true)]
+        private static unsafe extern bool WinUsb_ReadPipe(IntPtr InterfaceHandle, byte PipeID, byte* pBuffer, uint BufferLength, out uint LengthTransferred, IntPtr Overlapped);
+
+        [DllImport("winusb.dll", SetLastError = true)]
+        private static unsafe extern bool WinUsb_ReadPipe(IntPtr InterfaceHandle, byte PipeID, byte* pBuffer, uint BufferLength, out uint LengthTransferred, NativeOverlapped* pOverlapped);
+
+
     }
 }
