@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace Nitride.EE
 {
@@ -180,6 +181,17 @@ namespace Nitride.EE
                 for (int i = 0; i < w; i++)
                 {
                     int id = i * (Length / w);
+                    /*
+                    Parallel.For(0, LengthBy2, j => {
+                        int idj = id + j;
+                        int idjL2 = idj + LengthBy2;
+
+                        Complex TmpA = Dsw[idj] + Dsw[idjL2];
+                        Complex TmpB = (Dsw[idj] - Dsw[idjL2]) * Wn[w * j];
+                        Dsw[idj] = TmpA;
+                        Dsw[idjL2] = TmpB;
+                    });*/
+                
                     for (int j = 0; j < LengthBy2; j++)
                     {
                         int idj = id + j;

@@ -794,5 +794,95 @@ namespace WindowsFormsApp1
                 }
             }
         }
+
+        private void BtnStartFFT_Click(object sender, EventArgs e)
+        {
+            EnablePlay = true;
+            Task.Run(() => PlayWaveWorker());
+        }
+
+        private void BtnStopFFT_Click(object sender, EventArgs e)
+        {
+            EnablePlay = false;
+
+        }
+
+        bool EnablePlay { get; set; } = true;
+
+        void PlayWaveWorker()
+        {
+            //int step = FFT.Length / 8;
+            //if (step < 1) step = 1;
+            SampleTable.Clear(SampleLength);
+            SampleTable.SampleRate = 250e6;
+            FreqChart.IndexCount = FreqChart.StopPt = SampleLength / 2;
+
+            while (EnablePlay && UsbDevice is not null)
+            {
+                //Console.WriteLine("PlayPt = " + PlayPt + " | SampleTable.Count = " + SampleTable.Count + " | FFT.Length = " + FFT.Length);
+            
+                BtnCapture.Enabled = false;
+                SendCommand(STREAM_COMMAND_STOP_READ);
+                SendCommand(STREAM_COMMAND_READ_STOP_DMA);
+                SendCommand(STREAM_COMMAND_SET_SINGLE_READ);
+                SetReadLength(SampleLength);
+                SetReadAddress(0x800000000);
+                SendCommand(STREAM_COMMAND_READ_START_DMA);
+                SendCommand(STREAM_COMMAND_READ_TIGGER_DMA);
+
+                Thread.Sleep(100);
+
+
+                SendCommand(STREAM_COMMAND_READ_STOP_DMA);
+                SendCommand(STREAM_COMMAND_START_READ);
+
+                List<byte> buffer = new();
+                if (BulkIn is not null)
+                {
+                    byte[] databuffer = new byte[65536];
+
+                    int i = 0;
+                    //DateTime start = DateTime.Now;
+
+                    uint count = SampleLength / 65536;
+
+                    while (i < count && BulkIn.Read(databuffer))//databuffer)) 
+                    {
+                        buffer.AddRange(databuffer);
+                        i++;
+                    }
+
+                    //TimeSpan sp = DateTime.Now - start;
+                    //Console.WriteLine("Transfer Speed = " + ((i * 65536 / 1024 / 1024) / (sp.TotalSeconds)) + " MB / s");
+                    Console.WriteLine("count: " + i);
+                }
+
+                SendCommand(STREAM_COMMAND_STOP_READ);
+
+                int j = 0, k = 0;
+            
+                for (int i = 0; i < buffer.Count; i += 2)
+                {
+                    int d = (buffer[i + 1] << 10) | (buffer[i] << 2);
+
+                    d = ((d < 32768) ? d : (d - 65536)) / 4;
+
+                    if (j % 2 == 0)
+                    {
+                        SampleTable[k][Column_Channel1] = d;
+                    }
+                    else
+                    {
+                        SampleTable[k][Column_Channel2] = d;
+                        k++;
+                    }
+
+                    j++;
+                }
+
+                SampleTable.DataIsUpdated();
+                FFT.Transform(FreqTable, SampleTable, Column_Channel1, 0);
+            }
+        }
     }
 }

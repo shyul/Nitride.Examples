@@ -57,6 +57,8 @@ namespace WindowsFormsApp1
             this.BtnReadBufferOccupation = new System.Windows.Forms.Button();
             this.BtnCapture = new System.Windows.Forms.Button();
             this.BtnSingleCapture = new System.Windows.Forms.Button();
+            this.BtnStartFFT = new System.Windows.Forms.Button();
+            this.BtnStopFFT = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnReceiveOnce
@@ -367,11 +369,35 @@ namespace WindowsFormsApp1
             this.BtnSingleCapture.UseVisualStyleBackColor = true;
             this.BtnSingleCapture.Click += new System.EventHandler(this.BtnSingleCapture_Click);
             // 
+            // BtnStartFFT
+            // 
+            this.BtnStartFFT.Location = new System.Drawing.Point(14, 444);
+            this.BtnStartFFT.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BtnStartFFT.Name = "BtnStartFFT";
+            this.BtnStartFFT.Size = new System.Drawing.Size(182, 27);
+            this.BtnStartFFT.TabIndex = 28;
+            this.BtnStartFFT.Text = "Start FFT";
+            this.BtnStartFFT.UseVisualStyleBackColor = true;
+            this.BtnStartFFT.Click += new System.EventHandler(this.BtnStartFFT_Click);
+            // 
+            // BtnStopFFT
+            // 
+            this.BtnStopFFT.Location = new System.Drawing.Point(204, 444);
+            this.BtnStopFFT.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BtnStopFFT.Name = "BtnStopFFT";
+            this.BtnStopFFT.Size = new System.Drawing.Size(182, 27);
+            this.BtnStopFFT.TabIndex = 29;
+            this.BtnStopFFT.Text = "Stop FFT";
+            this.BtnStopFFT.UseVisualStyleBackColor = true;
+            this.BtnStopFFT.Click += new System.EventHandler(this.BtnStopFFT_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1060, 519);
+            this.Controls.Add(this.BtnStopFFT);
+            this.Controls.Add(this.BtnStartFFT);
             this.Controls.Add(this.BtnSingleCapture);
             this.Controls.Add(this.BtnCapture);
             this.Controls.Add(this.BtnReadBufferOccupation);
@@ -437,6 +463,8 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.Button BtnReadBufferOccupation;
         private System.Windows.Forms.Button BtnCapture;
         private System.Windows.Forms.Button BtnSingleCapture;
+        private System.Windows.Forms.Button BtnStartFFT;
+        private System.Windows.Forms.Button BtnStopFFT;
     }
 }
 
