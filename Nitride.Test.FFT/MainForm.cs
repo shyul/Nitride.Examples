@@ -95,6 +95,9 @@ namespace Nitride.Example
 
             FFT = new(SampleLength);// 65536, WindowsType.BlackmanHarris);
             FreqTable = new FreqTable();
+
+            FreqTable.Configure(0, SampleTable.SampleRate, SampleLength / 64);
+
             FFT.Transform(FreqTable, SampleTable, Column_ChannelComplex, 0);
 
             double peak = FreqTable.Rows.Select(n => n[FFT.Column_ResultDb]).Max();
@@ -193,6 +196,7 @@ namespace Nitride.Example
                 if (PlayPt > SampleTable.Count - FFT.Length)
                     PlayPt = 0;
 
+                //GC.Collect();
                 //Thread.Sleep(50);
             }
         }

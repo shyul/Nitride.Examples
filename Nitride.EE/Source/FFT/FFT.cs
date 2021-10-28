@@ -54,6 +54,10 @@ namespace Nitride.EE
                 int n = Length / 2;
                 for (int i = 1; i < n; i++)
                     Wn[i] = Wn[i - 1] * w;
+
+                Dsw = new Complex[Length];
+                Dsw2 = new Complex[Length];
+                Result = new Complex[Length];
             }
             else
                 throw new ArgumentException("Length must be greater than 4 and power of 2");
@@ -117,7 +121,7 @@ namespace Nitride.EE
             }*/
 
             //FreqTable ft = new();
-            ft.Configure(0, t.SampleRate, Length / 64);
+        
 
             Complex[] c = new Complex[dsw.Length];
 
@@ -139,24 +143,29 @@ namespace Nitride.EE
             ft.DataIsUpdated();
         }
 
+        Complex[] Dsw { get; }// = new Complex[Length];
+        Complex[] Dsw2 { get; } //= new Complex[Length];
+
+        Complex[] Result { get; }
+
         public void Transform(FreqTable ft, ChronoTable t, NumericColumn inputColumn, int startPt)
         {
             //double maxVal = t.Rows.Select(n => Math.Abs(n[inputColumn])).Max();
             //double minVal = t.Rows.Select(n => n[inputColumn]).Min();
             //double factor = 8191 / maxVal;
 
-            Complex[] dsw = new Complex[Length];
-            Complex[] dsw2 = new Complex[Length];
+            //Complex[] Dsw = new Complex[Length];
+            //Complex[] Dsw2 = new Complex[Length];
 
             for (int i = startPt; i < Length + startPt; i++)
             {
                 double input = t[i][inputColumn];// * factor;
-                dsw2[i - startPt] = new(input, 0);
+                Dsw2[i - startPt] = new(input, 0);
             }
 
             for (int i = 0; i < Length; i++)
             {
-                dsw[i] = dsw2[i] * WinF[i];
+                Dsw[i] = Dsw2[i] * WinF[i];
             }
 
             int LengthBy2 = Length / 2;
@@ -167,16 +176,19 @@ namespace Nitride.EE
             // Transform Radix-2
             while (LengthBy2 >= 1)
             {
-                int d = 0;
+                //int d = 0;
                 for (int i = 0; i < w; i++)
                 {
-                    d = Length / w;
+                    int id = i * (Length / w);
                     for (int j = 0; j < LengthBy2; j++)
                     {
-                        Complex TmpA = dsw[i * d + j] + dsw[i * d + LengthBy2 + j];
-                        Complex TmpB = (dsw[i * d + j] - dsw[i * d + LengthBy2 + j]) * Wn[w * j];
-                        dsw[i * d + j] = TmpA;
-                        dsw[i * d + LengthBy2 + j] = TmpB;
+                        int idj = id + j;
+                        int idjL2 = idj + LengthBy2;
+                        
+                        Complex TmpA = Dsw[idj] + Dsw[idjL2];
+                        Complex TmpB = (Dsw[idj] - Dsw[idjL2]) * Wn[w * j];
+                        Dsw[idj] = TmpA;
+                        Dsw[idjL2] = TmpB;
                     }
                 }
                 LengthBy2 /= 2;
@@ -201,11 +213,11 @@ namespace Nitride.EE
 
             ft.Configure(0, t.SampleRate, Length / 64);
 
-            Complex[] res = new Complex[dsw.Length];
+            //Complex[] Result = new Complex[Dsw.Length];
 
-            for (uint i = 0; i < dsw.Length; i++)
+            for (uint i = 0; i < Dsw.Length; i++)
             {
-                res[i] = dsw[i.EndianInverse(m)];
+                Result[i] = Dsw[i.EndianInverse(m)];
                 /*
                 FreqRow row = ft[(int)i];
                 Complex c = row[Column_Result] = dsw[i.EndianInverse(m)];
@@ -216,7 +228,7 @@ namespace Nitride.EE
             for (int i = 0; i < ft.Count; i++) 
             {
                 FreqRow row = ft[i];
-                double mag = row[Column_ResultMag] = res.Skip(i * 64).Take(64).Select(c => c.Magnitude).Max();
+                double mag = row[Column_ResultMag] = Result.Skip(i * 64).Take(64).Select(c => c.Magnitude).Max();
                 row[Column_ResultDb] = (20 * Math.Log10(mag)) - 180.6;
 
             }

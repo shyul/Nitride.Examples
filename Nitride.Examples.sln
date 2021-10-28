@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nitride", "Nitride\Nitride.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nitride.Test.FFT", "Nitride.Test.FFT\Nitride.Test.FFT.csproj", "{B05CB544-3622-4555-BB8B-4E09D9A58A86}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nitride.EE.WinUSB", "Nitride.EE.WinUSB\Nitride.EE.WinUSB.csproj", "{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,12 @@ Global
 		{B05CB544-3622-4555-BB8B-4E09D9A58A86}.Release|Any CPU.ActiveCfg = Release|x64
 		{B05CB544-3622-4555-BB8B-4E09D9A58A86}.Release|x64.ActiveCfg = Release|x64
 		{B05CB544-3622-4555-BB8B-4E09D9A58A86}.Release|x64.Build.0 = Release|x64
+		{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}.Debug|x64.ActiveCfg = Debug|x64
+		{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}.Debug|x64.Build.0 = Debug|x64
+		{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}.Release|Any CPU.ActiveCfg = Release|x64
+		{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}.Release|x64.ActiveCfg = Release|x64
+		{DA84A485-63E3-4369-A3C4-3258C9ECF1CF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
