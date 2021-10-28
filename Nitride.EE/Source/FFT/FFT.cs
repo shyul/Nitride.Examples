@@ -144,10 +144,11 @@ namespace Nitride.EE
 
             Complex[] dsw = new Complex[Length];
             Complex[] dsw2 = new Complex[Length];
+
             for (int i = startPt; i < Length + startPt; i++)
             {
                 double input = t[i][inputColumn];// * factor;
-                dsw2[i] = new(input, 0);
+                dsw2[i - startPt] = new(input, 0);
             }
 
             for (int i = 0; i < Length; i++)

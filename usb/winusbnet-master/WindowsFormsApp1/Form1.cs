@@ -32,7 +32,6 @@ namespace WindowsFormsApp1
                 TestBuffer[i] = (byte)next;
             }
 
-
             foreach (var dev in devices)
             {
                 Console.WriteLine(dev.DevicePath);

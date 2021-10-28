@@ -30,7 +30,5 @@ namespace Nitride.EE.WinUSB
 
         [DllImport("winusb.dll", SetLastError = true)]
         private static unsafe extern bool WinUsb_ReadPipe(IntPtr InterfaceHandle, byte PipeID, byte* pBuffer, uint BufferLength, out uint LengthTransferred, NativeOverlapped* pOverlapped);
-
-
     }
 }

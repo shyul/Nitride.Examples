@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Nitride;
 using Nitride.EE.WinUSB;
 
 namespace WindowsFormsApp1
@@ -30,6 +31,12 @@ namespace WindowsFormsApp1
 
         public MainForm()
         {
+            for (int i = 0; i < TestBuffer.Length; i++)
+            {
+                int next = Random.Next();
+                TestBuffer[i] = (byte)next;
+            }
+
             InitializeComponent();
             Guid guid = Guid.Parse("{6AE77B78-518B-493D-A9DD-3A64E87EA3F9}");
             Console.WriteLine("GUID is: " + guid.ToString().ToUpper());
@@ -141,12 +148,12 @@ namespace WindowsFormsApp1
                     }
                 }
 
-                /*
+                
                 for (int i = 0; i < sendbuffer.Count; i++)
                 {
                     Console.Write(sendbuffer[i] + " ");
                 }
-                Console.Write("\n");*/
+                Console.Write("\n");
 
                 intOut.Write(sendbuffer.ToArray());
                 //BaseNumber++;
@@ -184,9 +191,16 @@ namespace WindowsFormsApp1
         public const ushort STREAM_COMMAND_SET_SINGLE_READ = 0x1000;
         public const ushort STREAM_COMMAND_SET_LOOP_READ = 0x1001;
         public const ushort STREAM_COMMAND_SET_READ_BASEADDR = 0x2000;
+        public const ushort STREAM_COMMAND_SET_READ_LENGTH = 0x2002;
+        public const ushort STREAM_COMMAND_SET_READ_PACKET_LEN = 0x2003;
         public const ushort STREAM_COMMAND_START_READ = 0x3000;
         public const ushort STREAM_COMMAND_STOP_READ = 0x4000;
         public const ushort STREAM_COMMAND_READ_STATUS = 0x5000;
+        public const ushort STREAM_COMMAND_READ_START_DMA = 0x6000;
+        public const ushort STREAM_COMMAND_READ_TIGGER_DMA = 0x6001;
+        public const ushort STREAM_COMMAND_READ_STOP_DMA = 0x6002;
+        public const ushort STREAM_COMMAND_READ_DMA_STATUS = 0x6010;
+        public const ushort STREAM_COMMAND_READ_BUF_OCCUP = 0x6011;
 
         public const ushort STREAM_COMMAND_SET_SINGLE_WRITE = 0xA000;
         public const ushort STREAM_COMMAND_SET_LOOP_WRITE = 0xA001;
@@ -194,6 +208,26 @@ namespace WindowsFormsApp1
         public const ushort STREAM_COMMAND_START_WRITE = 0xC000;
         public const ushort STREAM_COMMAND_STOP_WRITE = 0xD000;
         public const ushort STREAM_COMMAND_WRITE_STATUS = 0xE000;
+
+        private void BtnStartDMA_Click(object sender, EventArgs e)
+        {
+            SendCommand(STREAM_COMMAND_READ_START_DMA);
+        }
+
+        private void BtnReadDMATrigger_Click(object sender, EventArgs e)
+        {
+            SendCommand(STREAM_COMMAND_READ_TIGGER_DMA);
+        }
+
+        private void BtnStopDMA_Click(object sender, EventArgs e)
+        {
+            SendCommand(STREAM_COMMAND_READ_STOP_DMA);
+        }
+
+        private void BtnGetDMAStatus_Click(object sender, EventArgs e)
+        {
+            SendCommand(STREAM_COMMAND_READ_DMA_STATUS);
+        }
 
         private void BtnSetSingleRead_Click(object sender, EventArgs e)
         {
@@ -214,6 +248,26 @@ namespace WindowsFormsApp1
         {
             ulong baseAddess = addr;
             SendCommand(STREAM_COMMAND_SET_READ_BASEADDR, new byte[] { (byte)(baseAddess & 0xFF), (byte)((baseAddess << 8) & 0xFF), (byte)((baseAddess >> 16) & 0xFF), (byte)((baseAddess >> 24) & 0xFF), (byte)((baseAddess >> 32) & 0xFF), (byte)((baseAddess >> 40) & 0xFF), (byte)((baseAddess >> 48) & 0xFF), (byte)((baseAddess >> 56) & 0xFF) });
+        }
+
+        private void BtnSetReadLength_Click(object sender, EventArgs e)
+        {
+            SetReadLength(0x2000000);
+        }
+
+        void SetReadLength(uint length)
+        {
+            SendCommand(STREAM_COMMAND_SET_READ_LENGTH, new byte[] { (byte)(length & 0xFF), (byte)((length << 8) & 0xFF), (byte)((length >> 16) & 0xFF), (byte)((length >> 24) & 0xFF) });
+        }
+
+        private void BtnSetReadUSBPacketSize_Click(object sender, EventArgs e)
+        {
+            SetReadPacketSize(65536);
+        }
+
+        void SetReadPacketSize(ulong length)
+        {
+            SendCommand(STREAM_COMMAND_SET_READ_PACKET_LEN, new byte[] { (byte)(length & 0xFF), (byte)((length << 8) & 0xFF), (byte)((length >> 16) & 0xFF), (byte)((length >> 24) & 0xFF) });
         }
 
         private void BtnSetStartRead_Click(object sender, EventArgs e)
@@ -243,33 +297,6 @@ namespace WindowsFormsApp1
                         if (i % 8 == 0) s += "\n";
                         i++;
                     }
-
-
-                    /*
-                    List<int> data = new List<int>();
-
-                    int i = 0;
-                    for (; i < databuffer.Length; i += 2)
-                    {
-                        //short d = (short)(((char)databuffer[i + 1]) * 256);
-
-
-
-                        int d = (databuffer[i + 1] << 10) | (databuffer[i] << 2);
-
-                        d = ((d < 32768) ? d : (d - 65536)) / 4;
-
-                        //short d = (short)(((databuffer[i + 1] << 10) | (databuffer[i] << 2)) / 4);
-                        data.Add(d);
-                    }
-
-
-                    foreach (var b in data.Take(64))
-                    {
-                        s += b.ToString() + "\t";
-                        if (i % 16 == 0) s += "\n";
-                        i++;
-                    }*/
 
                     Console.WriteLine(s + "\nbytesRead = " + bytesRead);
                 }
@@ -445,10 +472,12 @@ namespace WindowsFormsApp1
 
         private void BtnCheck_Click(object sender, EventArgs e)
         {
-            BtnCheck.Enabled = false;
+     
 
             if (UsbDevice is not null)
             {
+                BtnCheck.Enabled = false;
+
                 SendCommand(STREAM_COMMAND_STOP_WRITE);
                 //Thread.Sleep(100);
                 SendCommand(STREAM_COMMAND_STOP_READ);
@@ -484,7 +513,6 @@ namespace WindowsFormsApp1
                 Thread.Sleep(100);
                 if (BulkIn is not null)
                 {
-                    BtnReceiveBulk2.Enabled = false;
                     List<byte> result = new();
 
                     DateTime start = DateTime.Now;
@@ -516,15 +544,139 @@ namespace WindowsFormsApp1
                 Thread.Sleep(100);
 
                 SendCommand(STREAM_COMMAND_STOP_READ);
+                BtnCheck.Enabled = true;
             }
-            BtnCheck.Enabled = true;
+        }
+
+        private void BtnReadBufferOccupation_Click(object sender, EventArgs e)
+        {
+            SendCommand(STREAM_COMMAND_READ_BUF_OCCUP);
+        }
+
+        private void BtnCapture_Click(object sender, EventArgs e)
+        {
+            if (UsbDevice is not null)
+            {
+                uint readLen = 0x2000000;
+                BtnCapture.Enabled = false;
+                SendCommand(STREAM_COMMAND_STOP_READ);
+                SendCommand(STREAM_COMMAND_READ_STOP_DMA);
+                SendCommand(STREAM_COMMAND_SET_SINGLE_READ);
+                SetReadLength(readLen);
+                SetReadAddress(0x800000000);
+                SendCommand(STREAM_COMMAND_READ_START_DMA);
+                SendCommand(STREAM_COMMAND_READ_TIGGER_DMA);
+
+                Thread.Sleep(500);
+                SendCommand(STREAM_COMMAND_READ_STOP_DMA);
+                SendCommand(STREAM_COMMAND_START_READ);
+
+                List<byte> buffer = new();
+                if (BulkIn is not null)
+                {
+                    BtnReceiveBulk.Enabled = false;
+                    byte[] databuffer = new byte[65536];
+
+                    int i = 0;
+                    DateTime start = DateTime.Now;
+
+                    uint count = readLen / 65536;
+
+                    while (i < count && BulkIn.Read(databuffer))//databuffer)) 
+                    {
+                        buffer.AddRange(databuffer);
+                        i++;
+                    }
+
+                    TimeSpan sp = DateTime.Now - start;
+                    Console.WriteLine("Transfer Speed = " + ((i * 65536 / 1024 / 1024) / (sp.TotalSeconds)) + " MB / s");
+                    Console.WriteLine("count: " + i);
+
+
+                    BtnReceiveBulk.Enabled = true;
+                }
+
+                SendCommand(STREAM_COMMAND_STOP_READ);
+
+                StringBuilder s = new();
+                int j = 0;
+                string ch1 = string.Empty;
+                for (int i = 0; i < buffer.Count; i += 2)
+                {
+                    int d = (buffer[i + 1] << 10) | (buffer[i] << 2);
+
+                    d = ((d < 32768) ? d : (d - 65536)) / 4;
+
+                    //short d = (short)(((databuffer[i + 1] << 10) | (databuffer[i] << 2)) / 4);
+                    //data.Add(d);
+
+
+                    if (j % 2 == 0)
+                    {
+                        ch1 = d.ToString();
+                    }
+                    else
+                    {
+                        s.AppendLine(ch1 + "," + d.ToString());
+                    }
 
 
 
+                    j++;
+                }
+
+                s.ToFile("B:\\samples.csv");
+
+                BtnCapture.Enabled = true;
+            }
+        }
+
+        private void BtnSingleCapture_Click(object sender, EventArgs e)
+        {
+            if (BulkIn is not null)
+            {
+                byte[] databuffer = new byte[65536];
+                int bytesRead = 0;// databuffer.Length;
+
+                if (BulkIn.Read(databuffer))
+                {
 
 
 
+                    
+                    List<int> data = new List<int>();
 
+                    int i = 0;
+                    for (; i < databuffer.Length; i += 2)
+                    {
+                        //short d = (short)(((char)databuffer[i + 1]) * 256);
+
+
+
+                        int d = (databuffer[i + 1] << 10) | (databuffer[i] << 2);
+
+                        d = ((d < 32768) ? d : (d - 65536)) / 4;
+
+                        //short d = (short)(((databuffer[i + 1] << 10) | (databuffer[i] << 2)) / 4);
+                        data.Add(d);
+                    }
+
+                    string s = "";
+                    i = 1;
+                    foreach (var b in data.Take(256))
+                    {
+                        s += b.ToString() + "\t";
+                        if (i % 8 == 0) s += "\n";
+                        i++;
+                    }
+
+                    Console.WriteLine(s + "\nbytesRead = " + bytesRead);
+                }
+                else
+                {
+                    Console.WriteLine("failed");
+                }
+            }
         }
     }
 }

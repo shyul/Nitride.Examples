@@ -129,7 +129,7 @@ namespace Nitride.Example
 
                 FFT fft = new(262144);// 65536, WindowsType.BlackmanHarris);
 
-                FreqTable = fft.Transform(SampleTable, Column_Channel1, 0);
+                FreqTable = fft.Transform(SampleTable, Column_Channel1, 65536);
 
                 FreqChart = new("Freq Chart", FreqTable)
                 {
