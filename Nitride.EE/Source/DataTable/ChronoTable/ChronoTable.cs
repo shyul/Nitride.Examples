@@ -17,10 +17,12 @@ namespace Nitride.EE
     {
         public ChronoTable(int numOfPts)
         {
+            Clear(numOfPts);
+            /*
             for (int i = 0; i < numOfPts; i++)
             {
                 TimeRows.Add(new ChronoRow(i, this));
-            }
+            }*/
         }
 
         ~ChronoTable() => Dispose();
@@ -43,6 +45,15 @@ namespace Nitride.EE
         {
             lock (TimeRows)
                 TimeRows.Clear();
+        }
+
+        public void Clear(int numOfPts)
+        {
+            TimeRows.Clear();
+            for (int i = 0; i < numOfPts; i++)
+            {
+                TimeRows.Add(new ChronoRow(i, this));
+            }
         }
 
         public ChronoRow this[int i]

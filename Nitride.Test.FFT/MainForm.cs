@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Nitride.Chart;
@@ -15,152 +16,29 @@ namespace Nitride.Example
 {
     public partial class MainForm : Form
     {
-        FreqTable FreqTable { get; set; } 
-
-        FreqChart FreqChart { get; set; }
-
-        public MainForm()
-        {
-            InitializeComponent();
-
-            /*
-            TestChart = new("Test Chart", FreqTable)
-            {
-                IndexCount = FreqTable.Count,
-                ReadyToShow = true,
-                StopPt = FreqTable.Count
-            };
-
-            TestChart.Location = new Point(0, 0);
-            TestChart.Dock = DockStyle.Fill;
-
-
-            Controls.Add(TestChart);
-
-
-            Program.ChartForm.AddForm(TestChart);
-
-            Console.WriteLine(FreqTable[3][TestChart.Column_Amplitude]);
-            Console.WriteLine(TestChart.IndexCount);*/
-        }
-
         public static NumericColumn Column_Channel1 { get; } = new("Channel 1", "FS");
+
         public static NumericColumn Column_Channel2 { get; } = new("Channel 2", "FS");
 
         public ChronoTable SampleTable { get; set; }
 
         public ChronoChart SampleChart { get; set; }
 
-        private void BtnReadWaveform_Click(object sender, EventArgs e)
-        {
-            using OpenFileDialog openFileDialog = new()
-            {
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                Filter = "CSV File (*.csv)|*.csv",
-                RestoreDirectory = true
-            };
+        FreqTable FreqTable { get; set; } 
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                using var fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                using StreamReader sr = new(fs);
-                List<(double, double)> sample = new();
+        FreqChart FreqChart { get; set; }
 
-                
-                while (!sr.EndOfStream)
-                {
-                    string[] fields = sr.ReadLine().Trim().Split(',');
-                    if (fields.Length == 2) 
-                    {
-                        sample.Add((fields[0].ToDouble(), fields[1].ToDouble()));
-                    }
-                }
+        FFT FFT { get; }
 
-                ChronoTable ct = new(sample.Count) { SampleRate = 250e6 };
-
-                
-
-                for (int i = 0; i < sample.Count; i++)// var (d1, d2) in sample)
-                {
-                    var (d1, d2) = sample[i];
-                    ct[i][Column_Channel1] = d1;
-                    ct[i][Column_Channel2] = d2;
-                }
-
-                SampleTable = ct;
-
-                SampleChart = new ChronoChart("Sample Chart", SampleTable)
-                {
-                    IndexCount = 1000,
-                    ReadyToShow = true,
-                    StopPt = 1000
-                };
-
-                //SampleChart.MainArea.AxisRight.
-
-                SampleChart.MainArea.AddSeries(new LineSeries(Column_Channel1)
-                {
-                    Order = 0,
-                    Importance = Importance.Minor,
-                    Name = "Channel 1",
-                    LegendName = "Channel 1",
-                    Color = Color.SlateBlue,
-                    IsAntialiasing = true,
-                    Tension = 0,
-                    HasTailTag = false
-                });
-
-                SampleChart.MainArea.AddSeries(new LineSeries(Column_Channel2)
-                {
-                    Order = 0,
-                    Importance = Importance.Minor,
-                    Name = "Channel 2",
-                    LegendName = "Channel 2",
-                    Color = Color.DarkGreen,
-                    IsAntialiasing = true,
-                    Tension = 0,
-                    HasTailTag = false
-                });
-
-                SampleChart.Location = new Point(0, 0);
-                SampleChart.Dock = DockStyle.Fill;
-                Program.ChartForm.AddForm(SampleChart);
-
-
-                FFT fft = new(262144);// 65536, WindowsType.BlackmanHarris);
-
-                FreqTable = fft.Transform(SampleTable, Column_Channel1, 65536);
-
-                FreqChart = new("Freq Chart", FreqTable)
-                {
-                    IndexCount = FreqTable.Count / 2,
-                    ReadyToShow = true,
-                    StopPt = FreqTable.Count / 2
-                };
-
-                FreqChart.MainArea.AddSeries(new LineSeries(FFT.Column_ResultDb)
-                {
-                    Order = 0,
-                    Importance = Importance.Major,
-                    Name = "FFT Spectrum",
-                    LegendName = "FFT Spectrum",
-                    Color = Color.Gray,
-                    IsAntialiasing = true,
-                    Tension = 0,
-                    HasTailTag = false
-                });
-
-                FreqChart.Location = new Point(0, 0);
-                FreqChart.Dock = DockStyle.Fill;
-                Program.ChartForm.AddForm(FreqChart);
-            }
-        }
+        const int SampleLength = 65536 * 4;
 
         public static ComplexColumn Column_ChannelComplex { get; } = new("Complex Channel", "FS");
 
-        private void BtnDemo_Click(object sender, EventArgs e)
+        public MainForm()
         {
-            var samples = FFT.GetSineWave(262144, 8191, 0.86);
+            InitializeComponent();
+
+            var samples = FFT.GetSineWave(SampleLength, 8191, 0.86);
             /*
             foreach(var c in samples) 
             {
@@ -215,9 +93,9 @@ namespace Nitride.Example
             SampleChart.Dock = DockStyle.Fill;
             Program.ChartForm.AddForm(SampleChart);
 
-            FFT fft = new(samples.Length);// 65536, WindowsType.BlackmanHarris);
-
-            FreqTable = fft.Transform(SampleTable, Column_ChannelComplex, 0);
+            FFT = new(SampleLength);// 65536, WindowsType.BlackmanHarris);
+            FreqTable = new FreqTable();
+            FFT.Transform(FreqTable, SampleTable, Column_ChannelComplex, 0);
 
             double peak = FreqTable.Rows.Select(n => n[FFT.Column_ResultDb]).Max();
 
@@ -245,6 +123,90 @@ namespace Nitride.Example
             FreqChart.Location = new Point(0, 0);
             FreqChart.Dock = DockStyle.Fill;
             Program.ChartForm.AddForm(FreqChart);
+        }
+
+
+
+        private void BtnReadWaveform_Click(object sender, EventArgs e)
+        {
+            using OpenFileDialog openFileDialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                Filter = "CSV File (*.csv)|*.csv",
+                RestoreDirectory = true
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                using var fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using StreamReader sr = new(fs);
+                List<(double, double)> sample = new();
+
+                while (!sr.EndOfStream)
+                {
+                    string[] fields = sr.ReadLine().Trim().Split(',');
+                    if (fields.Length == 2) 
+                    {
+                        sample.Add((fields[0].ToDouble(), fields[1].ToDouble()));
+                    }
+                }
+
+                Console.WriteLine("sample.Count = " + sample.Count);
+
+                SampleTable.Clear(sample.Count);
+                SampleTable.SampleRate = 250e6;
+
+                for (int i = 0; i < sample.Count; i++)// var (d1, d2) in sample)
+                {
+                    var (d1, d2) = sample[i];
+                    SampleTable[i][Column_Channel1] = d1;
+                    SampleTable[i][Column_Channel2] = d2;
+                }
+
+                SampleTable.DataIsUpdated();
+
+                FreqChart.IndexCount = FreqChart.StopPt = FreqTable.Count / 2;
+
+                FFT.Transform(FreqTable, SampleTable, Column_Channel1, 0);
+            }
+        }
+
+
+        int PlayPt = 0;
+        bool EnablePlay { get; set; } = true;
+
+        //Task PlayWave { get; set; }
+
+        void PlayWaveWorker() 
+        {
+            //int step = FFT.Length / 8;
+            //if (step < 1) step = 1;
+
+            while (EnablePlay) 
+            {
+                Console.WriteLine("PlayPt = " + PlayPt + " | SampleTable.Count = " + SampleTable.Count + " | FFT.Length = " + FFT.Length);
+
+                FFT.Transform(FreqTable, SampleTable, Column_Channel1, PlayPt);
+
+                PlayPt += 32768;
+
+                if (PlayPt > SampleTable.Count - FFT.Length)
+                    PlayPt = 0;
+
+                //Thread.Sleep(50);
+            }
+        }
+
+        private void BtnStartPlay_Click(object sender, EventArgs e)
+        {
+            PlayPt = 0;
+            EnablePlay = true;
+            Task.Run(() => PlayWaveWorker());
+        }
+
+        private void BtnStopPlay_Click(object sender, EventArgs e)
+        {
+            EnablePlay = false;
         }
     }
 }

@@ -69,13 +69,16 @@ namespace Nitride.EE
         public static NumericColumn Column_ResultMag { get; } = new("FFT Result Mag", "FS");
         public static NumericColumn Column_ResultDb { get; } = new("FFT Result Db", "FS");
 
-        public FreqTable Transform(ChronoTable t, ComplexColumn inputColumn, int startPt)
+        public void Transform(FreqTable ft, ChronoTable t, ComplexColumn inputColumn, int startPt)
         {
             Complex[] dsw = new Complex[Length];
 
             // Apply window to input sample
-            for (int i = startPt; i < Length + startPt; i++)
-                dsw[i] = t[i][inputColumn] * WinF[i];
+            for (int i = startPt; i < Length + startPt; i++) 
+            {
+                dsw[i - startPt] = t[i][inputColumn] * WinF[i];
+            }
+           
 
             int LengthBy2 = Length / 2;
             //int LengthBy4 = LengthBy2 / 2;
@@ -113,7 +116,7 @@ namespace Nitride.EE
                 ft[(int)i][Column_Result] = dsw[i.EndianInverse(m)];
             }*/
 
-            FreqTable ft = new();
+            //FreqTable ft = new();
             ft.Configure(0, t.SampleRate, Length / 64);
 
             Complex[] c = new Complex[dsw.Length];
@@ -133,12 +136,12 @@ namespace Nitride.EE
 
             }
 
-            return ft;
+            ft.DataIsUpdated();
         }
 
-        public FreqTable Transform(ChronoTable t, NumericColumn inputColumn, int startPt)
+        public void Transform(FreqTable ft, ChronoTable t, NumericColumn inputColumn, int startPt)
         {
-            double maxVal = t.Rows.Select(n => Math.Abs(n[inputColumn])).Max();
+            //double maxVal = t.Rows.Select(n => Math.Abs(n[inputColumn])).Max();
             //double minVal = t.Rows.Select(n => n[inputColumn]).Min();
             //double factor = 8191 / maxVal;
 
@@ -196,7 +199,6 @@ namespace Nitride.EE
                 row[Column_ResultDb] = 20 * Math.Log10(mag);
             }*/
 
-            FreqTable ft = new();
             ft.Configure(0, t.SampleRate, Length / 64);
 
             Complex[] res = new Complex[dsw.Length];
@@ -219,8 +221,7 @@ namespace Nitride.EE
 
             }
 
-
-            return ft;
+            ft.DataIsUpdated();
         }
         public FreqTable Transform2(ChronoTable t, NumericColumn inputColumn, int startPt)
         {
