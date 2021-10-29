@@ -815,17 +815,17 @@ namespace WindowsFormsApp1
             //if (step < 1) step = 1;
             SampleTable.Clear(SampleLength);
             SampleTable.SampleRate = 250e6;
-            FreqChart.IndexCount = FreqChart.StopPt = SampleLength / 2;
+            FreqChart.IndexCount = FreqChart.StopPt = SampleLength / 64 / 2;
 
             while (EnablePlay && UsbDevice is not null)
             {
                 //Console.WriteLine("PlayPt = " + PlayPt + " | SampleTable.Count = " + SampleTable.Count + " | FFT.Length = " + FFT.Length);
             
-                BtnCapture.Enabled = false;
+            
                 SendCommand(STREAM_COMMAND_STOP_READ);
                 SendCommand(STREAM_COMMAND_READ_STOP_DMA);
                 SendCommand(STREAM_COMMAND_SET_SINGLE_READ);
-                SetReadLength(SampleLength);
+                SetReadLength(SampleLength * 4);
                 SetReadAddress(0x800000000);
                 SendCommand(STREAM_COMMAND_READ_START_DMA);
                 SendCommand(STREAM_COMMAND_READ_TIGGER_DMA);
@@ -844,7 +844,7 @@ namespace WindowsFormsApp1
                     int i = 0;
                     //DateTime start = DateTime.Now;
 
-                    uint count = SampleLength / 65536;
+                    uint count = SampleLength * 4 / 65536;
 
                     while (i < count && BulkIn.Read(databuffer))//databuffer)) 
                     {
@@ -858,6 +858,8 @@ namespace WindowsFormsApp1
                 }
 
                 SendCommand(STREAM_COMMAND_STOP_READ);
+
+                Console.WriteLine("buffer.Count = " + buffer.Count);
 
                 int j = 0, k = 0;
             
@@ -880,8 +882,10 @@ namespace WindowsFormsApp1
                     j++;
                 }
 
+                Console.WriteLine("SampleTable.Count = " + SampleTable.Count);
+
                 SampleTable.DataIsUpdated();
-                FFT.Transform(FreqTable, SampleTable, Column_Channel1, 0);
+                FFT.Transform(FreqTable, SampleTable, Column_Channel2, 0);
             }
         }
     }
