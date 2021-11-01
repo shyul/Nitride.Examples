@@ -862,6 +862,9 @@ namespace WindowsFormsApp1
                 Console.WriteLine("buffer.Count = " + buffer.Count);
 
                 int j = 0, k = 0;
+
+                List<int> ch_1 = new();
+                List<int> ch_2 = new();
             
                 for (int i = 0; i < buffer.Count; i += 2)
                 {
@@ -871,18 +874,30 @@ namespace WindowsFormsApp1
 
                     if (j % 2 == 0)
                     {
-                        SampleTable[k][Column_Channel1] = d;
+                        ch_1.Add(d);
+                        //SampleTable[k][Column_Channel1] = d;
                     }
                     else
                     {
-                        SampleTable[k][Column_Channel2] = d;
+                        ch_2.Add(d);
+                        //SampleTable[k][Column_Channel2] = d;
                         k++;
                     }
 
                     j++;
                 }
 
-                Console.WriteLine("SampleTable.Count = " + SampleTable.Count);
+                double ch1_avg = ch_1.Average();
+                double ch2_avg = ch_2.Average();
+
+                for (int i = 0; i < ch_1.Count; i++)
+                {
+                    SampleTable[i][Column_Channel1] = ch_1[i] - ch1_avg;
+                    SampleTable[i][Column_Channel2] = ch_2[i] - ch2_avg;
+                }
+
+
+                //Console.WriteLine("SampleTable.Count = " + SampleTable.Count);
 
                 SampleTable.DataIsUpdated();
                 FFT.Transform(FreqTable, SampleTable, Column_Channel2, 0);
