@@ -80,7 +80,7 @@ namespace Nitride.EE
                 Complex p22 = row[this[2, 2]];
 
                 //Console.WriteLine("freq = " + row.Frequency + "; " + "Mag11 = " + p11.Magnitude + "; " + "Mag21 = " + p21.Magnitude + "; " + "Mag12 = " + p12.Magnitude + "; " + "Mag22 = " + p22.Magnitude);
-                Console.WriteLine("CalculateFormat: freq = " + row.Frequency + "; " + "p11 = " + p11 + "; " + "p21 = " + p21 + "; " + "p12 = " + p12 + "; " + "p22 = " + p22);
+                //Console.WriteLine("CalculateFormat: freq = " + row.Frequency + "; " + "p11 = " + p11 + "; " + "p21 = " + p21 + "; " + "p12 = " + p12 + "; " + "p22 = " + p22);
 
                 row[this[1, 1, ComplexFormat.Magnitude]] = p11.Magnitude;
                 row[this[1, 1, ComplexFormat.Phase]] = p11.Phase;

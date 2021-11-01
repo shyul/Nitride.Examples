@@ -34,7 +34,7 @@ namespace Nitride.EE
             {
                 double z0 = Z0;
                 ZParam zt = new(Name, 2);
-                Console.WriteLine("Get Z Table:\n");
+                //Console.WriteLine("Get Z Table:\n");
                 int pt = 0;
                 foreach (var row in ft.Rows)
                 {
@@ -56,10 +56,10 @@ namespace Nitride.EE
                     //if (pt < 5 || (freq >= 1.9e6 && freq <= 2.4e6))
                     if (freq >= 1.9e6 && freq <= 2.4e6)
                     {
-                        Console.WriteLine("freq = " + freq + "; s11 = " + row[this[1, 1]] + "; s21 = " + row[this[2, 1]] + "; s12 = " + row[this[1, 2]] + "; s22 = " + row[this[2, 2]]);
-                        Console.WriteLine("freq = " + freq + "; z11 = " + row[zt[1, 1]] + "; z21 = " + row[zt[2, 1]] + "; z12 = " + row[zt[1, 2]] + "; z22 = " + row[zt[2, 2]]);
-                        Console.WriteLine("freq = " + freq + "; Mag(z11) = " + row[zt[1, 1]].Magnitude + "; Mag(z21) = " + row[zt[2, 1]].Magnitude + "; Mag(z12) = " + row[zt[1, 2]].Magnitude + "; Mag(z22) = " + row[zt[2, 2]].Magnitude);
-                        Console.WriteLine();
+                        //Console.WriteLine("freq = " + freq + "; s11 = " + row[this[1, 1]] + "; s21 = " + row[this[2, 1]] + "; s12 = " + row[this[1, 2]] + "; s22 = " + row[this[2, 2]]);
+                        //Console.WriteLine("freq = " + freq + "; z11 = " + row[zt[1, 1]] + "; z21 = " + row[zt[2, 1]] + "; z12 = " + row[zt[1, 2]] + "; z22 = " + row[zt[2, 2]]);
+                        //Console.WriteLine("freq = " + freq + "; Mag(z11) = " + row[zt[1, 1]].Magnitude + "; Mag(z21) = " + row[zt[2, 1]].Magnitude + "; Mag(z12) = " + row[zt[1, 2]].Magnitude + "; Mag(z22) = " + row[zt[2, 2]].Magnitude);
+                        //Console.WriteLine();
                     }
                 }
 

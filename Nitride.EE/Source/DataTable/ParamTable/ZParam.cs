@@ -25,27 +25,8 @@ namespace Nitride.EE
             PortCount = portCount;
         }
 
-        private Dictionary<int, (ComplexColumn V, ComplexColumn I, ComplexColumn P)> VIColumnLUT { get; } = new();
-
-        public (ComplexColumn V, ComplexColumn I, ComplexColumn P) this[int num]
-        {
-            get
-            {
-                if (!VIColumnLUT.ContainsKey(num))
-                {
-                    VIColumnLUT.Add(num, (
-                        new ComplexColumn(GetType().Name + "_" + Name + "_V_" + num, "V" + num),
-                        new ComplexColumn(GetType().Name + "_" + Name + "_I_" + num, "I" + num),
-                        new ComplexColumn(GetType().Name + "_" + Name + "_P_" + num, "P" + num)
-                    ));
-                }
-
-                return VIColumnLUT[num];
-            }
-        }
-
         // https://en.wikipedia.org/wiki/Impedance_parameters
-        public void GetZin(FreqTable ft, ComplexColumn zinColumn, ComplexColumn zloadColumn)
+        public void GetZinWithZload(FreqTable ft, ComplexColumn zinColumn, ComplexColumn zloadColumn)
         {
             foreach (FreqRow row in ft.Rows)
             {
@@ -59,7 +40,7 @@ namespace Nitride.EE
         }
 
         // Get Zout
-        public void GetZout(FreqTable ft, ComplexColumn zoutColumn, ComplexColumn zsourceColumn)
+        public void GetZoutWithZsource(FreqTable ft, ComplexColumn zoutColumn, ComplexColumn zsourceColumn)
         {
             foreach (FreqRow row in ft.Rows)
             {
@@ -72,14 +53,8 @@ namespace Nitride.EE
             }
         }
 
-        // v1 = (z11 * i1) + (z12 * i2)
-        // v2 = (z21 * i1) + (z22 * i2)
-
-        public void CalculatePort2VI(FreqTable ft)
+        public void CalculatePort2VI(FreqTable ft, ComplexColumn V1, ComplexColumn I1, ComplexColumn V2, ComplexColumn I2)
         {
-            var (V1_Column, I1_Column, P1_Column) = this[1];
-            var (V2_Column, I2_Column, P2_Column) = this[2];
-
             foreach (var row in ft.Rows)
             {
                 Complex z11 = row[this[1, 1]];
@@ -87,21 +62,16 @@ namespace Nitride.EE
                 Complex z21 = row[this[2, 1]];
                 Complex z22 = row[this[2, 2]];
                 
-                Complex v1 = row[V1_Column];
-                Complex i1 = row[I1_Column];
-                row[P1_Column] = v1 * i1;
+                Complex v1 = row[V1];
+                Complex i1 = row[I1];
 
-                Complex i2 = row[I2_Column] = (v1 - (z11 * i1)) / z12;
-                Complex v2 = row[V2_Column] = (z21 * i1) + (z22 * i2);
-                row[P2_Column] = v2 * i2;
+                Complex i2 = row[I2] = (v1 - (z11 * i1)) / z12;
+                row[V2] = (z21 * i1) + (z22 * i2);
             }
         }
 
-        public void CalculatePort1VI(FreqTable ft)
+        public void CalculatePort2VI(FreqTable ft, NumericColumn V1, NumericColumn I1, ComplexColumn V2, ComplexColumn I2)
         {
-            var (V1_Column, I1_Column, P1_Column) = this[1];
-            var (V2_Column, I2_Column, P2_Column) = this[2];
-
             foreach (var row in ft.Rows)
             {
                 Complex z11 = row[this[1, 1]];
@@ -109,13 +79,45 @@ namespace Nitride.EE
                 Complex z21 = row[this[2, 1]];
                 Complex z22 = row[this[2, 2]];
 
-                Complex v2 = row[V2_Column];
-                Complex i2 = row[I2_Column];
-                row[P2_Column] = v2 * i2;
+                double v1 = row[V1];
+                double i1 = row[I1];
 
-                Complex i1 = row[I1_Column] = (v2 - (z22 * i2)) / z21;
-                Complex v1 = row[V1_Column] = (z11 * i1) + (z12 * i2);
-                row[P1_Column] = v1 * i1;
+                Complex i2 = row[I2] = (v1 - (z11 * i1)) / z12;
+                row[V2] = (z21 * i1) + (z22 * i2);
+            }
+        }
+
+        public void CalculatePort1VI(FreqTable ft, ComplexColumn V1, ComplexColumn I1, ComplexColumn V2, ComplexColumn I2)
+        {
+            foreach (var row in ft.Rows)
+            {
+                Complex z11 = row[this[1, 1]];
+                Complex z12 = row[this[1, 2]];
+                Complex z21 = row[this[2, 1]];
+                Complex z22 = row[this[2, 2]];
+
+                Complex v2 = row[V2];
+                Complex i2 = row[I2];
+
+                Complex i1 = row[I1] = (v2 - (z22 * i2)) / z21;
+                row[V1] = (z11 * i1) + (z12 * i2);
+            }
+        }
+
+        public void CalculatePort1VI(FreqTable ft, ComplexColumn V1, ComplexColumn I1, NumericColumn V2, NumericColumn I2)
+        {
+            foreach (var row in ft.Rows)
+            {
+                Complex z11 = row[this[1, 1]];
+                Complex z12 = row[this[1, 2]];
+                Complex z21 = row[this[2, 1]];
+                Complex z22 = row[this[2, 2]];
+
+                double v2 = row[V2];
+                double i2 = row[I2];
+
+                Complex i1 = row[I1] = (v2 - (z22 * i2)) / z21;
+                row[V1] = (z11 * i1) + (z12 * i2);
             }
         }
     }
