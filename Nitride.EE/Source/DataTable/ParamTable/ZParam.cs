@@ -69,7 +69,7 @@ namespace Nitride.EE
                 row[V2] = (z21 * i1) + (z22 * i2);
             }
         }
-
+        /*
         public void CalculatePort2VI(FreqTable ft, NumericColumn V1, NumericColumn I1, ComplexColumn V2, ComplexColumn I2)
         {
             foreach (var row in ft.Rows)
@@ -85,7 +85,7 @@ namespace Nitride.EE
                 Complex i2 = row[I2] = (v1 - (z11 * i1)) / z12;
                 row[V2] = (z21 * i1) + (z22 * i2);
             }
-        }
+        }*/
 
         public void CalculatePort1VI(FreqTable ft, ComplexColumn V1, ComplexColumn I1, ComplexColumn V2, ComplexColumn I2)
         {
@@ -103,7 +103,7 @@ namespace Nitride.EE
                 row[V1] = (z11 * i1) + (z12 * i2);
             }
         }
-
+        /*
         public void CalculatePort1VI(FreqTable ft, ComplexColumn V1, ComplexColumn I1, NumericColumn V2, NumericColumn I2)
         {
             foreach (var row in ft.Rows)
@@ -119,6 +119,6 @@ namespace Nitride.EE
                 Complex i1 = row[I1] = (v2 - (z22 * i2)) / z21;
                 row[V1] = (z11 * i1) + (z12 * i2);
             }
-        }
+        }*/
     }
 }
