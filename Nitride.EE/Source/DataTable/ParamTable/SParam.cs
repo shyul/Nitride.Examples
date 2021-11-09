@@ -14,6 +14,7 @@ using System.Numerics;
 using System.IO;
 using Nitride.Chart;
 using System.Drawing;
+using System.Text;
 
 namespace Nitride.EE
 {
@@ -27,6 +28,36 @@ namespace Nitride.EE
         }
 
         public double Z0 { get; }
+
+        public void ExportSnP(FreqTable ft, string fileName)
+        {
+            StringBuilder sb = new StringBuilder("# Hz S RI R " + Z0 + "\n");
+            foreach (var row in ft.Rows)
+            {
+                string line = row.Frequency + " ";
+
+                if (PortCount == 1)
+                {
+                    Complex s11 = row[this[1, 1]];
+                    line += s11.Real + " " + s11.Imaginary;
+                }
+                else if (PortCount == 2)
+                {
+                    Complex s11 = row[this[1, 1]];
+                    Complex s12 = row[this[1, 2]];
+                    Complex s21 = row[this[2, 1]];
+                    Complex s22 = row[this[2, 2]];
+
+                    line += s11.Real + " " + s11.Imaginary + " " + s21.Real + " " + s21.Imaginary + " " + s12.Real + " " + s12.Imaginary + " " + s22.Real + " " + s22.Imaginary;
+                }
+                else
+                    throw new Exception("The function only supports 1 or 2 ports, S-Parameter table.");
+
+                sb.AppendLine(line);
+            }
+
+            sb.ToFile(fileName + ".s" + PortCount + "p");
+        }
 
         public ZParam GetZTable(FreqTable ft)
         {
@@ -65,8 +96,25 @@ namespace Nitride.EE
 
                 return zt;
             }
+            else if (PortCount == 1)
+            {
+                double z0 = Z0;
+                ZParam zt = new(Name, 1);
+                //Console.WriteLine("Get Z Table:\n");
+                int pt = 0;
+                foreach (var row in ft.Rows)
+                {
+                    double freq = row.Frequency;
+                    pt++;
+
+                    Complex s11 = row[this[1, 1]];
+                    row[zt[1, 1]] = (s11 + 1) * z0 / (1 - s11);
+                }
+
+                return zt;
+            }
             else
-                throw new Exception("The function only supports 2 ports, S-Parameter table.");
+                throw new Exception("The function only supports 1 or 2 ports, S-Parameter table.");
         }
     }
 }

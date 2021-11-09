@@ -25,6 +25,53 @@ namespace Nitride.EE
             PortCount = portCount;
         }
 
+        public SParam GetSTable(FreqTable ft, double z0)
+        {
+            if (PortCount == 2)
+            {
+                SParam st = new(Name, 2, z0);
+
+                int pt = 0;
+                foreach (var row in ft.Rows)
+                {
+                    double freq = row.Frequency;
+                    pt++;
+
+                    Complex z11 = row[this[1, 1]];
+                    Complex z12 = row[this[1, 2]];
+                    Complex z21 = row[this[2, 1]];
+                    Complex z22 = row[this[2, 2]];
+
+                    Complex delta = ((z11 + z0) * (z22 + z0)) - (z12 * z21);
+
+                    row[st[1, 1]] = (((z11 - z0) * (z22 + z0)) - (z12 * z21)) / delta;
+                    row[st[1, 2]] = 2 * z12 * z0 / delta;
+                    row[st[2, 1]] = 2 * z21 * z0 / delta;
+                    row[st[2, 2]] = (((z11 + z0) * (z22 - z0)) - (z12 * z21)) / delta;
+                }
+
+                return st;
+            }
+            else if (PortCount == 1)
+            {
+                SParam st = new(Name, 1, z0);
+                //Console.WriteLine("Get Z Table:\n");
+                int pt = 0;
+                foreach (var row in ft.Rows)
+                {
+                    double freq = row.Frequency;
+                    pt++;
+
+                    Complex z11 = row[this[1, 1]];
+                    row[st[1, 1]] = (z11 - z0) / (z11 + z0);
+                }
+
+                return st;
+            }
+            else
+                throw new Exception("The function only supports 1 or 2 ports, Z-Parameter table.");
+        }
+
         // https://en.wikipedia.org/wiki/Impedance_parameters
         public void GetZinWithZload(FreqTable ft, ComplexColumn zinColumn, ComplexColumn zloadColumn)
         {
