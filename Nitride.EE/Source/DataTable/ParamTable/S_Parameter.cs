@@ -18,9 +18,9 @@ using System.Text;
 
 namespace Nitride.EE
 {
-    public class SParam : Parameter
+    public class S_Parameter : Parameter
     {
-        public SParam(string name, int portCount, double z0 = 50)
+        public S_Parameter(string name, int portCount, double z0 = 50)
         {
             Name = name;
             PortCount = portCount;
@@ -59,12 +59,12 @@ namespace Nitride.EE
             sb.ToFile(fileName + ".s" + PortCount + "p");
         }
 
-        public ZParam GetZTable(FreqTable ft)
+        public Z_Parameter GetZTable(FreqTable ft)
         {
             if (PortCount == 2)
             {
                 double z0 = Z0;
-                ZParam zt = new(Name, 2);
+                Z_Parameter zt = new(Name, 2);
                 //Console.WriteLine("Get Z Table:\n");
                 int pt = 0;
                 foreach (var row in ft.Rows)
@@ -99,7 +99,7 @@ namespace Nitride.EE
             else if (PortCount == 1)
             {
                 double z0 = Z0;
-                ZParam zt = new(Name, 1);
+                Z_Parameter zt = new(Name, 1);
                 //Console.WriteLine("Get Z Table:\n");
                 int pt = 0;
                 foreach (var row in ft.Rows)

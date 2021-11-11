@@ -27,7 +27,7 @@ namespace Nitride.Example
 
         FreqTable FreqTable { get; set; }
 
-        SParam SParam { get; set; }
+        S_Parameter SParam { get; set; }
 
         private void BtnLoadSnPFile_Click(object sender, EventArgs e)
         {
@@ -45,7 +45,7 @@ namespace Nitride.Example
                     var (ft, pr) = Parameter.LoadSnP(openFileDialog.FileName);
 
                     FreqTable = ft;
-                    SParam = pr as SParam;
+                    SParam = pr as S_Parameter;
 
                     if (SParam is null) throw new Exception("SParam is still null!!");
                 }
@@ -58,7 +58,7 @@ namespace Nitride.Example
 
         private void BtnSaveSnPFile_Click(object sender, EventArgs e)
         {
-            if (SParam is SParam sp)
+            if (SParam is S_Parameter sp)
             {
                 using SaveFileDialog fileDialog = new()
                 {

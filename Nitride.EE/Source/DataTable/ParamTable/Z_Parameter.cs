@@ -17,19 +17,19 @@ using System.Drawing;
 
 namespace Nitride.EE
 {
-    public class ZParam : Parameter
+    public class Z_Parameter : Parameter
     {
-        public ZParam(string name, int portCount)
+        public Z_Parameter(string name, int portCount)
         {
             Name = name;
             PortCount = portCount;
         }
 
-        public SParam GetSTable(FreqTable ft, double z0)
+        public S_Parameter GetSTable(FreqTable ft, double z0)
         {
             if (PortCount == 2)
             {
-                SParam st = new(Name, 2, z0);
+                S_Parameter st = new(Name, 2, z0);
 
                 int pt = 0;
                 foreach (var row in ft.Rows)
@@ -54,7 +54,7 @@ namespace Nitride.EE
             }
             else if (PortCount == 1)
             {
-                SParam st = new(Name, 1, z0);
+                S_Parameter st = new(Name, 1, z0);
                 //Console.WriteLine("Get Z Table:\n");
                 int pt = 0;
                 foreach (var row in ft.Rows)

@@ -33,8 +33,8 @@ namespace Nitride.EE
                 {
                     string label = this switch
                     {
-                        SParam => "S",
-                        ZParam => "Z",
+                        S_Parameter => "S",
+                        Z_Parameter => "Z",
                         _ => "Unknown"
                     } + p1 + p2;
 
@@ -55,8 +55,8 @@ namespace Nitride.EE
                 {
                     string label = this switch
                     {
-                        SParam => "S",
-                        ZParam => "Z",
+                        S_Parameter => "S",
+                        Z_Parameter => "Z",
                         _ => "Unknown"
                     } + p1 + p2;
 
@@ -183,8 +183,8 @@ namespace Nitride.EE
 
                                 switch (fields[2].Trim().ToUpper())
                                 {
-                                    case "S": if (pr is SParam sp && sp.Z0 == fields[5].Trim().ToDouble()) break; else return;
-                                    case "Z": if (pr is ZParam) break; else return;
+                                    case "S": if (pr is S_Parameter sp && sp.Z0 == fields[5].Trim().ToDouble()) break; else return;
+                                    case "Z": if (pr is Z_Parameter) break; else return;
                                     default: return;
                                 };
 
@@ -304,8 +304,8 @@ namespace Nitride.EE
                                 {
                                     pr = fields[2].Trim().ToUpper() switch
                                     {
-                                        "S" => new SParam(fileName, PortCount, Z0), // ParamType.S,
-                                        "Z" => new ZParam(fileName, PortCount),
+                                        "S" => new S_Parameter(fileName, PortCount, Z0), // ParamType.S,
+                                        "Z" => new Z_Parameter(fileName, PortCount),
                                         //"Y" => ParamType.Y,
                                         //"G" => ParamType.G,
                                         _ => throw new Exception("Invalid SnP file format.")
@@ -396,8 +396,8 @@ namespace Nitride.EE
                 {
                     string label = this switch
                     {
-                        SParam => "S",
-                        ZParam => "Z",
+                        S_Parameter => "S",
+                        Z_Parameter => "Z",
                         _ => "Unknown"
                     } + i + j;
 
