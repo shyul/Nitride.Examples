@@ -24,7 +24,7 @@ namespace Nitride.EE
 
         public FreqTable FreqTable { get; }
 
-        public int Index { get; }
+        public int Index { get; set; }
 
         public double Frequency { get; }
 

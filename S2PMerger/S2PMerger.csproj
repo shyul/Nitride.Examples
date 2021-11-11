@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <UseWindowsForms>false</UseWindowsForms>
+    <Platforms>x64</Platforms>
+    <ApplicationIcon>MicrosoftTeams-image.ico</ApplicationIcon>
+    <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath>..\bin\Release\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Nitride.Examples\Nitride\Nitride.csproj" />
+    <ProjectReference Include="..\Nitride.EE\Nitride.EE.csproj" />
+  </ItemGroup>
+
+</Project>
