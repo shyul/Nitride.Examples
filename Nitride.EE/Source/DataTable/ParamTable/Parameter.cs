@@ -221,7 +221,7 @@ namespace Nitride.EE
                                             row[pr[j, i]] = format switch
                                             {
                                                 "RI" => new(fields[pt].ToDouble(), fields[pt + 1].ToDouble()),
-                                                "DB" => Complex.FromPolarCoordinates(Math.Pow((fields[pt].ToDouble() / 20D), 10D), fields[pt + 1].ToDouble() * Math.PI / 180D),
+                                                "DB" => Complex.FromPolarCoordinates(Math.Pow((fields[pt].ToDouble() / 10D), 10D), fields[pt + 1].ToDouble() * Math.PI / 180D),
                                                 "MA" => Complex.FromPolarCoordinates(fields[pt].ToDouble(), fields[pt + 1].ToDouble() * Math.PI / 180D),
                                                 _ => throw new Exception("Invalid SnP file format.")
                                             };
@@ -350,7 +350,7 @@ namespace Nitride.EE
                                             row[pr[j, i]] = format switch
                                             {
                                                 "RI" => new(fields[pt].ToDouble(), fields[pt + 1].ToDouble()),
-                                                "DB" => Complex.FromPolarCoordinates(Math.Pow((fields[pt].ToDouble() / 20D), 10D), fields[pt + 1].ToDouble() * Math.PI / 180D),
+                                                "DB" => Complex.FromPolarCoordinates(Math.Pow((fields[pt].ToDouble() / 10D), 10D), fields[pt + 1].ToDouble() * Math.PI / 180D),
                                                 "MA" => Complex.FromPolarCoordinates(fields[pt].ToDouble(), fields[pt + 1].ToDouble() * Math.PI / 180D),
                                                 _ => throw new Exception("Invalid SnP file format.")
                                             };
