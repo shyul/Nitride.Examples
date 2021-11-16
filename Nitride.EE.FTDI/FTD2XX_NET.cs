@@ -7090,7 +7090,7 @@ namespace Nitride.EE.FTDI
 
             // 0x86 Set TCK frequency  
             // TCK = 60MHz /((1 + [(1 +0xValueH*256) OR 0xValueL])*2) 
-            ushort clockDiv = 0;
+            ushort clockDiv = 10;
             status |= Write(new byte[] { 0x86, (byte)(clockDiv & 0xFF), (byte)(clockDiv >> 8 & 0xFF) });
             Thread.Sleep(20);
 

@@ -30,6 +30,9 @@ namespace Nitride.Example
         private void InitializeComponent()
         {
             this.BtnSPITest = new System.Windows.Forms.Button();
+            this.BtnTX = new System.Windows.Forms.Button();
+            this.BtnRX = new System.Windows.Forms.Button();
+            this.BtnSW = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnSPITest
@@ -42,11 +45,44 @@ namespace Nitride.Example
             this.BtnSPITest.UseVisualStyleBackColor = true;
             this.BtnSPITest.Click += new System.EventHandler(this.BtnSPITest_Click);
             // 
+            // BtnTX
+            // 
+            this.BtnTX.Location = new System.Drawing.Point(280, 78);
+            this.BtnTX.Name = "BtnTX";
+            this.BtnTX.Size = new System.Drawing.Size(75, 23);
+            this.BtnTX.TabIndex = 1;
+            this.BtnTX.Text = "Tx Enable";
+            this.BtnTX.UseVisualStyleBackColor = true;
+            this.BtnTX.Click += new System.EventHandler(this.BtnTX_Click);
+            // 
+            // BtnRX
+            // 
+            this.BtnRX.Location = new System.Drawing.Point(410, 78);
+            this.BtnRX.Name = "BtnRX";
+            this.BtnRX.Size = new System.Drawing.Size(75, 23);
+            this.BtnRX.TabIndex = 2;
+            this.BtnRX.Text = "Rx Enable";
+            this.BtnRX.UseVisualStyleBackColor = true;
+            this.BtnRX.Click += new System.EventHandler(this.BtnRX_Click);
+            // 
+            // BtnSW
+            // 
+            this.BtnSW.Location = new System.Drawing.Point(280, 175);
+            this.BtnSW.Name = "BtnSW";
+            this.BtnSW.Size = new System.Drawing.Size(75, 23);
+            this.BtnSW.TabIndex = 3;
+            this.BtnSW.Text = "Toggle SW";
+            this.BtnSW.UseVisualStyleBackColor = true;
+            this.BtnSW.Click += new System.EventHandler(this.BtnSW_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BtnSW);
+            this.Controls.Add(this.BtnRX);
+            this.Controls.Add(this.BtnTX);
             this.Controls.Add(this.BtnSPITest);
             this.Name = "MainForm";
             this.Text = "Form1";
@@ -57,6 +93,9 @@ namespace Nitride.Example
         #endregion
 
         private System.Windows.Forms.Button BtnSPITest;
+        private System.Windows.Forms.Button BtnTX;
+        private System.Windows.Forms.Button BtnRX;
+        private System.Windows.Forms.Button BtnSW;
     }
 }
 
