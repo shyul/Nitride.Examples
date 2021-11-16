@@ -128,5 +128,17 @@ namespace Nitride.EE
         public override double this[int i, NumericColumn column] => i >= Count || i < 0 ? double.NaN : FreqRows[i][column];
 
         public Complex this[int i, ComplexColumn column] => i >= Count || i < 0 ? Complex.NaN : FreqRows[i][column];
+
+        public Range<double> GetRange(NumericColumn column, double startFreq, double stopFreq)
+        {
+            var rows = Rows.Where(n => n.Frequency <= stopFreq && n.Frequency >= startFreq).Select(n => n[column]);
+            return rows.Count() > 0 ? new Range<double>(rows.Min(), rows.Max()) : null;
+        }
+
+        public Range<double> GetRange(NumericColumn column)
+        {
+            var rows = Rows.Select(n => n[column]);
+            return rows.Count() > 0 ? new Range<double>(rows.Min(), rows.Max()) : null;
+        }
     }
 }
