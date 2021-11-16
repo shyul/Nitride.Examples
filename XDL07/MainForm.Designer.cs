@@ -33,11 +33,12 @@ namespace Nitride.Example
             this.BtnTX = new System.Windows.Forms.Button();
             this.BtnRX = new System.Windows.Forms.Button();
             this.BtnSW = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.SuspendLayout();
             // 
             // BtnSPITest
             // 
-            this.BtnSPITest.Location = new System.Drawing.Point(113, 78);
+            this.BtnSPITest.Location = new System.Drawing.Point(12, 12);
             this.BtnSPITest.Name = "BtnSPITest";
             this.BtnSPITest.Size = new System.Drawing.Size(75, 23);
             this.BtnSPITest.TabIndex = 0;
@@ -47,7 +48,7 @@ namespace Nitride.Example
             // 
             // BtnTX
             // 
-            this.BtnTX.Location = new System.Drawing.Point(280, 78);
+            this.BtnTX.Location = new System.Drawing.Point(105, 12);
             this.BtnTX.Name = "BtnTX";
             this.BtnTX.Size = new System.Drawing.Size(75, 23);
             this.BtnTX.TabIndex = 1;
@@ -57,7 +58,7 @@ namespace Nitride.Example
             // 
             // BtnRX
             // 
-            this.BtnRX.Location = new System.Drawing.Point(410, 78);
+            this.BtnRX.Location = new System.Drawing.Point(202, 12);
             this.BtnRX.Name = "BtnRX";
             this.BtnRX.Size = new System.Drawing.Size(75, 23);
             this.BtnRX.TabIndex = 2;
@@ -67,7 +68,7 @@ namespace Nitride.Example
             // 
             // BtnSW
             // 
-            this.BtnSW.Location = new System.Drawing.Point(280, 175);
+            this.BtnSW.Location = new System.Drawing.Point(283, 12);
             this.BtnSW.Name = "BtnSW";
             this.BtnSW.Size = new System.Drawing.Size(75, 23);
             this.BtnSW.TabIndex = 3;
@@ -75,11 +76,21 @@ namespace Nitride.Example
             this.BtnSW.UseVisualStyleBackColor = true;
             this.BtnSW.Click += new System.EventHandler(this.BtnSW_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Location = new System.Drawing.Point(12, 41);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(618, 237);
+            this.groupBox1.TabIndex = 4;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "groupBox1";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.BtnSW);
             this.Controls.Add(this.BtnRX);
             this.Controls.Add(this.BtnTX);
@@ -96,6 +107,7 @@ namespace Nitride.Example
         private System.Windows.Forms.Button BtnTX;
         private System.Windows.Forms.Button BtnRX;
         private System.Windows.Forms.Button BtnSW;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

@@ -13,14 +13,26 @@ namespace Nitride.Example
 {
     public partial class MainForm : Form
     {
-        XDL07_USB XDL07;// = new();
+        XDL07_USB XDL07 { get; }// = new();
+
+        XDL07_Channel Ch_A { get; }
+
+        XDL07_Channel Ch_B { get; }
+
+        ChannelControl ChannelControl = new();
 
         public MainForm()
         {
             XDL07 = new();
             XDL07.Connect();
 
+            Ch_A = XDL07.Channels.Where(n => n.SerialNumber.EndsWith("A")).FirstOrDefault();
+            Ch_B = XDL07.Channels.Where(n => n.SerialNumber.EndsWith("B")).FirstOrDefault();
+
             InitializeComponent();
+
+            groupBox1.Width = ChannelControl.Width;
+            groupBox1.Controls.Add(ChannelControl);
         }
 
         int count = 0;
