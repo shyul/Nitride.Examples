@@ -38,7 +38,9 @@ namespace Nitride
 
         public override bool Equals(object other)
         {
-            if (other is Column dc)
+            if (base.Equals(other))
+                return true;
+            else if (other is Column dc)
                 return Equals(dc);
             else
                 return false;
