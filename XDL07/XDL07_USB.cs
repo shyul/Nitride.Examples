@@ -34,7 +34,7 @@ namespace Nitride.Example
 
         public bool IsConnected { get; private set; } = false;
 
-        public FTDI.FT_STATUS Connect(string serialNum = "FT4Q1LMS")
+        public FTDI.FT_STATUS Connect(string serialNum = "FT5LDNTP")//"FT4Q1LMS")
         {
             if (!IsConnected)
             {

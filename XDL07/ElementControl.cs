@@ -10,12 +10,23 @@ namespace Nitride.Example
 {
     public class ElementControl : UserControl
     {
-        public ElementControl(string name) 
+        public ElementControl(string name, ChannelControl cc)
         {
+            ChannelControl = cc;
             Name = name;
             InitializeComponent();
             LableName.Text = name;
+
+            TextBoxRX_V_Phase.Text = RX_V_Phase.ToString();
+            TextBoxRX_V_Atten.Text = RX_V_Atten.ToString();
+            TextBoxRX_H_Phase.Text = RX_H_Phase.ToString();
+            TextBoxRX_H_Atten.Text = RX_H_Atten.ToString();
+            TextBoxTX_H_Phase.Text = TX_H_Phase.ToString();
+            TextBoxTX_H_Atten.Text = TX_H_Atten.ToString();
+            CheckPowerOff.Checked = PowerOff;
         }
+
+        private ChannelControl ChannelControl { get; }
 
         private TextBox TextBoxRX_V_Atten;
         private TextBox TextBoxRX_V_Phase;
@@ -27,67 +38,73 @@ namespace Nitride.Example
         private Label LableName;
         private ProgressBar PbTX_Power;
 
-        public void IsUpdated() { }
+        public void IsUpdated() => ChannelControl.IsUpdated();
 
         private void TextBoxRX_V_Phase_Validated(object sender, EventArgs e)
         {
             int value = TextBoxRX_V_Phase.Text.ToInt32(0);
             if (value > 63) value = 63; else if (value < 0) value = 0;
             RX_V_Phase = value;
+            TextBoxRX_V_Phase.Text = RX_V_Phase.ToString();
             IsUpdated();
         }
 
-        public int RX_V_Phase { get; private set; } = 0; // 6-bit
+        public int RX_V_Phase { get; set; } = 0; // 6-bit
 
         private void TextBoxRX_V_Atten_Validated(object sender, EventArgs e)
         {
             int value = TextBoxRX_V_Atten.Text.ToInt32(0);
             if (value > 63) value = 63; else if (value < 0) value = 0;
             RX_V_Atten = value;
+            TextBoxRX_V_Atten.Text = RX_V_Atten.ToString();
             IsUpdated();
         }
 
-        public int RX_V_Atten { get; private set; } = 0; // 6-bit
+        public int RX_V_Atten { get; set; } = 63; // 6-bit
 
         private void TextBoxRX_H_Phase_Validated(object sender, EventArgs e)
         {
             int value = TextBoxRX_H_Phase.Text.ToInt32(0);
             if (value > 63) value = 63; else if (value < 0) value = 0;
             RX_H_Phase = value;
+            TextBoxRX_H_Phase.Text = RX_H_Phase.ToString();
             IsUpdated();
         }
 
-        public int RX_H_Phase { get; private set; } = 0; // 6-bit
+        public int RX_H_Phase { get; set; } = 0; // 6-bit
 
         private void TextBoxRX_H_Atten_Validated(object sender, EventArgs e)
         {
             int value = TextBoxRX_H_Atten.Text.ToInt32(0);
             if (value > 63) value = 63; else if (value < 0) value = 0;
             RX_H_Atten = value;
+            TextBoxRX_H_Atten.Text = RX_H_Atten.ToString();
             IsUpdated();
         }
 
-        public int RX_H_Atten { get; private set; } = 0; // 6-bit
+        public int RX_H_Atten { get; set; } = 63; // 6-bit
 
         private void TextBoxTX_H_Phase_Validated(object sender, EventArgs e)
         {
             int value = TextBoxTX_H_Phase.Text.ToInt32(0);
             if (value > 63) value = 63; else if (value < 0) value = 0;
             TX_H_Phase = value;
+            TextBoxTX_H_Phase.Text = TX_H_Phase.ToString();
             IsUpdated();
         }
 
-        public int TX_H_Phase { get; private set; } = 0; // 6-bit
+        public int TX_H_Phase { get; set; } = 0; // 6-bit
 
         private void TextBoxTX_H_Atten_Validated(object sender, EventArgs e)
         {
             int value = TextBoxTX_H_Atten.Text.ToInt32(0);
             if (value > 63) value = 63; else if (value < 0) value = 0;
             TX_H_Atten = value;
+            TextBoxTX_H_Atten.Text = TX_H_Atten.ToString();
             IsUpdated();
         }
 
-        public int TX_H_Atten { get; private set; } = 0; // 6-bit
+        public int TX_H_Atten { get; set; } = 63; // 6-bit
 
         private void CheckPowerOff_Validated(object sender, EventArgs e)
         {
@@ -95,7 +112,7 @@ namespace Nitride.Example
             IsUpdated();
         }
 
-        public bool PowerOff { get; private set; }
+        public bool PowerOff { get; set; } = false;
 
         public int TX_Power
         {
@@ -110,11 +127,32 @@ namespace Nitride.Example
                 else if (m_TX_Power < PbTX_Power.Minimum)
                     m_TX_Power = PbTX_Power.Minimum;
 
-                PbTX_Power.Value = m_TX_Power;
+                PbTX_Power.Invoke(() => { PbTX_Power.Value = m_TX_Power; });
             }
         }
 
         private int m_TX_Power;
+
+
+
+        public void Test(int offset) 
+        {
+            TX_H_Atten = offset % 64;
+            TX_H_Phase = (offset + 10) % 64;
+            RX_H_Atten = (offset + 20) % 64;
+            RX_H_Phase = (offset + 30) % 64;
+            RX_V_Atten = (offset + 40) % 64;
+            RX_V_Phase = (offset + 50) % 64;
+
+            TextBoxTX_H_Atten.Invoke(() => { TextBoxTX_H_Atten.Text = TX_H_Atten.ToString(); });
+            TextBoxTX_H_Phase.Invoke(() => { TextBoxTX_H_Phase.Text = TX_H_Phase.ToString(); });
+            TextBoxRX_H_Atten.Invoke(() => { TextBoxRX_H_Atten.Text = RX_H_Atten.ToString(); });
+            TextBoxRX_H_Phase.Invoke(() => { TextBoxRX_H_Phase.Text = RX_H_Phase.ToString(); });
+            TextBoxRX_V_Atten.Invoke(() => { TextBoxRX_V_Atten.Text = RX_V_Atten.ToString(); });
+            TextBoxRX_V_Phase.Invoke(() => { TextBoxRX_V_Phase.Text = RX_V_Phase.ToString(); });
+            //IsUpdated();
+        }
+
 
         private void InitializeComponent()
         {
@@ -132,10 +170,10 @@ namespace Nitride.Example
             // PbTX_Power
             // 
             this.PbTX_Power.Location = new System.Drawing.Point(665, 3);
+            this.PbTX_Power.Maximum = 31;
             this.PbTX_Power.Name = "PbTX_Power";
             this.PbTX_Power.Size = new System.Drawing.Size(100, 23);
             this.PbTX_Power.TabIndex = 0;
-            this.PbTX_Power.Maximum = 31;
             // 
             // TextBoxRX_V_Atten
             // 
@@ -200,6 +238,7 @@ namespace Nitride.Example
             this.CheckPowerOff.TabIndex = 8;
             this.CheckPowerOff.Text = "Power Off";
             this.CheckPowerOff.UseVisualStyleBackColor = true;
+            this.CheckPowerOff.CheckedChanged += new System.EventHandler(this.CheckPowerOff_Validated);
             this.CheckPowerOff.Validated += new System.EventHandler(this.CheckPowerOff_Validated);
             // 
             // LableName
@@ -222,7 +261,7 @@ namespace Nitride.Example
             this.Controls.Add(this.TextBoxRX_V_Phase);
             this.Controls.Add(this.TextBoxRX_V_Atten);
             this.Controls.Add(this.PbTX_Power);
-            //this.Name = "ElementControl";
+            this.Name = "ElementControl";
             this.Size = new System.Drawing.Size(857, 29);
             this.ResumeLayout(false);
             this.PerformLayout();

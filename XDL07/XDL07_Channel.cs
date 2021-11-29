@@ -36,11 +36,23 @@ namespace Nitride.Example
             TxBuffer[4] = 0x1A;
             TxBuffer[5] = 0x00;
 
+
+
+            TxBuffer[TxBuffer.Length - 9] = 0x80;
+            //TxBuffer[34] = DBUS;
+            TxBuffer[TxBuffer.Length - 7] = 0xFB;
+
+            TxBuffer[TxBuffer.Length - 6] = 0x80;
+            //TxBuffer[34] = DBUS;
+            TxBuffer[TxBuffer.Length - 4] = 0xFB;
+
             TxBuffer[TxBuffer.Length - 3] = 0x80;
             //TxBuffer[34] = DBUS;
             TxBuffer[TxBuffer.Length - 1] = 0xFB;
 
             //Initialize_Test_Values();
+
+            ChannelControl = new ChannelControl(this);
         }
 
         ~XDL07_Channel() => Dispose();
@@ -55,65 +67,8 @@ namespace Nitride.Example
 
         public string SerialNumber { get; }
 
-        /*
-        public void SpiTransfer(List<byte> data)
-        {
-            DBUS3_SPI_CS_B = false;
-            UpdateDBUS();
 
-            foreach (byte b in data)
-            {
-                uint rxByteCount = 0;
-                Ftdi.Write(new byte[] { 0x34, 0x0, 0x0, b });
-                Ftdi.GetRxBytesAvailable(ref rxByteCount);
-                Console.WriteLine("rxByteCount = " + rxByteCount);
-                if (rxByteCount > 0) 
-                {
-                    Ftdi.Read(out string buffer, rxByteCount, ref rxByteCount);
-                    Console.WriteLine("rxByteCount = " + rxByteCount);
-                }
-            }
-
-            DBUS3_SPI_CS_B = true;
-            UpdateDBUS();
-        }*/
-
-
-
-
-
-        public void SpiTransfer(List<byte> data, bool check = false)
-        {
-            List<byte> list = new();
-
-            DBUS3_SPI_CS_B = false;
-            list.AddRange(new byte[] { 0x80, DBUS, 0xFB }); // 3
-
-            int length = data.Count - 1;
-            list.AddRange(new byte[] { (byte)(DBUS0_SPI_CLK ? 0x34 : 0x31), (byte)(length & 0xFF), (byte)((length >> 8) & 0xFF) }); //3
-            list.AddRange(data); //27
-
-            DBUS3_SPI_CS_B = true;
-            list.AddRange(new byte[] { 0x80, DBUS, 0xFB }); // 3
-            Ftdi.Write(list.ToArray());
-
-            Thread.Sleep(10);
-
-            uint rxByteCount = 0;
-            Ftdi.GetRxBytesAvailable(ref rxByteCount);
-            //Console.WriteLine("rxByteCount = " + rxByteCount);
-            if (rxByteCount == data.Count)
-            {
-                byte[] buffer = new byte[rxByteCount];
-                Ftdi.Read(buffer, (uint)buffer.Length, ref rxByteCount);
-
-                if (rxByteCount != data.Count && check) throw new Exception("rxByteCount = " + rxByteCount);
-            }
-            else if (check)
-                throw new Exception("rxByteCount = " + rxByteCount);
-        }
-
-
+        public ChannelControl ChannelControl { get; }
 
         public int TXEN_Delay { get; private set; } = 0; // 0 ~ 7; (3-bit)
 
@@ -123,13 +78,17 @@ namespace Nitride.Example
 
         public int FBS_Address { get; set; } = 0; // 0 ~ 7; (3-bit)
 
-        public bool Power_Down_NW { get; set; } = false;
+        // 1
+        public bool Power_Down_NW => ChannelControl.ElementControl1.PowerOff; //{ get; set; } = false;
 
-        public bool Power_Down_NE { get; set; } = false;
+        // 2
+        public bool Power_Down_NE => ChannelControl.ElementControl2.PowerOff; //{ get; set; } = false;
 
-        public bool Power_Down_SW { get; set; } = false;
+        // 3
+        public bool Power_Down_SW => ChannelControl.ElementControl3.PowerOff; //{ get; set; } = false;
 
-        public bool Power_Down_SE { get; set; } = false;
+        // 4
+        public bool Power_Down_SE => ChannelControl.ElementControl4.PowerOff; //{ get; set; } = false;
 
 
 
@@ -141,88 +100,74 @@ namespace Nitride.Example
 
         public int RX_V_Temp_VGA { get; set; } = 0; // 6-bit
 
-        public int Temp_Sense { get; set; } = 0; // 5-bit
 
 
-        public int TX1_H_Power_Det { get; set; } = 0; // 5-bit
+        public int RX4_V_Phase => ChannelControl.ElementControl4.RX_V_Phase; // 6-bit
 
-        public int TX2_H_Power_Det { get; set; } = 0; // 5-bit
+        public int RX4_V_Atten => ChannelControl.ElementControl4.RX_V_Atten; // 6-bit
 
-        public int TX3_H_Power_Det { get; set; } = 0; // 5-bit
+        public int RX4_H_Phase => ChannelControl.ElementControl4.RX_H_Phase; // 6-bit
 
-        public int TX4_H_Power_Det { get; set; } = 0; // 5-bit
+        public int RX4_H_Atten => ChannelControl.ElementControl4.RX_H_Atten; // 6-bit
 
+        public int TX4_H_Phase => ChannelControl.ElementControl4.TX_H_Phase; // 6-bit
 
-
-        public int RX4_V_Phase { get; set; } = 0; // 6-bit
-
-        public int RX4_V_VGA { get; set; } = 0; // 6-bit
-
-        public int RX4_H_Phase { get; set; } = 0; // 6-bit
-
-        public int RX4_H_VGA { get; set; } = 0; // 6-bit
-
-        public int TX4_H_Phase { get; set; } = 0; // 6-bit
-
-        public int TX4_H_VGA { get; set; } = 0; // 6-bit
+        public int TX4_H_Atten => ChannelControl.ElementControl4.TX_H_Atten; // 6-bit
 
 
+        public int RX3_V_Phase => ChannelControl.ElementControl3.RX_V_Phase; // 6-bit
 
-        public int RX3_V_Phase { get; set; } = 0; // 6-bit
+        public int RX3_V_Atten => ChannelControl.ElementControl3.RX_V_Atten; // 6-bit
 
-        public int RX3_V_VGA { get; set; } = 0; // 6-bit
+        public int RX3_H_Phase => ChannelControl.ElementControl3.RX_H_Phase; // 6-bit
 
-        public int RX3_H_Phase { get; set; } = 0; // 6-bit
+        public int RX3_H_Atten => ChannelControl.ElementControl3.RX_H_Atten; // 6-bit
 
-        public int RX3_H_VGA { get; set; } = 0; // 6-bit
+        public int TX3_H_Phase => ChannelControl.ElementControl3.TX_H_Phase; // 6-bit
 
-        public int TX3_H_Phase { get; set; } = 0; // 6-bit
-
-        public int TX3_H_VGA { get; set; } = 0; // 6-bit
-
-
-        public int RX2_V_Phase { get; set; } = 0; // 6-bit
-
-        public int RX2_V_VGA { get; set; } = 0; // 6-bit
-
-        public int RX2_H_Phase { get; set; } = 0; // 6-bit
-
-        public int RX2_H_VGA { get; set; } = 0; // 6-bit
-
-        public int TX2_H_Phase { get; set; } = 0; // 6-bit
-
-        public int TX2_H_VGA { get; set; } = 0; // 6-bit
+        public int TX3_H_Atten => ChannelControl.ElementControl3.TX_H_Atten; // 6-bit
 
 
+        public int RX2_V_Phase => ChannelControl.ElementControl2.RX_V_Phase; // 6-bit
 
-        public int RX1_V_Phase { get; set; } = 0; // 6-bit
+        public int RX2_V_Atten => ChannelControl.ElementControl2.RX_V_Atten; // 6-bit
 
-        public int RX1_V_VGA { get; set; } = 0; // 6-bit
+        public int RX2_H_Phase => ChannelControl.ElementControl2.RX_H_Phase; // 6-bit
 
-        public int RX1_H_Phase { get; set; } = 0; // 6-bit
+        public int RX2_H_Atten => ChannelControl.ElementControl2.RX_H_Atten; // 6-bit
 
-        public int RX1_H_VGA { get; set; } = 0; // 6-bit
+        public int TX2_H_Phase => ChannelControl.ElementControl2.TX_H_Phase; // 6-bit
 
-        public int TX1_H_Phase { get; set; } = 0; // 6-bit
-
-        public int TX1_H_VGA { get; set; } = 0; // 6-bit
-
+        public int TX2_H_Atten => ChannelControl.ElementControl2.TX_H_Atten; // 6-bit
 
 
-        public int TX1_Power { get; private set; } = 0; // 5-bit
+        public int RX1_V_Phase => ChannelControl.ElementControl1.RX_V_Phase; // 6-bit
 
-        public int TX2_Power { get; private set; } = 0; // 5-bit
+        public int RX1_V_Atten => ChannelControl.ElementControl1.RX_V_Atten; // 6-bit
 
-        public int TX3_Power { get; private set; } = 0; // 5-bit
+        public int RX1_H_Phase => ChannelControl.ElementControl1.RX_H_Phase; // 6-bit
 
-        public int TX4_Power { get; private set; } = 0; // 5-bit
+        public int RX1_H_Atten => ChannelControl.ElementControl1.RX_H_Atten; // 6-bit
 
-        public int Chip_Temperature { get; private set; } = 0; // 5-bit
+        public int TX1_H_Phase => ChannelControl.ElementControl1.TX_H_Phase; // 6-bit
+
+        public int TX1_H_Atten => ChannelControl.ElementControl1.TX_H_Atten; // 6-bit
+
+
+        public int TX1_Power { get => ChannelControl.ElementControl1.TX_Power; private set => ChannelControl.ElementControl1.TX_Power = value; } // 5-bit
+
+        public int TX2_Power { get => ChannelControl.ElementControl2.TX_Power; private set => ChannelControl.ElementControl2.TX_Power = value; } // 5-bit
+
+        public int TX3_Power { get => ChannelControl.ElementControl3.TX_Power; private set => ChannelControl.ElementControl3.TX_Power = value; } // 5-bit
+
+        public int TX4_Power { get => ChannelControl.ElementControl4.TX_Power; private set => ChannelControl.ElementControl4.TX_Power = value; } // 5-bit
+
+        public int Chip_Temperature { get => ChannelControl.Temperature; private set => ChannelControl.Temperature = value; }
 
 
 
 
-        private byte[] TxBuffer { get; } = new byte[36]; //= new byte[36];
+        private byte[] TxBuffer { get; } = new byte[42]; //= new byte[36];
 
         private byte[] RxBuffer { get; } = new byte[27];
 
@@ -239,29 +184,29 @@ namespace Nitride.Example
             TxBuffer[10] = (byte)((RX_V_Temp_VGA >> 2) & 0xF);
             TxBuffer[11] = (byte)(((RX_V_Temp_VGA & 0x3) << 6) + (RX_H_Temp_VGA & 0x3F));
 
-            TxBuffer[12] = (byte)(((TX1_H_VGA & 0x3F) << 2) + ((TX1_H_Phase >> 4) & 0x3));
-            TxBuffer[13] = (byte)(((TX1_H_Phase & 0xF) << 4) + ((RX1_H_VGA >> 2) & 0xF));
-            TxBuffer[14] = (byte)(((RX1_H_VGA & 0x3) << 6) + (RX1_H_Phase & 0x3F));
+            TxBuffer[12] = (byte)(((TX1_H_Atten & 0x3F) << 2) + ((TX1_H_Phase >> 4) & 0x3));
+            TxBuffer[13] = (byte)(((TX1_H_Phase & 0xF) << 4) + ((RX1_H_Atten >> 2) & 0xF));
+            TxBuffer[14] = (byte)(((RX1_H_Atten & 0x3) << 6) + (RX1_H_Phase & 0x3F));
 
-            TxBuffer[15] = (byte)(((RX1_V_VGA & 0x3F) << 2) + ((RX1_V_Phase >> 4) & 0x3));
-            TxBuffer[16] = (byte)(((RX1_V_Phase & 0xF) << 4) + ((TX2_H_VGA >> 2) & 0xF));
-            TxBuffer[17] = (byte)(((TX2_H_VGA & 0x3) << 6) + (TX2_H_Phase & 0x3F));
+            TxBuffer[15] = (byte)(((RX1_V_Atten & 0x3F) << 2) + ((RX1_V_Phase >> 4) & 0x3));
+            TxBuffer[16] = (byte)(((RX1_V_Phase & 0xF) << 4) + ((TX2_H_Atten >> 2) & 0xF));
+            TxBuffer[17] = (byte)(((TX2_H_Atten & 0x3) << 6) + (TX2_H_Phase & 0x3F));
 
-            TxBuffer[18] = (byte)(((RX2_H_VGA & 0x3F) << 2) + ((RX2_H_Phase >> 4) & 0x3));
-            TxBuffer[19] = (byte)(((RX2_H_Phase & 0xF) << 4) + ((RX2_V_VGA >> 2) & 0xF));
-            TxBuffer[20] = (byte)(((RX2_V_VGA & 0x3) << 6) + (RX2_V_Phase & 0x3F));
+            TxBuffer[18] = (byte)(((RX2_H_Atten & 0x3F) << 2) + ((RX2_H_Phase >> 4) & 0x3));
+            TxBuffer[19] = (byte)(((RX2_H_Phase & 0xF) << 4) + ((RX2_V_Atten >> 2) & 0xF));
+            TxBuffer[20] = (byte)(((RX2_V_Atten & 0x3) << 6) + (RX2_V_Phase & 0x3F));
 
-            TxBuffer[21] = (byte)(((TX3_H_VGA & 0x3F) << 2) + ((TX3_H_Phase >> 4) & 0x3));
-            TxBuffer[22] = (byte)(((TX3_H_Phase & 0xF) << 4) + ((RX3_H_VGA >> 2) & 0xF));
-            TxBuffer[23] = (byte)(((RX3_H_VGA & 0x3) << 6) + (RX3_H_Phase & 0x3F));
+            TxBuffer[21] = (byte)(((TX3_H_Atten & 0x3F) << 2) + ((TX3_H_Phase >> 4) & 0x3));
+            TxBuffer[22] = (byte)(((TX3_H_Phase & 0xF) << 4) + ((RX3_H_Atten >> 2) & 0xF));
+            TxBuffer[23] = (byte)(((RX3_H_Atten & 0x3) << 6) + (RX3_H_Phase & 0x3F));
 
-            TxBuffer[24] = (byte)(((RX3_V_VGA & 0x3F) << 2) + ((RX3_V_Phase >> 4) & 0x3));
-            TxBuffer[25] = (byte)(((RX3_V_Phase & 0xF) << 4) + ((TX4_H_VGA >> 2) & 0xF));
-            TxBuffer[26] = (byte)(((TX4_H_VGA & 0x3) << 6) + (TX4_H_Phase & 0x3F));
+            TxBuffer[24] = (byte)(((RX3_V_Atten & 0x3F) << 2) + ((RX3_V_Phase >> 4) & 0x3));
+            TxBuffer[25] = (byte)(((RX3_V_Phase & 0xF) << 4) + ((TX4_H_Atten >> 2) & 0xF));
+            TxBuffer[26] = (byte)(((TX4_H_Atten & 0x3) << 6) + (TX4_H_Phase & 0x3F));
 
-            TxBuffer[27] = (byte)(((RX4_H_VGA & 0x3F) << 2) + ((RX4_H_Phase >> 4) & 0x3));
-            TxBuffer[28] = (byte)(((RX4_H_Phase & 0xF) << 4) + ((RX4_V_VGA >> 2) & 0xF));
-            TxBuffer[29] = (byte)(((RX4_V_VGA & 0x3) << 6) + (RX4_V_Phase & 0x3F));
+            TxBuffer[27] = (byte)(((RX4_H_Atten & 0x3F) << 2) + ((RX4_H_Phase >> 4) & 0x3));
+            TxBuffer[28] = (byte)(((RX4_H_Phase & 0xF) << 4) + ((RX4_V_Atten >> 2) & 0xF));
+            TxBuffer[29] = (byte)(((RX4_V_Atten & 0x3) << 6) + (RX4_V_Phase & 0x3F));
 
             TxBuffer[30] = (byte)(((TX_Temp_VGA & 0x1F) << 3) + (Cal_Mode & 0x7));
             TxBuffer[31] = (byte)(((Power_Down_SE ? 1 : 0) << 7) + ((Power_Down_SW ? 1 : 0) << 6) + ((Power_Down_NE ? 1 : 0) << 5) + ((Power_Down_NW ? 1 : 0) << 4) + ((Load_FBS ? 1 : 0) << 3) + ((FBS_Address >> 1) & 0x3));
@@ -269,9 +214,19 @@ namespace Nitride.Example
 
             DBUS3_SPI_CS_B = true;
             //TxBuffer[^2] = DBUS;
+            TxBuffer[TxBuffer.Length - 8] = DBUS;
+            DBUS4_SPI_LD = false;
+            TxBuffer[TxBuffer.Length - 5] = DBUS;
+            DBUS4_SPI_LD = true;
             TxBuffer[TxBuffer.Length - 2] = DBUS;
 
             Ftdi.Write(TxBuffer);
+
+    
+            //UpdateDBUS(); // Ftdi.Write(new byte[] { 0x80, DBUS, 0xFB });
+            //Thread.Sleep(5);
+       
+            //UpdateDBUS(); // Ftdi.Write(new byte[] { 0x80, DBUS, 0xFB });
 
             uint rxByteCount = 0;
             while (rxByteCount < RxBuffer.Length)
@@ -280,10 +235,7 @@ namespace Nitride.Example
                 Ftdi.GetRxBytesAvailable(ref rxByteCount);
             }
 
-            DBUS4_SPI_LD = false;
-            UpdateDBUS();
-            DBUS4_SPI_LD = true;
-            UpdateDBUS();
+
 
             Ftdi.Read(RxBuffer, (uint)RxBuffer.Length, ref rxByteCount);
 
@@ -331,7 +283,7 @@ namespace Nitride.Example
             RX_V_Temp_VGA = ((RxBuffer[5] >> 6) & 0x3) + ((RxBuffer[4] & 0xF) << 2);
             */
 
-            TX3_Power = ((RxBuffer[4] >> 4) & 0xF) + (RxBuffer[3] & 0x1);
+            TX3_Power = ((RxBuffer[4] >> 4) & 0xF) + ((RxBuffer[3] & 0x1) << 4);
             TX4_Power = (RxBuffer[3] >> 2) & 0x1F;
             TX2_Power = RxBuffer[2] & 0x1F;
             TX1_Power = ((RxBuffer[2] >> 6) & 0x3) + ((RxBuffer[1] & 0x7) << 2);
@@ -345,17 +297,17 @@ namespace Nitride.Example
         {
             Load_FBS = true;
 
-            Power_Down_NW = false;
-            Power_Down_NE = true;
-            Power_Down_SW = false;
-            Power_Down_SE = true;
+            //Power_Down_NW = false;
+            //Power_Down_NE = true;
+            //Power_Down_SW = false;
+            //Power_Down_SE = true;
 
             TXEN_Delay = (1 + i) % 7;
             LDB_Delay = (2 + i) % 7;
             FBS_Address = (3 + i) % 7;
             Cal_Mode = (4 + i) % 7;
             TX_Temp_VGA = (5 + i) % 31;
-
+            /*
             RX4_V_Phase = (6 + i) % 63;
             RX4_V_VGA = (7 + i) % 63;
             RX4_H_Phase = (8 + i) % 63;
@@ -383,7 +335,7 @@ namespace Nitride.Example
             RX1_H_VGA = (27 + i) % 63;
             TX1_H_Phase = (28 + i) % 63;
             TX1_H_VGA = (29 + i) % 63;
-
+            */
             RX_H_Temp_VGA = (30 + i) % 31;
             RX_V_Temp_VGA = (31 + i) % 31;
 
@@ -407,32 +359,32 @@ namespace Nitride.Example
             Console.WriteLine("TX_Temp_VGA = " + TX_Temp_VGA);
 
             Console.WriteLine("RX4_V_Phase = " + RX4_V_Phase);
-            Console.WriteLine("RX4_V_VGA = " + RX4_V_VGA);
+            Console.WriteLine("RX4_V_VGA = " + RX4_V_Atten);
             Console.WriteLine("RX4_H_Phase = " + RX4_H_Phase);
-            Console.WriteLine("RX4_H_VGA = " + RX4_H_VGA);
+            Console.WriteLine("RX4_H_VGA = " + RX4_H_Atten);
             Console.WriteLine("TX4_H_Phase = " + TX4_H_Phase);
-            Console.WriteLine("TX4_H_VGA = " + TX4_H_VGA);
+            Console.WriteLine("TX4_H_VGA = " + TX4_H_Atten);
 
             Console.WriteLine("RX3_V_Phase = " + RX3_V_Phase);
-            Console.WriteLine("RX3_V_VGA = " + RX3_V_VGA);
+            Console.WriteLine("RX3_V_VGA = " + RX3_V_Atten);
             Console.WriteLine("RX3_H_Phase = " + RX3_H_Phase);
-            Console.WriteLine("RX3_H_VGA = " + RX3_H_VGA);
+            Console.WriteLine("RX3_H_VGA = " + RX3_H_Atten);
             Console.WriteLine("TX3_H_Phase = " + TX3_H_Phase);
-            Console.WriteLine("TX3_H_VGA = " + TX3_H_VGA);
+            Console.WriteLine("TX3_H_VGA = " + TX3_H_Atten);
 
             Console.WriteLine("RX2_V_Phase = " + RX2_V_Phase);
-            Console.WriteLine("RX2_V_VGA = " + RX2_V_VGA);
+            Console.WriteLine("RX2_V_VGA = " + RX2_V_Atten);
             Console.WriteLine("RX2_H_Phase = " + RX2_H_Phase);
-            Console.WriteLine("RX2_H_VGA = " + RX2_H_VGA);
+            Console.WriteLine("RX2_H_VGA = " + RX2_H_Atten);
             Console.WriteLine("TX2_H_Phase = " + TX2_H_Phase);
-            Console.WriteLine("TX2_H_VGA = " + TX2_H_VGA);
+            Console.WriteLine("TX2_H_VGA = " + TX2_H_Atten);
 
             Console.WriteLine("RX1_V_Phase = " + RX1_V_Phase);
-            Console.WriteLine("RX1_V_VGA = " + RX1_V_VGA);
+            Console.WriteLine("RX1_V_VGA = " + RX1_V_Atten);
             Console.WriteLine("RX1_H_Phase = " + RX1_H_Phase);
-            Console.WriteLine("RX1_H_VGA = " + RX1_H_VGA);
+            Console.WriteLine("RX1_H_VGA = " + RX1_H_Atten);
             Console.WriteLine("TX1_H_Phase = " + TX1_H_Phase);
-            Console.WriteLine("TX1_H_VGA = " + TX1_H_VGA);
+            Console.WriteLine("TX1_H_VGA = " + TX1_H_Atten);
 
             Console.WriteLine("RX_H_Temp_VGA = " + RX_H_Temp_VGA);
             Console.WriteLine("RX_V_Temp_VGA = " + RX_V_Temp_VGA);
@@ -458,7 +410,8 @@ namespace Nitride.Example
                 DBUS6_TX_EN = value;
                 DBUS7_RX_EN = !DBUS6_TX_EN;
                 DBUS5_SW_VCTL = DBUS6_TX_EN;
-                UpdateDBUS();
+                SpiTransfer();
+                //UpdateDBUS();
             }
         }
 
@@ -466,7 +419,8 @@ namespace Nitride.Example
         {
             DBUS6_TX_EN = false;
             DBUS7_RX_EN = false;
-            DBUS5_SW_VCTL = false;
+            DBUS5_SW_VCTL = DBUS6_TX_EN;
+            UpdateDBUS();
         }
 
         public FTDI.FT_STATUS UpdateDBUS() => Ftdi.Write(new byte[] { 0x80, DBUS, 0xFB });

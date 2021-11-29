@@ -29,26 +29,26 @@ namespace Nitride.Example
         /// </summary>
         private void InitializeComponent()
         {
-            this.BtnSPITest = new System.Windows.Forms.Button();
+            this.BtnTestMode = new System.Windows.Forms.Button();
             this.BtnTX = new System.Windows.Forms.Button();
             this.BtnRX = new System.Windows.Forms.Button();
-            this.BtnSW = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.BtnStandby = new System.Windows.Forms.Button();
+            this.ControlPanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
-            // BtnSPITest
+            // BtnTestMode
             // 
-            this.BtnSPITest.Location = new System.Drawing.Point(12, 12);
-            this.BtnSPITest.Name = "BtnSPITest";
-            this.BtnSPITest.Size = new System.Drawing.Size(75, 23);
-            this.BtnSPITest.TabIndex = 0;
-            this.BtnSPITest.Text = "Test SPI";
-            this.BtnSPITest.UseVisualStyleBackColor = true;
-            this.BtnSPITest.Click += new System.EventHandler(this.BtnSPITest_Click);
+            this.BtnTestMode.Location = new System.Drawing.Point(12, 12);
+            this.BtnTestMode.Name = "BtnTestMode";
+            this.BtnTestMode.Size = new System.Drawing.Size(75, 23);
+            this.BtnTestMode.TabIndex = 0;
+            this.BtnTestMode.Text = "Test Mode";
+            this.BtnTestMode.UseVisualStyleBackColor = true;
+            this.BtnTestMode.Click += new System.EventHandler(this.BtnSPITest_Click);
             // 
             // BtnTX
             // 
-            this.BtnTX.Location = new System.Drawing.Point(105, 12);
+            this.BtnTX.Location = new System.Drawing.Point(121, 12);
             this.BtnTX.Name = "BtnTX";
             this.BtnTX.Size = new System.Drawing.Size(75, 23);
             this.BtnTX.TabIndex = 1;
@@ -66,48 +66,48 @@ namespace Nitride.Example
             this.BtnRX.UseVisualStyleBackColor = true;
             this.BtnRX.Click += new System.EventHandler(this.BtnRX_Click);
             // 
-            // BtnSW
+            // BtnStandby
             // 
-            this.BtnSW.Location = new System.Drawing.Point(283, 12);
-            this.BtnSW.Name = "BtnSW";
-            this.BtnSW.Size = new System.Drawing.Size(75, 23);
-            this.BtnSW.TabIndex = 3;
-            this.BtnSW.Text = "Toggle SW";
-            this.BtnSW.UseVisualStyleBackColor = true;
-            this.BtnSW.Click += new System.EventHandler(this.BtnSW_Click);
+            this.BtnStandby.Location = new System.Drawing.Point(283, 12);
+            this.BtnStandby.Name = "BtnStandby";
+            this.BtnStandby.Size = new System.Drawing.Size(75, 23);
+            this.BtnStandby.TabIndex = 3;
+            this.BtnStandby.Text = "Standby";
+            this.BtnStandby.UseVisualStyleBackColor = true;
+            this.BtnStandby.Click += new System.EventHandler(this.BtnStandby_Click);
             // 
-            // groupBox1
+            // ControlPanel
             // 
-            this.groupBox1.Location = new System.Drawing.Point(12, 41);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(618, 237);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
+            this.ControlPanel.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.ControlPanel.Location = new System.Drawing.Point(12, 53);
+            this.ControlPanel.Name = "ControlPanel";
+            this.ControlPanel.Size = new System.Drawing.Size(857, 674);
+            this.ControlPanel.TabIndex = 4;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.BtnSW);
+            this.ClientSize = new System.Drawing.Size(881, 739);
+            this.Controls.Add(this.ControlPanel);
+            this.Controls.Add(this.BtnStandby);
             this.Controls.Add(this.BtnRX);
             this.Controls.Add(this.BtnTX);
-            this.Controls.Add(this.BtnSPITest);
+            this.Controls.Add(this.BtnTestMode);
             this.Name = "MainForm";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button BtnSPITest;
+        private System.Windows.Forms.Button BtnTestMode;
         private System.Windows.Forms.Button BtnTX;
         private System.Windows.Forms.Button BtnRX;
-        private System.Windows.Forms.Button BtnSW;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button BtnStandby;
+        private System.Windows.Forms.Panel ControlPanel;
     }
 }
 
