@@ -129,6 +129,12 @@ namespace Nitride.EE
 
         public Complex this[int i, ComplexColumn column] => i >= Count || i < 0 ? Complex.NaN : FreqRows[i][column];
 
+        public override string GetXAxisLabel(int i) 
+        {
+            //return (this[i].Frequency / 1e6).ToString("0.######") + "MHz";
+            return this[i].Frequency.ToString();
+        }
+
         public Range<double> GetRange(NumericColumn column, double startFreq, double stopFreq)
         {
             var rows = Rows.Where(n => n.Frequency <= stopFreq && n.Frequency >= startFreq).Select(n => n[column]);
