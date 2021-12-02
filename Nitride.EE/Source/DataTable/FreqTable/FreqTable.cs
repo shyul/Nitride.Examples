@@ -45,7 +45,7 @@ namespace Nitride.EE
                 Start = startFreq;
 
                 int pt = 0;
-                for (double freq = startFreq; freq < stopFreq; freq += stepFreq)
+                for (double freq = startFreq; freq <= stopFreq; freq += stepFreq)
                 {
                     FreqRows.Add(new FreqRow(freq, pt, this));
                     Stop = freq;
