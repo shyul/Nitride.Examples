@@ -88,7 +88,11 @@ namespace Nitride
             TrackBar = trackBar;
 
             TextBoxValue.Validated += new EventHandler(TextBoxValue_Validated);
+            TextBoxValue.Leave += new EventHandler(TextBoxValue_Validated);
+            TextBoxValue.KeyDown += new KeyEventHandler(TextBoxValue_KeyDown);
+
             TextBoxPercent.Validated += new EventHandler(TextBoxPercent_Validated);
+            TextBoxPercent.Leave += new EventHandler(TextBoxPercent_Validated);
 
             TrackBar.Value = 50;
             TrackBar.Minimum = 0;
@@ -134,6 +138,14 @@ namespace Nitride
             UpdateTune();
         }
 
+        private void TextBoxValue_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                TextBoxValue_Validated(sender, e);
+            }
+        }
+
         private void TextBoxValue_Validated(object sender, EventArgs e)
         {
             try
@@ -153,6 +165,7 @@ namespace Nitride
             Tunable.UpdatePercent();
             TextBoxValue.Text = Tunable.Value.ToString();
             TextBoxPercent.Text = (Tunable.Percent * 100).ToString();
+            TrackBar.Enabled = (Tunable.Value < Tunable.MaxBound && Tunable.Value > Tunable.MinBound);
             TrackBar.Value = 50;
         }
     }
