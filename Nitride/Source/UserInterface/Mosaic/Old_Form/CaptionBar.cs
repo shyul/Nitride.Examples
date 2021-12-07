@@ -16,9 +16,11 @@ namespace Nitride
     [DesignerCategory("Code")]
     public class CaptionBar : UserControl
     {
-        public CaptionBar(MosaicForm fm)
+        public CaptionBar(OldMosaicForm fm)
         {
             MoForm = fm;
+            SepPen = new(new SolidBrush(Color.FromArgb(180, ControlPaint.Dark(MoForm.ActiveColor, 0.1f))));
+            SepPenShade1 = new(new SolidBrush(Color.FromArgb(120, ControlPaint.Light(MoForm.ActiveColor, 1f))));
 
             if (MoForm != null)
             {
@@ -58,7 +60,7 @@ namespace Nitride
             ResumeLayout(false);
             PerformLayout();
         }
-        public MosaicForm MoForm { get; protected set; }
+        public OldMosaicForm MoForm { get; protected set; }
 
         public TextBox SearchBox { get; }
 
@@ -108,8 +110,10 @@ namespace Nitride
             base.OnClientSizeChanged(e);
         }
 
-        public static readonly Pen SepPen = new(new SolidBrush(Color.FromArgb(180, ControlPaint.Dark(MosaicForm.ActiveColor, 0.1f))));
-        public static readonly Pen SepPenShade1 = new(new SolidBrush(Color.FromArgb(120, ControlPaint.Light(MosaicForm.ActiveColor, 1f))));
+        public Pen SepPen { get; }
+
+        public Pen SepPenShade1 { get; }
+
         public void DrawSeparator(Graphics g, int x, int y1, int y2)
         {
             if (IsActivated)

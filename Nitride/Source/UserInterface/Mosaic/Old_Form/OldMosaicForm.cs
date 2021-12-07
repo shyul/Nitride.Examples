@@ -16,7 +16,7 @@ using Nitride.WindowsNativeMethods;
 namespace Nitride
 {
     [DesignerCategory("Code")]
-    public class MosaicForm : Form
+    public class OldMosaicForm : Form
     {
         #region Caption Geometry
         public const int UpEdgeResizeGripMargin = 8;
@@ -28,7 +28,7 @@ namespace Nitride
 
         public int ShowFormMsg { get; private set; }
 
-        public static Color ActiveColor => DWMAPI.GetWindowColorizationColor(true);
+        public virtual Color ActiveColor { get; }// => DWMAPI.GetWindowColorizationColor(true);
 
         public float ScaleFactor => GUI.ScalingFactor();
 
@@ -37,9 +37,14 @@ namespace Nitride
         public static string HelpLink { get; set; }
 
         #region Ctor
-        public MosaicForm(int showFormMsg)
+
+
+        public OldMosaicForm(int showFormMsg) : this(showFormMsg, DWMAPI.GetWindowColorizationColor(true)) { }
+
+        public OldMosaicForm(int showFormMsg, Color activeColor)
         {
             ShowFormMsg = showFormMsg;
+            ActiveColor = activeColor;
 
             // Commands
             Command_Minimize = new Command()
@@ -106,7 +111,7 @@ namespace Nitride
             Ribbon = new Ribbon();
             OrbMenu = new OrbMenu(this) { Visible = false };
             StatusPane = new StatusStrip();
-            DockControl = new DockCanvas();
+            DockCanvas = new DockCanvas();
 
             Btn_Minimize = new ButtonWidget(Command_Minimize, true, true, false);
             Btn_Maximize = new ToggleWidget(Command_Maximize, Command_Restore, (WindowState == FormWindowState.Maximized), true, true, false);
@@ -132,7 +137,7 @@ namespace Nitride
             Controls.Add(Ribbon);
             Controls.Add(Ribbon.RibbonContainer);
             //Controls.Add(OrbMenu);
-            Controls.Add(DockControl);
+            Controls.Add(DockCanvas);
             Controls.Add(StatusPane);
 
             Controls.Add(CaptionBar);
@@ -180,11 +185,11 @@ namespace Nitride
         public OrbMenu OrbMenu { get; protected set; }
         public Ribbon Ribbon { get; protected set; }
         public StatusStrip StatusPane { get; protected set; }
-        public DockCanvas DockControl { get; protected set; }
+        public DockCanvas DockCanvas { get; protected set; }
 
-        public void AddForm(DockForm df) => DockControl.AddForm(DockStyle.Fill, 0, df);
-        public void AddForm(DockStyle postion, DockForm df) => DockControl.AddForm(postion, 0, df);
-        public void AddForm(DockStyle postion, int index, DockForm df) => DockControl.AddForm(postion, index, df);
+        public void AddForm(DockForm df) => DockCanvas.AddForm(DockStyle.Fill, 0, df);
+        public void AddForm(DockStyle postion, DockForm df) => DockCanvas.AddForm(postion, 0, df);
+        public void AddForm(DockStyle postion, int index, DockForm df) => DockCanvas.AddForm(postion, index, df);
 
         #region Drop Menus ####################################################################### t.b.d
         public static ContextPane ContextPane { get; } = new ContextPane();
@@ -256,16 +261,16 @@ namespace Nitride
                 Ribbon.RibbonContainer.Visible = false;
                 Ribbon.RibbonContainer.Coordinate();
                 Ribbon.RibbonContainer.DeActivate();
-                DockControl.Location = new Point(0, Ribbon.Bounds.Bottom);
+                DockCanvas.Location = new Point(0, Ribbon.Bounds.Bottom);
             }
             else
             {
                 Ribbon.RibbonContainer.Coordinate();
                 Ribbon.RibbonContainer.Visible = true;
                 Ribbon.RibbonContainer.ActivateDefaultTab();
-                DockControl.Location = new Point(0, Ribbon.RibbonContainer.Bounds.Bottom);
+                DockCanvas.Location = new Point(0, Ribbon.RibbonContainer.Bounds.Bottom);
             }
-            DockControl.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - DockControl.Location.Y - StatusPane.Height);
+            DockCanvas.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - DockCanvas.Location.Y - StatusPane.Height);
         }
 
         protected void Coordinate()
@@ -287,7 +292,7 @@ namespace Nitride
 
             //OrbMenu.Location = new Point(Ribbon.Bounds.Left, Ribbon.Bounds.Bottom);
 
-            DockControl.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - DockControl.Location.Y - StatusPane.Height);
+            DockCanvas.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - DockCanvas.Location.Y - StatusPane.Height);
 
             if (WindowState == FormWindowState.Maximized)
             {

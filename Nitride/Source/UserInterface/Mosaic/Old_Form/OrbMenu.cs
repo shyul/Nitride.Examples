@@ -39,13 +39,13 @@ namespace Nitride
     public class OrbMenu : UserControl
     {
         #region Ctor
-        public OrbMenu(MosaicForm fm) // : base()
+        public OrbMenu(OldMosaicForm fm) // : base()
         {
             MoForm = fm;
         }
         #endregion
         #region Components
-        public MosaicForm MoForm { get; protected set; }
+        public OldMosaicForm MoForm { get; protected set; }
 
         #endregion
         #region Control
