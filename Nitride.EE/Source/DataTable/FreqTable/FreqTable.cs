@@ -103,6 +103,8 @@ namespace Nitride.EE
 
         public override int Count => FreqRows.Count;
 
+        public override bool IsEmpty => !FreqRows.Any();
+
         public override void Clear()
         {
             lock (DataLockObject)
@@ -138,13 +140,13 @@ namespace Nitride.EE
         public Range<double> GetRange(NumericColumn column, double startFreq, double stopFreq)
         {
             var rows = Rows.Where(n => n.Frequency <= stopFreq && n.Frequency >= startFreq).Select(n => n[column]);
-            return rows.Count() > 0 ? new Range<double>(rows.Min(), rows.Max()) : null;
+            return rows.Any() ? new Range<double>(rows.Min(), rows.Max()) : null;
         }
 
         public Range<double> GetRange(NumericColumn column)
         {
             var rows = Rows.Select(n => n[column]);
-            return rows.Count() > 0 ? new Range<double>(rows.Min(), rows.Max()) : null;
+            return rows.Any() ? new Range<double>(rows.Min(), rows.Max()) : null;
         }
     }
 }
