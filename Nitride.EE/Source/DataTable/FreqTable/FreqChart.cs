@@ -32,7 +32,7 @@ namespace Nitride.EE
             FreqTable = st;
             FreqTable.Status = TableStatus.Loading;
             FreqTable.AddDataConsumer(this);
-            TabName = Name = "Test Chart with Table Here:)";
+            TabName = Name = name;
             /*
             AddArea(MainArea = new OscillatorArea(this, "Main", 0.3f)
             {
