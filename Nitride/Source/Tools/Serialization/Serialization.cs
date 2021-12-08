@@ -204,7 +204,10 @@ namespace Nitride
         public static T DeserializeJson<T>(this byte[] source)
         {
             using MemoryStream stream = new(source);
+            
             DataContractJsonSerializer JsonSer = new(typeof(T));
+
+            Console.WriteLine("Deserializing Json ##");
             return (T)JsonSer.ReadObject(stream);
         }
 
@@ -221,8 +224,12 @@ namespace Nitride
             if (File.Exists(fileName))
                 using (FileStream stream = File.OpenRead(fileName))
                     return DeserializeJson<T>(File.ReadAllBytes(fileName));
-            else
+            else 
+            {
+                Console.WriteLine("DeserializeJsonFile() Unable to find file: " + fileName);
                 return default;
+            }
+         
         }
 
         #endregion Json Data

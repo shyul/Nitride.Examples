@@ -108,7 +108,7 @@ namespace Nitride.EE
                 Complex z12 = row[this[1, 2]];
                 Complex z21 = row[this[2, 1]];
                 Complex z22 = row[this[2, 2]];
-                
+
                 Complex v1 = row[V1];
                 Complex i1 = row[I1];
 

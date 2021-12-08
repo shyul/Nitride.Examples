@@ -78,9 +78,9 @@ namespace Nitride.EE
 
         }
 
-        public void Sort() 
+        public void Sort()
         {
-            lock (DataLockObject) 
+            lock (DataLockObject)
             {
                 var rows = FreqRows.OrderBy(n => n.Frequency).ToList();
 
@@ -131,7 +131,7 @@ namespace Nitride.EE
 
         public Complex this[int i, ComplexColumn column] => i >= Count || i < 0 ? Complex.NaN : FreqRows[i][column];
 
-        public override string GetXAxisLabel(int i) 
+        public override string GetXAxisLabel(int i)
         {
             //return (this[i].Frequency / 1e6).ToString("0.######") + "MHz";
             return this[i].Frequency.ToString();
