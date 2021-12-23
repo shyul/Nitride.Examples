@@ -73,5 +73,35 @@ namespace Nitride.Example
                 }
             }
         }
+
+        private void BtnConvertMAX2_Click(object sender, EventArgs e)
+        {
+            using OpenFileDialog openFileDialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                Filter = "MAX II Pinout Text File (*.txt)|*.txt",
+                RestoreDirectory = true
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Altera.ReadPinoutFileMAX2(openFileDialog.FileName);
+            }
+        }
+
+        private void BtnConvertQuartusPinFile_Click(object sender, EventArgs e)
+        {
+            using OpenFileDialog openFileDialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                Filter = "Quartus Pin File (*.pin)|*.pin",
+                RestoreDirectory = true
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Altera.ReadQuartusPinFile(openFileDialog.FileName);
+            }
+        }
     }
 }

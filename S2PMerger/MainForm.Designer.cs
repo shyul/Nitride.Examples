@@ -31,6 +31,8 @@ namespace Nitride.Example
         {
             this.BtnLoadSnPFile = new System.Windows.Forms.Button();
             this.BtnSaveSnPFile = new System.Windows.Forms.Button();
+            this.BtnConvertMAX2 = new System.Windows.Forms.Button();
+            this.BtnConvertQuartusPinFile = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnLoadSnPFile
@@ -53,11 +55,33 @@ namespace Nitride.Example
             this.BtnSaveSnPFile.UseVisualStyleBackColor = true;
             this.BtnSaveSnPFile.Click += new System.EventHandler(this.BtnSaveSnPFile_Click);
             // 
+            // BtnConvertMAX2
+            // 
+            this.BtnConvertMAX2.Location = new System.Drawing.Point(309, 61);
+            this.BtnConvertMAX2.Name = "BtnConvertMAX2";
+            this.BtnConvertMAX2.Size = new System.Drawing.Size(148, 23);
+            this.BtnConvertMAX2.TabIndex = 2;
+            this.BtnConvertMAX2.Text = "Convert MAX II Pins";
+            this.BtnConvertMAX2.UseVisualStyleBackColor = true;
+            this.BtnConvertMAX2.Click += new System.EventHandler(this.BtnConvertMAX2_Click);
+            // 
+            // BtnConvertQuartusPinFile
+            // 
+            this.BtnConvertQuartusPinFile.Location = new System.Drawing.Point(309, 90);
+            this.BtnConvertQuartusPinFile.Name = "BtnConvertQuartusPinFile";
+            this.BtnConvertQuartusPinFile.Size = new System.Drawing.Size(148, 23);
+            this.BtnConvertQuartusPinFile.TabIndex = 3;
+            this.BtnConvertQuartusPinFile.Text = "Convert Quartus Pin File";
+            this.BtnConvertQuartusPinFile.UseVisualStyleBackColor = true;
+            this.BtnConvertQuartusPinFile.Click += new System.EventHandler(this.BtnConvertQuartusPinFile_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BtnConvertQuartusPinFile);
+            this.Controls.Add(this.BtnConvertMAX2);
             this.Controls.Add(this.BtnSaveSnPFile);
             this.Controls.Add(this.BtnLoadSnPFile);
             this.Name = "MainForm";
@@ -70,6 +94,8 @@ namespace Nitride.Example
 
         private System.Windows.Forms.Button BtnLoadSnPFile;
         private System.Windows.Forms.Button BtnSaveSnPFile;
+        private System.Windows.Forms.Button BtnConvertMAX2;
+        private System.Windows.Forms.Button BtnConvertQuartusPinFile;
     }
 }
 

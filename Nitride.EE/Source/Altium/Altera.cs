@@ -31,6 +31,138 @@ namespace Nitride.EE
                 funcList.Add("GND");
             }*/
         }
+
+        public static void ReadPinoutFileMAX2(string txtFilename)
+        {
+            if (File.Exists(txtFilename))
+            {
+                using var fs = new FileStream(txtFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using StreamReader sr = new(fs);
+                //string[] headers = sr.CsvReadFields();
+
+                Dictionary<string, FPGAPin> pinList = new();
+                List<string> vrefList = new();
+
+                while (!sr.EndOfStream)
+                {
+                    string[] fields = sr.ReadLine().Trim().Split('\t');
+                    Console.WriteLine(fields.ToStringWithIndex());
+                }
+
+            }
+        }
+
+        public static string ToStringWithIndexTrim<T>(this ICollection<T> list)
+        {
+            string s = string.Empty;
+            for (int i = 0; i < list.Count; i++)
+            {
+                s += "(" + i.ToString() + ")\"" + list.ElementAt(i).ToString().Trim() + "\"-";
+            }
+
+            if (s.Length > 0) return s.TrimEnd('-');
+            else return "Empty String Array";
+        }
+
+        public static void ReadQuartusPinFile(string pinFilename) 
+        {
+            if (File.Exists(pinFilename))
+            {
+                using var fs = new FileStream(pinFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using StreamReader sr = new(fs);
+                //string[] headers = sr.CsvReadFields();
+
+                Dictionary<string, FPGAPin> pinList = new();
+                List<string> vrefList = new();
+                int index = 0;
+                while (!sr.EndOfStream)
+                {
+                    
+                    string[] fields = sr.ReadLine().Trim().Split(':');
+
+                    if (fields.Length == 7)
+                    {
+                        // Console.WriteLine(fields.ToStringWithIndexTrim());
+                        //for (int i = 0; i < fields.Length; i++)
+                        //{
+
+                        PinType type = PinType.Passive;
+
+                        string pinName = fields[0].Trim();
+                        string pinNum = fields[1].Trim();
+                        string direction = fields[2].Trim().ToUpper();
+                        string standard = fields[3].Trim();
+                        string voltage = fields[4].Trim();
+                        string bank = fields[5].Trim();
+
+                        //string label = pinName.StartsWith("RESERVED_") ? "IO" + bank : pinName;
+                        string label = pinName;
+
+                        if (pinName.StartsWith("RESERVED_")) 
+                        {
+                            type = PinType.IO;
+                            label = "IO" + bank;
+
+                        }
+                        else if (voltage.Length > 0)
+                        {
+                            label = pinName + "(" + voltage + ")";
+                        }
+
+                        if (direction.Contains("POWER") || direction.Contains("GND")) direction = "PASSIVE";
+
+                        if (direction.Contains("INPUT")) type = PinType.Input;
+
+                        if (direction.Contains("OUTPUT")) type = PinType.Output;
+
+                        if (index > 0)
+                        {
+                            pinList.Add(pinNum, new FPGAPin()
+                            {
+                                Designator = pinNum,
+                                Name = label,
+                                Type = type,
+                                Bank = bank,
+                            }); ;
+
+                            //Console.WriteLine("Pin," + label + "," + pinNum + "," + direction);
+                        }
+                    
+
+                        index++;
+                    }
+                }
+
+                string title = "Object Kind,Name,Pin Designator,Electrical Type,X1,Y1";
+                Console.WriteLine(title);
+
+                int X = 0;
+                int Y = 0;
+
+                string lastBank = string.Empty;
+
+                foreach (var pin in pinList.OrderBy(n => n.Value.Bank).ThenBy(n => n.Value.Name).ThenBy(n => n.Key))
+                {
+                    if (pin.Value.Bank != lastBank)
+                    {
+                        X += 500;
+                        Y = 0;
+                        lastBank = pin.Value.Bank;
+                    }
+
+                    string dirType = pin.Value.Type.ToString();
+                    if (dirType == "IO") dirType = "I/O";
+
+                    string line = "Pin," + pin.Value.Name + "," + pin.Key + "," + dirType + "," + X.ToString() + "," + Y.ToString();
+                    Y -= 100;
+                    Console.WriteLine(line);
+                }
+
+                Console.WriteLine("Total pin count = " + pinList.Count().ToString());
+            }
+
+        }
+
         public static void ReadPinoutFileCycloneV(string csvFileName)
         {
             if (File.Exists(csvFileName))
