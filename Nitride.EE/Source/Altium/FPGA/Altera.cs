@@ -7,15 +7,6 @@ using System.Threading.Tasks;
 
 namespace Nitride.EE
 {
-    public class FPGAPin : SchematicPin
-    {
-        public string DiffName { get; set; }
-
-        public string Bank { get; set; }
-
-        public string VREFGroup { get; set; }
-    }
-
     public static class Altera
     {
         private static void AddPinFunction(this List<string> funcList, string func) 

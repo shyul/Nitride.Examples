@@ -14,7 +14,7 @@ namespace Nitride.Example
 {
     public partial class MainForm : Form
     {
-
+        FPGA FPGA { get; set; } = new FPGA();
 
         public MainForm()
         {
@@ -101,6 +101,117 @@ namespace Nitride.Example
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 Altera.ReadQuartusPinFile(openFileDialog.FileName);
+            }
+        }
+
+
+
+
+
+        private void BtnImportXilinxPackageFile_Click(object sender, EventArgs e)
+        {
+            OpenFile.Filter = "Xilinx Package File (*.txt) | *.txt";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK)
+            {
+                FPGA = new FPGA();
+                FPGA.ImportXilinxPackageFile(OpenFile.FileName);
+            }
+        }
+
+        private void BtnImportAlteraPackageFile_Click(object sender, EventArgs e)
+        {
+            OpenFile.Filter = "DIYed Alera Package File (*.csv) | *.csv";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK)
+            {
+                FPGA = new FPGA();
+                FPGA.ImportAlteraPackageFile(OpenFile.FileName);
+            }
+        }
+
+        private void BtnExportCSVFile_Click(object sender, EventArgs e)
+        {
+            SaveFile.Filter = "CSV File (*.csv) | *.csv";
+
+            if (SaveFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ExportPins(SaveFile.FileName);
+            }
+        }
+
+        private void BtnImportAltiumPinMapReport_Click(object sender, EventArgs e)
+        {
+            OpenFile.Filter = "Altium Pin Map File (*.csv) | *.csv";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ImportAltiumPinMapReport(OpenFile.FileName);
+            }
+        }
+
+        private void BtnExportXilinxXDCFile_Click(object sender, EventArgs e)
+        {
+            SaveFile.Filter = "Xilinx Constraint File (*.xdc) | *.xdc";
+
+            if (SaveFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ExportXdcConstraint(SaveFile.FileName);
+            }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveFile.Filter = "Quartus Spec File (*.qsf) | *.qsf";
+
+            if (SaveFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ExportQuartusSpecFileAssignment(SaveFile.FileName);
+            }
+        }
+
+        private void BtnExportNets_Click(object sender, EventArgs e)
+        {
+            SaveFile.Filter = "System Verilog (*.sv) | *.sv";
+
+            if (SaveFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ExportAllSignals(SaveFile.FileName);
+            }
+        }
+
+        private void BtnImportQuartusPinFile_Click(object sender, EventArgs e)
+        {
+            OpenFile.Filter = "Quartus Pin File (*.pin) | *.pin";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ImportQuartusPinFile(OpenFile.FileName);
+            }
+        }
+
+        private void BtnImportVivadoIOPlacedReport_Click(object sender, EventArgs e)
+        {
+            OpenFile.Filter = "Report File (*.rpt) | *.rpt";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK && FPGA is not null && OpenFile.FileName.Contains("_io_placed"))
+            {
+                FPGA.ImportVivadoIOPlacedReport(OpenFile.FileName);
+            }
+        }
+
+        private void BtnImportVivadoIOPorts_Click(object sender, EventArgs e)
+        {
+            OpenFile.Filter = "Vivado I/O Ports File (*.csv) | *.csv";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            {
+                FPGA.ImportVivadoIOPorts(OpenFile.FileName);
             }
         }
     }
