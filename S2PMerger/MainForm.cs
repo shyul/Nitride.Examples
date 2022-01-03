@@ -100,7 +100,7 @@ namespace Nitride.Example
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Altera.ReadQuartusPinFile(openFileDialog.FileName);
+                FPGA.ReadQuartusPinFile(openFileDialog.FileName);
             }
         }
 

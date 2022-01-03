@@ -95,7 +95,7 @@ namespace Nitride.Example
             // 
             this.BtnImportAlteraPackageFile.Location = new System.Drawing.Point(307, 12);
             this.BtnImportAlteraPackageFile.Name = "BtnImportAlteraPackageFile";
-            this.BtnImportAlteraPackageFile.Size = new System.Drawing.Size(239, 52);
+            this.BtnImportAlteraPackageFile.Size = new System.Drawing.Size(239, 35);
             this.BtnImportAlteraPackageFile.TabIndex = 4;
             this.BtnImportAlteraPackageFile.Text = "Import Altera Package File";
             this.BtnImportAlteraPackageFile.UseVisualStyleBackColor = true;
@@ -163,9 +163,9 @@ namespace Nitride.Example
             // 
             // BtnConvertMAX2
             // 
-            this.BtnConvertMAX2.Location = new System.Drawing.Point(672, 205);
+            this.BtnConvertMAX2.Location = new System.Drawing.Point(618, 12);
             this.BtnConvertMAX2.Name = "BtnConvertMAX2";
-            this.BtnConvertMAX2.Size = new System.Drawing.Size(148, 23);
+            this.BtnConvertMAX2.Size = new System.Drawing.Size(213, 35);
             this.BtnConvertMAX2.TabIndex = 2;
             this.BtnConvertMAX2.Text = "Convert MAX II Pins";
             this.BtnConvertMAX2.UseVisualStyleBackColor = true;
@@ -173,11 +173,11 @@ namespace Nitride.Example
             // 
             // BtnConvertQuartusPinFile
             // 
-            this.BtnConvertQuartusPinFile.Location = new System.Drawing.Point(672, 234);
+            this.BtnConvertQuartusPinFile.Location = new System.Drawing.Point(307, 53);
             this.BtnConvertQuartusPinFile.Name = "BtnConvertQuartusPinFile";
-            this.BtnConvertQuartusPinFile.Size = new System.Drawing.Size(148, 23);
+            this.BtnConvertQuartusPinFile.Size = new System.Drawing.Size(239, 35);
             this.BtnConvertQuartusPinFile.TabIndex = 3;
-            this.BtnConvertQuartusPinFile.Text = "Convert Quartus Pin File";
+            this.BtnConvertQuartusPinFile.Text = "Import Quartus Pin File";
             this.BtnConvertQuartusPinFile.UseVisualStyleBackColor = true;
             this.BtnConvertQuartusPinFile.Click += new System.EventHandler(this.BtnConvertQuartusPinFile_Click);
             // 
