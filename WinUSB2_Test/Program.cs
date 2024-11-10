@@ -28,16 +28,16 @@ namespace WindowsFormsApp1
         public static readonly int SHOW_FORM = User32.RegisterWindowMessage("SHOW_NITRIDE_FORM");
     }
 
-    internal sealed partial class ChartForm : MosaicForm
+    internal sealed partial class ChartForm : Mosaic
     {
         #region Ctor
-        public ChartForm() : base(Program.SHOW_FORM)
+        public ChartForm() : base()//Program.SHOW_FORM)
         {
             SuspendLayout();
 
-            HelpLink = "https://github.com/shyul/Pacmio/wiki";
+            //HelpLink = "https://github.com/shyul/Pacmio/wiki";
             //Icon = Pacmio.Properties.Resources.Pacman;
-            IsRibbonShrink = true;
+            //IsRibbonShrink = true;
             Text = "Spectrum";
             Width = 1500;
             Height = 1200;

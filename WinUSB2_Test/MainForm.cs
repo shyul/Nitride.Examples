@@ -154,7 +154,8 @@ namespace WindowsFormsApp1
 
 
 
-            Guid guid = Guid.Parse("{6AE77B78-518B-493D-A9DD-3A64E87EA3F9}");
+            //Guid guid = Guid.Parse("{6AE77B78-518B-493D-A9DD-3A64E87EA3F9}");
+            Guid guid = Guid.Parse("{6AE77B78-518B-493D-A9DD-3A64E87EA3FA}");
             Console.WriteLine("GUID is: " + guid.ToString().ToUpper());
             var pathList = WinUsbDevice.FindDevicePathList(guid);
 

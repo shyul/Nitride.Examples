@@ -366,18 +366,27 @@ namespace Nitride.EE
                 {
                     string line = sr.ReadLine().Trim();
 
-                    if (line.StartsWith("|") && line.Split('|') is string[] fields && fields.Length == 23 && !line.Contains("Pin Number"))
+                    if (line.StartsWith("|") && line.Split('|') is string[] fields && fields.Length > 14 && !line.Contains("Pin Number"))
                     {
                         //Console.WriteLine(ToStringWithIndex(fields));
+
+
                         i++;
 
                         string pinDesignator = fields[1].Trim().ToUpper();
                         FPGAPin pin = PinList[pinDesignator];
-                        pin.AssignedName = fields[2].Trim().ToUpper();
+                        pin.AssignedName = fields[2].Trim().ToUpper().Trim(new char[] { '[', ']' }).Replace("[", "");
+
+                        string netName = pin.NetName;
+                        netName = netName.Replace(".", "P");
+                        pin.NetName = netName.StartsWith("r") ? netName.Remove(0, 1) : netName;
+
+                        //Console.WriteLine("AssignedName = " + pin.AssignedName);
 
                         if (pin.AssignedName.Contains("DDR4_")) pin.AssignedName = pin.AssignedName.Replace("DDR4_", "PS_DDR_");
 
-                        string voltage = fields[13].Trim().ToUpper();
+                        //string voltage = fields[13].Trim().ToUpper();
+                        string voltage = fields[12].Trim().ToUpper();
                         if (voltage.Length > 0 && voltage != "0.0") pin.AssignedName = voltage;
 
                     }
@@ -538,9 +547,11 @@ namespace Nitride.EE
         {
             StringBuilder sb = new();
 
-            foreach (var pin in PinList.Values.Where(n => n.IsIO && n.NetName.Length > 0 && !n.NetName.StartsWith("Net")).OrderBy(n => n.NetName).ThenBy(n => n.Designator))
+            //foreach (var pin in PinList.Values.Where(n => n.IsIO && n.NetName.Length > 0 && !n.NetName.StartsWith("Net")).OrderBy(n => n.NetName).ThenBy(n => n.Designator))
+            foreach (var pin in PinList.Values.Where(n => n.NetName.Length > 0 && !n.NetName.StartsWith("Net") && !n.NetName.StartsWith("+") && n.NetName.ToUpper() != "VSS").OrderBy(n => n.NetName).ThenBy(n => n.Designator))
             {
-                string pinName = pin.NetName.ToLower().Replace('.', 'p');
+                //string pinName = pin.NetName.ToLower().Replace('.', 'p');
+                string pinName = pin.NetName.Replace('.', 'p');
 
                 if (pinName.EndsWith("_p"))
                     pinName = pinName.Substring(0, pinName.Length - 2) + "_P";
@@ -548,6 +559,8 @@ namespace Nitride.EE
                     pinName = pinName.Substring(0, pinName.Length - 2) + "_N";
 
                 sb.AppendLine(pinName + ",");
+
+                Console.WriteLine(pinName);
             }
 
             File.WriteAllText(fileName, sb.ToString());
@@ -556,6 +569,47 @@ namespace Nitride.EE
 
         public void ImportPins(string csvFileName)
         {
+
+
+
+        }
+
+        public void ExportXdcConstraintSimple()// string xdcFileName)
+        {
+
+            Console.WriteLine("\n\n*** Start Pin List ***\n");
+
+            foreach (string netName in PinList.Values.Where(n => n.PinName.StartsWith("IO_") && !string.IsNullOrWhiteSpace(n.NetName)).GroupBy(n => n.NetName).Select(n => n.Key).OrderBy(n => n))
+            {
+                string netN = netName.StartsWith("r") ? netName.Remove(0, 1) : netName;
+
+                Console.WriteLine(netN + ",");
+            }
+
+            Console.WriteLine("\n\n*** End Pin List ***\n");
+
+            foreach (var (designator, pinName, netName, bankName) in PinList.Values.Where(n => n.PinName.StartsWith("IO_") && !string.IsNullOrWhiteSpace(n.NetName)).OrderBy(n => n.Bank).ThenBy(n => n.NetName).Select(n => (n.Designator, n.PinName, n.NetName, n.Bank)))
+            {
+                string netN = netName.StartsWith("r") ? netName.Remove(0, 1) : netName;
+
+                string line = "set_property -dict { PACKAGE_PIN " + designator + " IOSTANDARD " + "LVCMOS" + " } [ get_ports { " + netN + " } ]; # Bank" + bankName;
+                Console.WriteLine(line);
+                //Console.WriteLine(designator + " | " + pinName + " | " + netN + " | " + bankName);
+            }
+
+
+            /*
+            foreach (var pin in PinList.Values.Where(n => n.IsIO && n.PinName.StartsWith("IO_") && n.NetName.Length > 0 && !n.NetName.StartsWith("Net")).OrderBy(n => n.Bank).ThenBy(n => n.IOType).ThenBy(n => n.PairName).ThenBy(n => n.NetName).ThenBy(n => n.Designator))
+            {
+                string pinName = pin.NetName.ToLower().Replace('.', 'p');
+
+                if (pinName.EndsWith("_p"))
+                    pinName = pinName.Substring(0, pinName.Length - 2) + "_P";
+                else if (pinName.EndsWith("_n"))
+                    pinName = pinName.Substring(0, pinName.Length - 2) + "_N";
+
+                sb.AppendLine("set_property -dict {PACKAGE_PIN " + pin.Designator + " IOSTANDARD " + pin.IOStandard + "} [get_ports " + pinName + "]");
+            }*/
 
 
 

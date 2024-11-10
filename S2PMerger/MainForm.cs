@@ -152,12 +152,12 @@ namespace Nitride.Example
 
         private void BtnExportXilinxXDCFile_Click(object sender, EventArgs e)
         {
-            SaveFile.Filter = "Xilinx Constraint File (*.xdc) | *.xdc";
+            //SaveFile.Filter = "Xilinx Constraint File (*.xdc) | *.xdc";
 
-            if (SaveFile.ShowDialog() == DialogResult.OK && FPGA is not null)
-            {
-                FPGA.ExportXdcConstraint(SaveFile.FileName);
-            }
+           // if (SaveFile.ShowDialog() == DialogResult.OK && FPGA is not null)
+            //{
+                FPGA.ExportXdcConstraintSimple();
+            //}
         }
 
         private void MainForm_Load(object sender, EventArgs e)
